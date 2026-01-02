@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Meowsers Cat Rescue | Adopt, Volunteer, Donate</title>
+  <meta name="description" content="Meowsers Cat Rescue. Adopt, volunteer, donate, or report a cat in need." />
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#121212;
+      --muted:#5a5a5a;
+      --line:#e9e9e9;
+      --accent:#111111;
+      --soft:#f7f7f7;
+      --radius:16px;
+      --max:1100px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      line-height:1.5;
+    }
+
+    a{color:inherit}
+    .wrap{max-width:var(--max); margin:0 auto; padding:28px 18px 64px}
+
+    /* Top bar */
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:10px 0 18px;
+    }
+    .phone{
+      font-size:20px;
+      letter-spacing:.5px;
+      white-space:nowrap;
+    }
+
+    /* Header (logo centered, nav below) */
+    .brand{
+      display:grid;
+      place-items:center;
+      padding:26px 0 10px;
+    }
+    .brand img{
+      width:120px;
+      height:auto;
+      display:block;
+    }
+
+    nav{
+      display:flex;
+      justify-content:center;
+      gap:28px;
+      padding:18px 0 28px;
+      border-bottom:1px solid var(--line);
+      flex-wrap:wrap;
+    }
+    nav a{
+      text-decoration:none;
+      text-transform:uppercase;
+      letter-spacing:3px;
+      font-size:12px;
+      padding:8px 6px;
+      border-bottom:2px solid transparent;
+    }
+    nav a:hover{border-bottom-color:#000}
+
+    /* Hero */
+    .hero{
+      padding:34px 0 10px;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:26px;
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .hero{grid-template-columns:1fr}
+      .phone{font-size:16px}
+    }
+
+    .h-eyebrow{
+      text-transform:uppercase;
+      letter-spacing:3px;
+      font-size:12px;
+      color:var(--muted);
+      margin:0 0 12px;
+    }
+    h1{
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+      font-weight:500;
+      font-size:44px;
+      line-height:1.08;
+      margin:0 0 12px;
+    }
+    .lede{
+      font-size:16px;
+      color:var(--muted);
+      margin:0 0 18px;
+      max-width:62ch;
+    }
+
+    .ctaRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px 14px;
+      border-radius:999px;
+      border:1px solid #000;
+      text-decoration:none;
+      font-size:14px;
+      letter-spacing:.3px;
+    }
+    .btn.primary{
+      background:#000;
+      color:#fff;
+    }
+    .btn.soft{
+      border-color:var(--line);
+      background:var(--soft);
+    }
+
+    .heroCard{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:16px;
+      background:var(--soft);
+    }
+    .heroCard h3{
+      margin:0 0 10px;
+      font-size:14px;
+      text-transform:uppercase;
+      letter-spacing:2px;
+      font-weight:650;
+    }
+    .heroCard p{
+      margin:0 0 12px;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .shot{
+      border:1px solid var(--line);
+      border-radius:12px;
+      overflow:hidden;
+      background:#fff;
+    }
+    .shot img{
+      width:100%;
+      height:auto;
+      display:block;
+      aspect-ratio: 16 / 10;
+      object-fit:cover;
+    }
+    .cap{
+      font-size:12px;
+      color:var(--muted);
+      padding:10px 12px;
+      border-top:1px solid var(--line);
+      background:#fff;
+    }
+
+    /* Sections */
+    .section{
+      padding:34px 0 0;
+      border-top:1px solid var(--line);
+      margin-top:26px;
+    }
+    .sectionTitle{
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+      font-weight:500;
+      font-size:28px;
+      margin:0 0 14px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:14px;
+    }
+    @media (max-width: 900px){
+      .grid{grid-template-columns:1fr}
+    }
+    .card{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:16px;
+      background:#fff;
+    }
+    .card h4{
+      margin:0 0 6px;
+      font-size:14px;
+      text-transform:uppercase;
+      letter-spacing:2px;
+    }
+    .card p{margin:0; color:var(--muted); font-size:14px}
+
+    /* Form */
+    .twoCol{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .twoCol{grid-template-columns:1fr}
+    }
+    label{display:block; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin:10px 0 6px}
+    input, textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px 12px;
+      font-size:14px;
+      outline:none;
+    }
+    textarea{min-height:120px; resize:vertical}
+    .note{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:10px;
+    }
+    .toast{
+      display:none;
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:var(--soft);
+      color:var(--text);
+      font-size:13px;
+    }
+
+    footer{
+      margin-top:44px;
+      padding-top:18px;
+      border-top:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:13px;
+    }
+    footer a{text-decoration:none}
+    footer a:hover{text-decoration:underline}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="top">
+      <div></div>
+      <div class="phone"><a href="tel:7019795602">701-979-5602</a></div>
+    </div>
+
+    <div class="brand">
+      <img
+        src="https://img1.wsimg.com/isteam/ip/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/Logo-0001.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25"
+        alt="Meowsers Cat Rescue logo"
+      />
+    </div>
+
+    <nav>
+      <a href="https://meowserscatrescue.org/" target="_blank" rel="noopener">Home</a>
+      <a href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Adoption</a>
+      <a href="https://meowserscatrescue.org/volunteer" target="_blank" rel="noopener">Volunteer</a>
+      <a href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate</a>
+      <a href="https://meowserscatrescue.org/shop" target="_blank" rel="noopener">Shop</a>
+      <a href="#contact">Contact Us</a>
+    </nav>
+
+    <section class="hero">
+      <div>
+        <p class="h-eyebrow">Meowsers Cat Rescue</p>
+        <h1>Find more ways to help.</h1>
+        <p class="lede">
+          We are as strong as the community that holds us up. Together, we can do more than we can do alone.
+          Let's bring our abilities and passions together.
+        </p>
+
+        <div class="ctaRow">
+          <a class="btn primary" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">View Adoptable Cats</a>
+          <a class="btn" href="#report">Report a Cat in Need</a>
+          <a class="btn soft" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate</a>
+          <a class="btn soft" href="https://meowserscatrescue.org/volunteer" target="_blank" rel="noopener">Volunteer</a>
+        </div>
+
+        <p class="note">
+          Pitch angle: this page keeps their clean look, but adds a simple “Report a Cat” flow that can route to email or a Google Sheet in version one.
+        </p>
+      </div>
+
+      <div class="heroCard">
+        <h3>Drop in screenshots</h3>
+        <p>Replace the images below with screenshots from their current site so the demo feels instantly familiar.</p>
+
+        <div class="shot" style="margin-bottom:12px;">
+          <img src="https://picsum.photos/1200/750?random=31" alt="Placeholder screenshot">
+          <div class="cap">Screenshot placeholder, swap with Adoption page or cat listings</div>
+        </div>
+
+        <div class="shot">
+          <img src="https://picsum.photos/1200/750?random=32" alt="Placeholder screenshot">
+          <div class="cap">Screenshot placeholder, swap with Donate or Volunteer page</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="ways">
+      <h2 class="sectionTitle">Ways you can help</h2>
+
+      <div class="grid">
+        <div class="card">
+          <h4>Adopt</h4>
+          <p>Start with the adoption application, then browse available cats on their Adoption page.</p>
+          <p style="margin-top:10px;">
+            <a class="btn soft" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623" target="_blank" rel="noopener">Adoption Application (PDF)</a>
+          </p>
+        </div>
+
+        <div class="card">
+          <h4>Volunteer</h4>
+          <p>Join the team, make a difference, and help with events, socialization, and shelter support.</p>
+          <p style="margin-top:10px;">
+            <a class="btn soft" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Volunteer%20Application.pdf?ver=1761926270217" target="_blank" rel="noopener">Volunteer Application (PDF)</a>
+          </p>
+        </div>
+
+        <div class="card">
+          <h4>Donate</h4>
+          <p>Support medical care, food, and supplies. Venmo is listed as @meowserscatrescue.</p>
+          <p style="margin-top:10px;">
+            <a class="btn soft" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate Options</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="report">
+      <h2 class="sectionTitle">Report a cat in need (demo)</h2>
+
+      <div class="twoCol">
+        <div class="card" style="background:var(--soft);">
+          <h4>How it works</h4>
+          <p>
+            Version 1 can send reports straight to their email, or log them to a shared spreadsheet.
+            Later, it can become a simple app feature with photo upload, status updates, and a triage checklist.
+          </p>
+
+          <div class="note" style="margin-top:12px;">
+            Visits to the shelter must be scheduled and accompanied.
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="reportForm">
+            <label for="rname">Your name</label>
+            <input id="rname" name="name" placeholder="Jane Doe" required>
+
+            <label for="rcontact">Email or phone</label>
+            <input id="rcontact" name="contact" placeholder="jane@email.com or (555) 555-5555" required>
+
+            <label for="rlocation">Location</label>
+            <input id="rlocation" name="location" placeholder="Cross streets, address, park name" required>
+
+            <label for="rdetails">Details</label>
+            <textarea id="rdetails" name="details" placeholder="Injuries, collar/no collar, behavior, how long you've seen them"></textarea>
+
+            <label for="rphoto">Photo (optional, demo)</label>
+            <input id="rphoto" type="file" accept="image/*">
+
+            <button class="btn primary" type="submit" style="width:100%; justify-content:center;">Submit report</button>
+            <div class="toast" id="toast">✅ Demo submitted. Next step is routing this to Meowsers via email or Google Sheet.</div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <h2 class="sectionTitle">Contact</h2>
+      <div class="twoCol">
+        <div class="card">
+          <h4>Meowsers Cat Rescue</h4>
+          <p>
+            Mailing Address: PO Box 114, Bowman, ND 58623<br>
+            Email: <a href="mailto:meowserscatrescue@gmail.com">meowserscatrescue@gmail.com</a><br>
+            Phone: <a href="tel:7019795602">701-979-5602</a>
+          </p>
+        </div>
+        <div class="card">
+          <h4>Policies snapshot</h4>
+          <p>
+            Holding period: 3 days.<br>
+            Room and board: $7.00 per day (when applicable).
+          </p>
+          <p style="margin-top:10px;">
+            <a class="btn soft" href="https://meowserscatrescue.org/contact-us" target="_blank" rel="noopener">Read full policies</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div>© <span id="year"></span> Meowsers Cat Rescue (pitch mockup)</div>
+      <div>
+        <a href="https://meowserscatrescue.org/" target="_blank" rel="noopener">Website</a>
+        <span style="margin:0 10px;">|</span>
+        <a href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Adopt</a>
+        <span style="margin:0 10px;">|</span>
+        <a href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const form = document.getElementById("reportForm");
+    const toast = document.getElementById("toast");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      toast.style.display = "block";
+      form.reset();
+      setTimeout(() => toast.style.display = "none", 5000);
+    });
+  </script>
+</body>
+</html>
