@@ -464,12 +464,61 @@
       background: rgba(255,255,255,.06);
       box-shadow: var(--shadow2);
     }
+
+    /* Real thumbnails */
     .catMedia{
-      height:140px;
-      background:
-        radial-gradient(140px 90px at 30% 30%, rgba(255,255,255,.16), transparent 60%),
-        linear-gradient(135deg, rgba(124,92,255,.45), rgba(45,212,191,.22));
+      position:relative;
+      height:170px;
+      overflow:hidden;
+      background: rgba(255,255,255,.06);
     }
+    .catMedia img.hero{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      filter: saturate(1.05) contrast(1.02);
+      transform: scale(1.02);
+    }
+    .mediaLabel{
+      position:absolute;
+      left:12px;
+      top:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color: rgba(255,255,255,.90);
+      background: rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.16);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      user-select:none;
+    }
+    .thumbRow{
+      position:absolute;
+      left:12px;
+      right:12px;
+      bottom:12px;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    .thumb{
+      height:56px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow: 0 12px 20px rgba(0,0,0,.20);
+      overflow:hidden;
+      background: rgba(255,255,255,.06);
+    }
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      filter: saturate(1.02) contrast(1.02);
+    }
+
     .catBody{ padding:14px; }
     .catTitle{
       display:flex;
@@ -548,6 +597,7 @@
       background: rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.10);
       user-select:none;
+      white-space:nowrap;
     }
     .ext:hover{ border-color: rgba(255,255,255,.18); }
 
@@ -592,7 +642,6 @@
     .muted{ color: var(--muted); }
     .small{ font-size:12px; color: var(--muted); }
     .sep{ height:1px; background: rgba(255,255,255,.08); margin:12px 0; }
-    .hidden{ display:none !important; }
   </style>
 </head>
 
@@ -604,7 +653,7 @@
         <div class="appIcon" aria-hidden="true"></div>
         <div class="brandText">
           <strong>Rescue Companion (Demo)</strong>
-          <span>Mock data, labeled external links</span>
+          <span>Mock data, real cat photos, labeled links</span>
         </div>
       </div>
 
@@ -631,13 +680,13 @@
         <div class="panelInner">
           <div class="eyebrow">
             <span class="badge">Pitch prototype</span>
-            <span class="muted">No Meowsers content used, links preserved and labeled</span>
+            <span class="muted">Mock cats and copy, external links are real and labeled</span>
           </div>
 
           <h1>A clean, app-like home for adopt, donate, volunteer, and reporting cats in need.</h1>
           <p class="lede">
             This demo shows how a rescue could feel “native” on iPhone, without rebuilding their whole website.
-            All cats and copy below are mock data, external links point to the real Meowsers pages (clearly labeled).
+            All profiles below are mock data, and external links point to the real Meowsers pages (clearly labeled).
           </p>
 
           <div class="seg" role="tablist" aria-label="Primary focus">
@@ -647,10 +696,9 @@
           </div>
 
           <div class="ctaRow">
-            <a class="btn primary" href="#adopt" id="goAdopt">Browse adoptable cats (mock)</a>
-            <a class="btn" href="#report" id="goReport">Report a cat in need (demo)</a>
+            <a class="btn primary" href="#adopt">Browse adoptable cats (mock)</a>
+            <a class="btn" href="#report">Report a cat in need (demo)</a>
 
-            <!-- External links, labeled -->
             <a class="btn ghost" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Open Adoption page (external)</a>
             <a class="btn ghost" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Open Donate page (external)</a>
           </div>
@@ -665,8 +713,8 @@
           </div>
 
           <p class="help">
-            Pitch angle: the rescue keeps their site, and this app adds a simple “Report” pipeline and a nicer mobile experience.
-            Version 1 could route reports to email or a shared sheet, later it can grow into intake + status updates.
+            Pitch angle: the rescue keeps their site, and this app adds a simple “Report” pipeline and a better mobile experience.
+            Version 1 could route reports to email or a shared sheet, later it can grow into intake plus status updates.
           </p>
         </div>
       </div>
@@ -686,10 +734,10 @@
 
             <div class="kvRow">
               <div>
-                <strong>One-tap external actions</strong>
-                <span>All Meowsers links stay intact and are labeled clearly as external.</span>
+                <strong>Real photos</strong>
+                <span>Random real cat photos (placeholder service), so it feels believable on first glance.</span>
               </div>
-              <div class="tag">Links</div>
+              <div class="tag">Photos</div>
             </div>
 
             <div class="kvRow">
@@ -702,10 +750,10 @@
 
             <div class="kvRow">
               <div>
-                <strong>App-like feel</strong>
-                <span>Rounded cards, segmented control, bottom tab bar, iOS-style toggle.</span>
+                <strong>One-tap external actions</strong>
+                <span>All Meowsers links stay intact and are labeled clearly as external.</span>
               </div>
-              <div class="tag">iOS</div>
+              <div class="tag">Links</div>
             </div>
           </div>
 
@@ -732,7 +780,7 @@
       <div class="sectionHead">
         <div>
           <h2>Adoptable Cats (mock data)</h2>
-          <p>Swipey, app-like cards. In the real app, these could be pulled from a simple Google Sheet, Airtable, Petfinder, or a lightweight admin page.</p>
+          <p>App-like cards with real cat photos. In the real app, these profiles could be pulled from a Google Sheet, Airtable, Petfinder, or a lightweight admin page.</p>
         </div>
         <div class="row">
           <a class="ext" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">View Adoption page (external)</a>
@@ -783,7 +831,7 @@
               <div class="cardTop">
                 <div>
                   <h3>Donate</h3>
-                  <div class="sub">Fast, repeatable giving, send people to the real donate options.</div>
+                  <div class="sub">Fast, repeatable giving, sends people to the real donate options.</div>
                 </div>
                 <span class="tag">External</span>
               </div>
@@ -791,7 +839,7 @@
                 <a class="btn small primary" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate options (external)</a>
                 <a class="btn small ghost" href="https://meowserscatrescue.org/shop" target="_blank" rel="noopener">Shop (external)</a>
               </div>
-              <p class="help">In a real app, you could add Apple Pay later (optional), but version 1 can simply route to their existing flow.</p>
+              <p class="help">In a real app, you could add Apple Pay later (optional). Version 1 can simply route to their existing flow.</p>
             </div>
           </div>
 
@@ -828,7 +876,7 @@
               <div class="row" style="margin-top:8px;">
                 <a class="btn small ghost" href="https://meowserscatrescue.org/contact-us" target="_blank" rel="noopener">Contact page (external)</a>
               </div>
-              <p class="help">If you want, we can add a “copy to clipboard” button for phone/email to feel more app-like.</p>
+              <p class="help">If you want, we can add a “copy to clipboard” button for phone and email to feel even more app-like.</p>
             </div>
           </div>
         </div>
@@ -948,29 +996,25 @@
     // Year
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    // Demo Mode toggle
+    // Demo Mode toggle (purely visual)
     const demoSwitch = document.getElementById("demoSwitch");
     const phoneDot = document.getElementById("phoneDot");
+    let demoMode = true;
 
     function setDemoMode(isOn){
       demoSwitch.classList.toggle("on", isOn);
       demoSwitch.setAttribute("aria-checked", String(isOn));
-      // Just a tiny visual hint that everything is "labels / mock"
       phoneDot.classList.toggle("off", true);
       document.title = isOn
         ? "Rescue Companion (Demo) | Adopt, Volunteer, Donate"
         : "Rescue Companion | Adopt, Volunteer, Donate";
     }
-
-    let demoMode = true;
     setDemoMode(demoMode);
 
     function toggleDemo(){
       demoMode = !demoMode;
       setDemoMode(demoMode);
-      // In a real build, you could hide "mock" badges when demoMode is off.
     }
-
     demoSwitch.addEventListener("click", toggleDemo);
     demoSwitch.addEventListener("keydown", (e) => {
       if(e.key === "Enter" || e.key === " "){
@@ -979,13 +1023,12 @@
       }
     });
 
-    // Segmented control
+    // Segmented control scroll
     const segBtns = Array.from(document.querySelectorAll(".seg button"));
     segBtns.forEach(btn => {
       btn.addEventListener("click", () => {
         segBtns.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-
         const focus = btn.dataset.focus;
         const map = { adopt:"#adopt", report:"#report", donate:"#help" };
         document.querySelector(map[focus]).scrollIntoView({behavior:"smooth", block:"start"});
@@ -1003,49 +1046,86 @@
       });
     });
 
-    // Mock cat data
+    // Mock cat data, with real cat photos from a public placeholder service (random cats)
+    // If you want the photos to be consistent (not changing), replace these URLs later with your own hosted images.
     const cats = [
       {
         name: "Juniper",
         age: "Kitten",
         traits: ["playful","kitten"],
         tags: ["Spunky", "Great with kids"],
-        note: "Loves wand toys, fearless explorer, purrs the moment you look at her."
+        note: "Loves wand toys, fearless explorer, purrs the moment you look at her.",
+        hero: "https://cataas.com/cat?width=900&height=520&random=11",
+        thumbs: [
+          "https://cataas.com/cat?width=380&height=220&random=111",
+          "https://cataas.com/cat?width=380&height=220&random=112",
+          "https://cataas.com/cat?width=380&height=220&random=113"
+        ]
       },
       {
         name: "Mochi",
         age: "Adult",
         traits: ["calm","adult"],
         tags: ["Cuddle bug", "Lap cat"],
-        note: "Quiet, gentle, and happiest in a sunny window. Low drama, high affection."
+        note: "Quiet, gentle, and happiest in a sunny window. Low drama, high affection.",
+        hero: "https://cataas.com/cat?width=900&height=520&random=21",
+        thumbs: [
+          "https://cataas.com/cat?width=380&height=220&random=211",
+          "https://cataas.com/cat?width=380&height=220&random=212",
+          "https://cataas.com/cat?width=380&height=220&random=213"
+        ]
       },
       {
         name: "Atlas",
         age: "Adult",
         traits: ["adult","special"],
         tags: ["Special care", "Chill vibe"],
-        note: "Needs a steady routine. Once he trusts you, he becomes a total sweetheart."
+        note: "Needs a steady routine. Once he trusts you, he becomes a total sweetheart.",
+        hero: "https://cataas.com/cat?width=900&height=520&random=31",
+        thumbs: [
+          "https://cataas.com/cat?width=380&height=220&random=311",
+          "https://cataas.com/cat?width=380&height=220&random=312",
+          "https://cataas.com/cat?width=380&height=220&random=313"
+        ]
       },
       {
         name: "Peaches",
         age: "Kitten",
         traits: ["kitten","playful"],
         tags: ["Social", "Curious"],
-        note: "Bold little gremlin, always first to greet you, always last to nap."
+        note: "Bold little gremlin, always first to greet you, always last to nap.",
+        hero: "https://cataas.com/cat?width=900&height=520&random=41",
+        thumbs: [
+          "https://cataas.com/cat?width=380&height=220&random=411",
+          "https://cataas.com/cat?width=380&height=220&random=412",
+          "https://cataas.com/cat?width=380&height=220&random=413"
+        ]
       },
       {
         name: "Sable",
         age: "Adult",
         traits: ["adult","calm"],
         tags: ["Gentle", "Quiet home"],
-        note: "Best in a calm environment. She warms up slowly, then bonds hard."
+        note: "Best in a calm environment. She warms up slowly, then bonds hard.",
+        hero: "https://cataas.com/cat?width=900&height=520&random=51",
+        thumbs: [
+          "https://cataas.com/cat?width=380&height=220&random=511",
+          "https://cataas.com/cat?width=380&height=220&random=512",
+          "https://cataas.com/cat?width=380&height=220&random=513"
+        ]
       },
       {
         name: "Waffles",
         age: "Kitten",
         traits: ["kitten","playful"],
         tags: ["Goofy", "Food motivated"],
-        note: "Will absolutely steal your heart, then steal your snacks if you blink."
+        note: "Will absolutely steal your heart, then steal your snacks if you blink.",
+        hero: "https://cataas.com/cat?width=900&height=520&random=61",
+        thumbs: [
+          "https://cataas.com/cat?width=380&height=220&random=611",
+          "https://cataas.com/cat?width=380&height=220&random=612",
+          "https://cataas.com/cat?width=380&height=220&random=613"
+        ]
       }
     ];
 
@@ -1053,6 +1133,15 @@
     const searchInput = document.getElementById("searchInput");
     const chipRow = document.getElementById("chipRow");
     let activeFilter = "all";
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
 
     function renderCats(){
       const q = (searchInput.value || "").trim().toLowerCase();
@@ -1072,26 +1161,38 @@
 
       catGrid.innerHTML = filtered.map(c => `
         <div class="catCard">
-          <div class="catMedia" aria-hidden="true"></div>
+          <div class="catMedia">
+            <img class="hero" src="${escapeHtml(c.hero)}" alt="Photo of ${escapeHtml(c.name)}" loading="lazy" />
+            <div class="mediaLabel">Photos: demo placeholder</div>
+            <div class="thumbRow">
+              <div class="thumb"><img src="${escapeHtml(c.thumbs[0])}" alt="Thumbnail 1 of ${escapeHtml(c.name)}" loading="lazy"></div>
+              <div class="thumb"><img src="${escapeHtml(c.thumbs[1])}" alt="Thumbnail 2 of ${escapeHtml(c.name)}" loading="lazy"></div>
+              <div class="thumb"><img src="${escapeHtml(c.thumbs[2])}" alt="Thumbnail 3 of ${escapeHtml(c.name)}" loading="lazy"></div>
+            </div>
+          </div>
+
           <div class="catBody">
             <div class="catTitle">
               <div>
-                <strong>${c.name}</strong>
-                <div class="sub">${c.age} • Mock profile</div>
+                <strong>${escapeHtml(c.name)}</strong>
+                <div class="sub">${escapeHtml(c.age)} • Mock profile</div>
               </div>
               <a class="ext" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener" title="External link">
                 Adoption page (external)
               </a>
             </div>
+
             <div class="meta">
-              ${c.tags.map(t => `<span>${t}</span>`).join("")}
+              ${c.tags.map(t => `<span>${escapeHtml(t)}</span>`).join("")}
             </div>
-            <div class="catNote">${c.note}</div>
+
+            <div class="catNote">${escapeHtml(c.note)}</div>
+
             <div class="row" style="margin-top:12px;">
               <a class="btn small primary" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623" target="_blank" rel="noopener">
                 Apply (PDF external)
               </a>
-              <button class="btn small" type="button" onclick="alert('Demo only: In the real app this could save favorites.')">
+              <button class="btn small" type="button" data-save="${escapeHtml(c.name)}">
                 Save ♥ (demo)
               </button>
             </div>
@@ -1109,6 +1210,14 @@
           </div>
         `;
       }
+
+      // Wire save buttons
+      Array.from(catGrid.querySelectorAll("button[data-save]")).forEach(btn => {
+        btn.addEventListener("click", () => {
+          const name = btn.getAttribute("data-save");
+          alert("Demo only: Saved " + name + " to favorites (pretend).");
+        });
+      });
     }
 
     renderCats();
