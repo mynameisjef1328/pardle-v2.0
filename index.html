@@ -3,433 +3,1128 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Meowsers Cat Rescue | Adopt, Volunteer, Donate</title>
-  <meta name="description" content="Meowsers Cat Rescue. Adopt, volunteer, donate, or report a cat in need." />
+  <title>Rescue Companion (Demo) | Adopt, Volunteer, Donate</title>
+  <meta name="description" content="A private demo mockup for a cat rescue companion app concept. Uses mock data with labeled external links." />
 
   <style>
     :root{
-      --bg:#ffffff;
-      --text:#121212;
-      --muted:#5a5a5a;
-      --line:#e9e9e9;
-      --accent:#111111;
-      --soft:#f7f7f7;
-      --radius:16px;
-      --max:1100px;
+      /* iOS-ish palette */
+      --bg0:#0b0c10;
+      --bg1:#12141b;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.08);
+      --stroke: rgba(255,255,255,.10);
+      --stroke2: rgba(255,255,255,.14);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.66);
+      --muted2: rgba(255,255,255,.44);
+
+      --accent:#7c5cff;
+      --accent2:#2dd4bf;
+      --good:#34c759;
+      --warn:#ff9f0a;
+
+      --radius:18px;
+      --radius2:24px;
+      --max: 1120px;
+
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --shadow2: 0 10px 24px rgba(0,0,0,.28);
+
+      --blur: 14px;
     }
 
-    *{box-sizing:border-box}
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+
     body{
       margin:0;
-      background:var(--bg);
       color:var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      line-height:1.5;
+      background:
+        radial-gradient(900px 520px at 18% 12%, rgba(124,92,255,.20), transparent 60%),
+        radial-gradient(720px 460px at 82% 20%, rgba(45,212,191,.12), transparent 55%),
+        radial-gradient(820px 560px at 50% 110%, rgba(255,159,10,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      line-height:1.45;
     }
 
-    a{color:inherit}
-    .wrap{max-width:var(--max); margin:0 auto; padding:28px 18px 64px}
+    a{ color:inherit; }
+    .wrap{ max-width:var(--max); margin:0 auto; padding:20px 16px 92px; }
 
-    /* Top bar */
+    /* Top nav */
     .top{
+      position:sticky;
+      top:0;
+      z-index:10;
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+      background: rgba(15,16,22,.55);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .topInner{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:12px 16px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:14px;
-      padding:10px 0 18px;
-    }
-    .phone{
-      font-size:20px;
-      letter-spacing:.5px;
-      white-space:nowrap;
+      gap:12px;
     }
 
-    /* Header (logo centered, nav below) */
     .brand{
-      display:grid;
-      place-items:center;
-      padding:26px 0 10px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
     }
-    .brand img{
-      width:120px;
-      height:auto;
-      display:block;
+    .appIcon{
+      width:34px; height:34px;
+      border-radius:10px;
+      background:
+        radial-gradient(14px 14px at 30% 30%, rgba(255,255,255,.18), transparent 60%),
+        linear-gradient(135deg, rgba(124,92,255,.95), rgba(45,212,191,.75));
+      box-shadow: 0 10px 18px rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.14);
+    }
+    .brandText{ display:flex; flex-direction:column; line-height:1.1; min-width:0; }
+    .brandText strong{
+      font-size:13px;
+      letter-spacing:.2px;
+      font-weight:720;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .brandText span{
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
-    nav{
-      display:flex;
-      justify-content:center;
-      gap:28px;
-      padding:18px 0 28px;
-      border-bottom:1px solid var(--line);
-      flex-wrap:wrap;
-    }
-    nav a{
-      text-decoration:none;
-      text-transform:uppercase;
-      letter-spacing:3px;
+    .topActions{ display:flex; align-items:center; gap:10px; }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: 0 10px 22px rgba(0,0,0,.18);
       font-size:12px;
-      padding:8px 6px;
-      border-bottom:2px solid transparent;
+      color:var(--muted);
+      text-decoration:none;
+      user-select:none;
     }
-    nav a:hover{border-bottom-color:#000}
+    .pill:hover{ border-color: rgba(255,255,255,.16); }
+    .dot{
+      width:8px; height:8px; border-radius:99px;
+      background: var(--good);
+      box-shadow: 0 0 0 4px rgba(52,199,89,.12);
+    }
+    .dot.off{
+      background: rgba(255,255,255,.28);
+      box-shadow:none;
+    }
+
+    /* Toggle (iOS-ish) */
+    .toggle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .toggle label{
+      font-size:12px;
+      color:var(--muted);
+      user-select:none;
+      letter-spacing:.2px;
+    }
+    .switch{
+      position:relative;
+      width:42px;
+      height:24px;
+      border-radius:999px;
+      background: rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.10);
+      cursor:pointer;
+      flex:0 0 auto;
+      transition: background .18s ease, border-color .18s ease;
+    }
+    .knob{
+      position:absolute;
+      top:2px;
+      left:2px;
+      width:20px;
+      height:20px;
+      border-radius:999px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 8px 16px rgba(0,0,0,.25);
+      transition: transform .18s ease;
+    }
+    .switch.on{
+      background: rgba(52,199,89,.85);
+      border-color: rgba(52,199,89,.45);
+    }
+    .switch.on .knob{ transform: translateX(18px); }
 
     /* Hero */
     .hero{
-      padding:34px 0 10px;
+      padding:18px 0 0;
       display:grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap:26px;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
       align-items:start;
     }
-    @media (max-width: 900px){
-      .hero{grid-template-columns:1fr}
-      .phone{font-size:16px}
+    @media (max-width: 920px){
+      .hero{ grid-template-columns: 1fr; }
     }
 
-    .h-eyebrow{
-      text-transform:uppercase;
-      letter-spacing:3px;
+    .panel{
+      border-radius: var(--radius2);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panelInner{ padding:18px; }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
       font-size:12px;
       color:var(--muted);
-      margin:0 0 12px;
+      letter-spacing:.4px;
+      margin-bottom:10px;
+    }
+    .badge{
+      padding:4px 10px;
+      border-radius:999px;
+      background: rgba(124,92,255,.14);
+      border:1px solid rgba(124,92,255,.26);
+      color: rgba(255,255,255,.85);
+      font-size:12px;
     }
     h1{
-      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
-      font-weight:500;
-      font-size:44px;
+      margin:0 0 10px;
+      font-size:34px;
+      letter-spacing:-.4px;
       line-height:1.08;
-      margin:0 0 12px;
+      font-weight:780;
     }
     .lede{
-      font-size:16px;
+      margin:0 0 14px;
       color:var(--muted);
-      margin:0 0 18px;
-      max-width:62ch;
+      font-size:14px;
+      max-width:68ch;
     }
 
-    .ctaRow{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:16px;
+    /* Segmented control */
+    .seg{
+      display:inline-flex;
+      gap:0;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:999px;
+      padding:3px;
+      margin:6px 0 14px;
+      width:100%;
+      max-width:520px;
     }
+    .seg button{
+      flex:1;
+      border:0;
+      background: transparent;
+      color: var(--muted);
+      font-size:13px;
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      transition: background .18s ease, color .18s ease;
+      white-space:nowrap;
+    }
+    .seg button.active{
+      background: rgba(255,255,255,.16);
+      color: rgba(255,255,255,.92);
+      box-shadow: 0 10px 18px rgba(0,0,0,.18);
+    }
+
+    /* Buttons */
+    .ctaRow{ display:flex; flex-wrap:wrap; gap:10px; }
     .btn{
       display:inline-flex;
       align-items:center;
       justify-content:center;
+      gap:8px;
       padding:12px 14px;
       border-radius:999px;
-      border:1px solid #000;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.90);
       text-decoration:none;
       font-size:14px;
-      letter-spacing:.3px;
+      letter-spacing:.2px;
+      box-shadow: var(--shadow2);
+      user-select:none;
+      cursor:pointer;
     }
+    .btn:hover{ border-color: rgba(255,255,255,.24); }
     .btn.primary{
-      background:#000;
-      color:#fff;
+      background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(45,212,191,.78));
+      border-color: rgba(255,255,255,.14);
     }
-    .btn.soft{
-      border-color:var(--line);
-      background:var(--soft);
+    .btn.ghost{
+      background: transparent;
+      border-color: rgba(255,255,255,.14);
+    }
+    .btn.small{
+      padding:9px 12px;
+      font-size:13px;
+    }
+    .btn.warn{
+      background: rgba(255,159,10,.14);
+      border-color: rgba(255,159,10,.28);
+    }
+    .btn.good{
+      background: rgba(52,199,89,.14);
+      border-color: rgba(52,199,89,.28);
     }
 
-    .heroCard{
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      padding:16px;
-      background:var(--soft);
-    }
-    .heroCard h3{
-      margin:0 0 10px;
-      font-size:14px;
-      text-transform:uppercase;
-      letter-spacing:2px;
-      font-weight:650;
-    }
-    .heroCard p{
-      margin:0 0 12px;
-      color:var(--muted);
-      font-size:14px;
-    }
-    .shot{
-      border:1px solid var(--line);
-      border-radius:12px;
-      overflow:hidden;
-      background:#fff;
-    }
-    .shot img{
-      width:100%;
-      height:auto;
-      display:block;
-      aspect-ratio: 16 / 10;
-      object-fit:cover;
-    }
-    .cap{
+    /* Right hero card */
+    .miniTitle{
       font-size:12px;
-      color:var(--muted);
-      padding:10px 12px;
-      border-top:1px solid var(--line);
-      background:#fff;
+      letter-spacing:1.8px;
+      text-transform:uppercase;
+      color: var(--muted);
+      margin:0 0 10px;
+    }
+    .kv{
+      display:grid;
+      gap:10px;
+    }
+    .kvRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding:12px;
+      border-radius:16px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .kvRow strong{ font-size:13px; }
+    .kvRow span{ font-size:12px; color:var(--muted); display:block; margin-top:4px; max-width:44ch; }
+    .tag{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.78);
+      white-space:nowrap;
+      height:fit-content;
     }
 
     /* Sections */
     .section{
-      padding:34px 0 0;
-      border-top:1px solid var(--line);
-      margin-top:26px;
+      margin-top:14px;
+      border-radius: var(--radius2);
+      background: rgba(255,255,255,.045);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
     }
-    .sectionTitle{
-      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
-      font-weight:500;
-      font-size:28px;
-      margin:0 0 14px;
+    .sectionHead{
+      padding:16px 18px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
     }
+    .sectionHead h2{
+      margin:0;
+      font-size:16px;
+      letter-spacing:.2px;
+    }
+    .sectionHead p{
+      margin:2px 0 0;
+      color: var(--muted);
+      font-size:13px;
+      max-width:70ch;
+    }
+    .sectionBody{ padding:16px 18px; }
+
     .grid{
       display:grid;
       grid-template-columns: repeat(3, 1fr);
-      gap:14px;
+      gap:12px;
     }
-    @media (max-width: 900px){
-      .grid{grid-template-columns:1fr}
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
     }
+
     .card{
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      padding:16px;
-      background:#fff;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+      box-shadow: 0 10px 20px rgba(0,0,0,.18);
     }
-    .card h4{
-      margin:0 0 6px;
+    .cardInner{ padding:14px; }
+    .cardTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .card h3{
+      margin:0;
+      font-size:15px;
+      letter-spacing:.1px;
+    }
+    .sub{
+      font-size:12px;
+      color: var(--muted);
+      margin-top:4px;
+    }
+
+    /* Cat list */
+    .catsHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+    .search{
+      flex: 1 1 240px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .search input{
+      width:100%;
+      border:0;
+      outline:none;
+      background: transparent;
+      color: rgba(255,255,255,.92);
       font-size:14px;
-      text-transform:uppercase;
-      letter-spacing:2px;
     }
-    .card p{margin:0; color:var(--muted); font-size:14px}
+    .search input::placeholder{ color: rgba(255,255,255,.40); }
+
+    .chips{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .chip{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.74);
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip.active{
+      background: rgba(124,92,255,.20);
+      border-color: rgba(124,92,255,.34);
+      color: rgba(255,255,255,.88);
+    }
+
+    .catGrid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+    }
+    @media (max-width: 980px){
+      .catGrid{ grid-template-columns: 1fr; }
+    }
+    .catCard{
+      border-radius: var(--radius2);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      box-shadow: var(--shadow2);
+    }
+    .catMedia{
+      height:140px;
+      background:
+        radial-gradient(140px 90px at 30% 30%, rgba(255,255,255,.16), transparent 60%),
+        linear-gradient(135deg, rgba(124,92,255,.45), rgba(45,212,191,.22));
+    }
+    .catBody{ padding:14px; }
+    .catTitle{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .catTitle strong{ font-size:15px; }
+    .meta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .meta span{
+      font-size:12px;
+      color: rgba(255,255,255,.74);
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .catNote{
+      margin-top:10px;
+      font-size:13px;
+      color: var(--muted);
+    }
 
     /* Form */
-    .twoCol{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:14px;
-      align-items:start;
+    form label{
+      display:block;
+      font-size:12px;
+      color: var(--muted);
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      margin:10px 0 6px;
     }
-    @media (max-width: 900px){
-      .twoCol{grid-template-columns:1fr}
-    }
-    label{display:block; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin:10px 0 6px}
-    input, textarea{
+    input, textarea, select{
       width:100%;
-      border:1px solid var(--line);
-      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.92);
+      border-radius:14px;
       padding:12px 12px;
       font-size:14px;
       outline:none;
     }
-    textarea{min-height:120px; resize:vertical}
-    .note{
-      color:var(--muted);
-      font-size:13px;
+    textarea{ min-height:120px; resize:vertical; }
+    input::placeholder, textarea::placeholder{ color: rgba(255,255,255,.38); }
+    .help{
       margin-top:10px;
+      color: var(--muted);
+      font-size:13px;
     }
     .toast{
       display:none;
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:var(--soft);
-      color:var(--text);
+      margin-top:12px;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(52,199,89,.28);
+      background: rgba(52,199,89,.12);
+      color: rgba(255,255,255,.90);
       font-size:13px;
     }
 
-    footer{
-      margin-top:44px;
-      padding-top:18px;
-      border-top:1px solid var(--line);
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-      color:var(--muted);
-      font-size:13px;
+    /* External link labels */
+    .ext{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:12px;
+      color: var(--muted);
+      text-decoration:none;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+      user-select:none;
     }
-    footer a{text-decoration:none}
-    footer a:hover{text-decoration:underline}
+    .ext:hover{ border-color: rgba(255,255,255,.18); }
+
+    /* Bottom tab bar */
+    .tabbar{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      z-index:20;
+      padding:10px 12px 14px;
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+      background: rgba(12,12,18,.62);
+      border-top:1px solid rgba(255,255,255,.10);
+    }
+    .tabs{
+      max-width:var(--max);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+    }
+    .tab{
+      border-radius:16px;
+      padding:10px 10px;
+      text-align:center;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.70);
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .tab.active{
+      background: rgba(255,255,255,.12);
+      color: rgba(255,255,255,.92);
+      border-color: rgba(255,255,255,.18);
+      box-shadow: 0 12px 24px rgba(0,0,0,.20);
+    }
+
+    /* Utility */
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .muted{ color: var(--muted); }
+    .small{ font-size:12px; color: var(--muted); }
+    .sep{ height:1px; background: rgba(255,255,255,.08); margin:12px 0; }
+    .hidden{ display:none !important; }
   </style>
 </head>
 
 <body>
+  <!-- Sticky top bar -->
+  <div class="top">
+    <div class="topInner">
+      <div class="brand">
+        <div class="appIcon" aria-hidden="true"></div>
+        <div class="brandText">
+          <strong>Rescue Companion (Demo)</strong>
+          <span>Mock data, labeled external links</span>
+        </div>
+      </div>
+
+      <div class="topActions">
+        <a class="pill" href="tel:7019795602" title="Call (label only)">
+          <span class="dot off" id="phoneDot"></span>
+          Call (label): 701-979-5602
+        </a>
+
+        <div class="toggle" title="Shows this is a prototype using mock data">
+          <label for="demoSwitch">Demo Mode</label>
+          <div class="switch on" id="demoSwitch" role="switch" aria-checked="true" tabindex="0">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="wrap">
-
-    <div class="top">
-      <div></div>
-      <div class="phone"><a href="tel:7019795602">701-979-5602</a></div>
-    </div>
-
-    <div class="brand">
-      <img
-        src="https://img1.wsimg.com/isteam/ip/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/Logo-0001.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25"
-        alt="Meowsers Cat Rescue logo"
-      />
-    </div>
-
-    <nav>
-      <a href="https://meowserscatrescue.org/" target="_blank" rel="noopener">Home</a>
-      <a href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Adoption</a>
-      <a href="https://meowserscatrescue.org/volunteer" target="_blank" rel="noopener">Volunteer</a>
-      <a href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate</a>
-      <a href="https://meowserscatrescue.org/shop" target="_blank" rel="noopener">Shop</a>
-      <a href="#contact">Contact Us</a>
-    </nav>
-
+    <!-- HERO -->
     <section class="hero">
-      <div>
-        <p class="h-eyebrow">Meowsers Cat Rescue</p>
-        <h1>Find more ways to help.</h1>
-        <p class="lede">
-          We are as strong as the community that holds us up. Together, we can do more than we can do alone.
-          Let's bring our abilities and passions together.
-        </p>
+      <div class="panel">
+        <div class="panelInner">
+          <div class="eyebrow">
+            <span class="badge">Pitch prototype</span>
+            <span class="muted">No Meowsers content used, links preserved and labeled</span>
+          </div>
 
-        <div class="ctaRow">
-          <a class="btn primary" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">View Adoptable Cats</a>
-          <a class="btn" href="#report">Report a Cat in Need</a>
-          <a class="btn soft" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate</a>
-          <a class="btn soft" href="https://meowserscatrescue.org/volunteer" target="_blank" rel="noopener">Volunteer</a>
+          <h1>A clean, app-like home for adopt, donate, volunteer, and reporting cats in need.</h1>
+          <p class="lede">
+            This demo shows how a rescue could feel “native” on iPhone, without rebuilding their whole website.
+            All cats and copy below are mock data, external links point to the real Meowsers pages (clearly labeled).
+          </p>
+
+          <div class="seg" role="tablist" aria-label="Primary focus">
+            <button class="active" data-focus="adopt" type="button">Adopt</button>
+            <button data-focus="report" type="button">Report</button>
+            <button data-focus="donate" type="button">Donate</button>
+          </div>
+
+          <div class="ctaRow">
+            <a class="btn primary" href="#adopt" id="goAdopt">Browse adoptable cats (mock)</a>
+            <a class="btn" href="#report" id="goReport">Report a cat in need (demo)</a>
+
+            <!-- External links, labeled -->
+            <a class="btn ghost" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Open Adoption page (external)</a>
+            <a class="btn ghost" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Open Donate page (external)</a>
+          </div>
+
+          <div class="sep"></div>
+
+          <div class="row">
+            <a class="ext" href="https://meowserscatrescue.org/" target="_blank" rel="noopener">Website (external)</a>
+            <a class="ext" href="https://meowserscatrescue.org/volunteer" target="_blank" rel="noopener">Volunteer (external)</a>
+            <a class="ext" href="https://meowserscatrescue.org/shop" target="_blank" rel="noopener">Shop (external)</a>
+            <a class="ext" href="https://meowserscatrescue.org/contact-us" target="_blank" rel="noopener">Contact page (external)</a>
+          </div>
+
+          <p class="help">
+            Pitch angle: the rescue keeps their site, and this app adds a simple “Report” pipeline and a nicer mobile experience.
+            Version 1 could route reports to email or a shared sheet, later it can grow into intake + status updates.
+          </p>
         </div>
-
-        <p class="note">
-          Pitch angle: this page keeps their clean look, but adds a simple “Report a Cat” flow that can route to email or a Google Sheet in version one.
-        </p>
       </div>
 
-      <div class="heroCard">
-        <h3>Drop in screenshots</h3>
-        <p>Replace the images below with screenshots from their current site so the demo feels instantly familiar.</p>
+      <div class="panel">
+        <div class="panelInner">
+          <p class="miniTitle">What this demo includes</p>
 
-        <div class="shot" style="margin-bottom:12px;">
-          <img src="https://picsum.photos/1200/750?random=31" alt="Placeholder screenshot">
-          <div class="cap">Screenshot placeholder, swap with Adoption page or cat listings</div>
-        </div>
+          <div class="kv">
+            <div class="kvRow">
+              <div>
+                <strong>Adoptable list</strong>
+                <span>Mock profiles with tags (age, temperament, special notes).</span>
+              </div>
+              <div class="tag">Mock</div>
+            </div>
 
-        <div class="shot">
-          <img src="https://picsum.photos/1200/750?random=32" alt="Placeholder screenshot">
-          <div class="cap">Screenshot placeholder, swap with Donate or Volunteer page</div>
+            <div class="kvRow">
+              <div>
+                <strong>One-tap external actions</strong>
+                <span>All Meowsers links stay intact and are labeled clearly as external.</span>
+              </div>
+              <div class="tag">Links</div>
+            </div>
+
+            <div class="kvRow">
+              <div>
+                <strong>Report form</strong>
+                <span>Demo submit with a toast, easy to later wire to email, sheets, or a backend.</span>
+              </div>
+              <div class="tag">Demo</div>
+            </div>
+
+            <div class="kvRow">
+              <div>
+                <strong>App-like feel</strong>
+                <span>Rounded cards, segmented control, bottom tab bar, iOS-style toggle.</span>
+              </div>
+              <div class="tag">iOS</div>
+            </div>
+          </div>
+
+          <div class="sep"></div>
+
+          <div class="row">
+            <a class="btn small warn" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623" target="_blank" rel="noopener">
+              Adoption Application PDF (external)
+            </a>
+            <a class="btn small good" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Volunteer%20Application.pdf?ver=1761926270217" target="_blank" rel="noopener">
+              Volunteer Application PDF (external)
+            </a>
+          </div>
+
+          <p class="small" style="margin-top:10px;">
+            Note: PDFs and site links are the real destinations, everything else here is mock.
+          </p>
         </div>
       </div>
     </section>
 
-    <section class="section" id="ways">
-      <h2 class="sectionTitle">Ways you can help</h2>
-
-      <div class="grid">
-        <div class="card">
-          <h4>Adopt</h4>
-          <p>Start with the adoption application, then browse available cats on their Adoption page.</p>
-          <p style="margin-top:10px;">
-            <a class="btn soft" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623" target="_blank" rel="noopener">Adoption Application (PDF)</a>
-          </p>
+    <!-- ADOPT -->
+    <section class="section" id="adopt">
+      <div class="sectionHead">
+        <div>
+          <h2>Adoptable Cats (mock data)</h2>
+          <p>Swipey, app-like cards. In the real app, these could be pulled from a simple Google Sheet, Airtable, Petfinder, or a lightweight admin page.</p>
         </div>
-
-        <div class="card">
-          <h4>Volunteer</h4>
-          <p>Join the team, make a difference, and help with events, socialization, and shelter support.</p>
-          <p style="margin-top:10px;">
-            <a class="btn soft" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Volunteer%20Application.pdf?ver=1761926270217" target="_blank" rel="noopener">Volunteer Application (PDF)</a>
-          </p>
-        </div>
-
-        <div class="card">
-          <h4>Donate</h4>
-          <p>Support medical care, food, and supplies. Venmo is listed as @meowserscatrescue.</p>
-          <p style="margin-top:10px;">
-            <a class="btn soft" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate Options</a>
-          </p>
+        <div class="row">
+          <a class="ext" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">View Adoption page (external)</a>
         </div>
       </div>
-    </section>
 
-    <section class="section" id="report">
-      <h2 class="sectionTitle">Report a cat in need (demo)</h2>
+      <div class="sectionBody">
+        <div class="catsHeader">
+          <div class="search">
+            <span style="color:rgba(255,255,255,.52)">⌕</span>
+            <input id="searchInput" placeholder="Search names, traits (example: calm, playful, shy)..." />
+          </div>
 
-      <div class="twoCol">
-        <div class="card" style="background:var(--soft);">
-          <h4>How it works</h4>
-          <p>
-            Version 1 can send reports straight to their email, or log them to a shared spreadsheet.
-            Later, it can become a simple app feature with photo upload, status updates, and a triage checklist.
-          </p>
-
-          <div class="note" style="margin-top:12px;">
-            Visits to the shelter must be scheduled and accompanied.
+          <div class="chips" id="chipRow">
+            <div class="chip active" data-filter="all">All</div>
+            <div class="chip" data-filter="kitten">Kittens</div>
+            <div class="chip" data-filter="adult">Adults</div>
+            <div class="chip" data-filter="calm">Calm</div>
+            <div class="chip" data-filter="playful">Playful</div>
+            <div class="chip" data-filter="special">Special care</div>
           </div>
         </div>
 
-        <div class="card">
-          <form id="reportForm">
-            <label for="rname">Your name</label>
-            <input id="rname" name="name" placeholder="Jane Doe" required>
+        <div class="catGrid" id="catGrid"></div>
 
-            <label for="rcontact">Email or phone</label>
-            <input id="rcontact" name="contact" placeholder="jane@email.com or (555) 555-5555" required>
+        <div class="sep"></div>
 
-            <label for="rlocation">Location</label>
-            <input id="rlocation" name="location" placeholder="Cross streets, address, park name" required>
-
-            <label for="rdetails">Details</label>
-            <textarea id="rdetails" name="details" placeholder="Injuries, collar/no collar, behavior, how long you've seen them"></textarea>
-
-            <label for="rphoto">Photo (optional, demo)</label>
-            <input id="rphoto" type="file" accept="image/*">
-
-            <button class="btn primary" type="submit" style="width:100%; justify-content:center;">Submit report</button>
-            <div class="toast" id="toast">✅ Demo submitted. Next step is routing this to Meowsers via email or Google Sheet.</div>
-          </form>
+        <div class="row">
+          <a class="btn ghost" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Open Meowsers adoption listings (external)</a>
+          <a class="btn ghost" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623" target="_blank" rel="noopener">Adoption Application PDF (external)</a>
         </div>
       </div>
     </section>
 
-    <section class="section" id="contact">
-      <h2 class="sectionTitle">Contact</h2>
-      <div class="twoCol">
-        <div class="card">
-          <h4>Meowsers Cat Rescue</h4>
-          <p>
-            Mailing Address: PO Box 114, Bowman, ND 58623<br>
-            Email: <a href="mailto:meowserscatrescue@gmail.com">meowserscatrescue@gmail.com</a><br>
-            Phone: <a href="tel:7019795602">701-979-5602</a>
-          </p>
+    <!-- WAYS TO HELP -->
+    <section class="section" id="help">
+      <div class="sectionHead">
+        <div>
+          <h2>Ways to help</h2>
+          <p>Quick actions with a native feel, while the real information stays on their website.</p>
         </div>
-        <div class="card">
-          <h4>Policies snapshot</h4>
-          <p>
-            Holding period: 3 days.<br>
-            Room and board: $7.00 per day (when applicable).
-          </p>
-          <p style="margin-top:10px;">
-            <a class="btn soft" href="https://meowserscatrescue.org/contact-us" target="_blank" rel="noopener">Read full policies</a>
-          </p>
+      </div>
+
+      <div class="sectionBody">
+        <div class="grid">
+          <div class="card">
+            <div class="cardInner">
+              <div class="cardTop">
+                <div>
+                  <h3>Donate</h3>
+                  <div class="sub">Fast, repeatable giving, send people to the real donate options.</div>
+                </div>
+                <span class="tag">External</span>
+              </div>
+              <div class="row">
+                <a class="btn small primary" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate options (external)</a>
+                <a class="btn small ghost" href="https://meowserscatrescue.org/shop" target="_blank" rel="noopener">Shop (external)</a>
+              </div>
+              <p class="help">In a real app, you could add Apple Pay later (optional), but version 1 can simply route to their existing flow.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardInner">
+              <div class="cardTop">
+                <div>
+                  <h3>Volunteer</h3>
+                  <div class="sub">Quick access to volunteer info and the real application PDF.</div>
+                </div>
+                <span class="tag">External</span>
+              </div>
+              <div class="row">
+                <a class="btn small primary" href="https://meowserscatrescue.org/volunteer" target="_blank" rel="noopener">Volunteer page (external)</a>
+                <a class="btn small ghost" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Volunteer%20Application.pdf?ver=1761926270217" target="_blank" rel="noopener">Volunteer PDF (external)</a>
+              </div>
+              <p class="help">Later you could include a lightweight “available shifts” calendar, if they want it.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardInner">
+              <div class="cardTop">
+                <div>
+                  <h3>Contact</h3>
+                  <div class="sub">Labelled actions, easy to reach the rescue.</div>
+                </div>
+                <span class="tag">Label</span>
+              </div>
+              <div class="row">
+                <a class="btn small" href="tel:7019795602">Call (label): 701-979-5602</a>
+                <a class="btn small" href="mailto:meowserscatrescue@gmail.com">Email (label): meowserscatrescue@gmail.com</a>
+              </div>
+              <div class="row" style="margin-top:8px;">
+                <a class="btn small ghost" href="https://meowserscatrescue.org/contact-us" target="_blank" rel="noopener">Contact page (external)</a>
+              </div>
+              <p class="help">If you want, we can add a “copy to clipboard” button for phone/email to feel more app-like.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <footer>
-      <div>© <span id="year"></span> Meowsers Cat Rescue (pitch mockup)</div>
-      <div>
-        <a href="https://meowserscatrescue.org/" target="_blank" rel="noopener">Website</a>
-        <span style="margin:0 10px;">|</span>
-        <a href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Adopt</a>
-        <span style="margin:0 10px;">|</span>
-        <a href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate</a>
+    <!-- REPORT -->
+    <section class="section" id="report">
+      <div class="sectionHead">
+        <div>
+          <h2>Report a cat in need (demo form)</h2>
+          <p>This is the “app value-add.” Today it just demos. Later it can route to email, Google Sheets, Airtable, or a simple backend.</p>
+        </div>
+        <div class="row">
+          <a class="ext" href="https://meowserscatrescue.org/contact-us" target="_blank" rel="noopener">Policies and contact (external)</a>
+        </div>
       </div>
-    </footer>
 
+      <div class="sectionBody">
+        <div class="grid">
+          <div class="card">
+            <div class="cardInner">
+              <div class="cardTop">
+                <div>
+                  <h3>How it would work</h3>
+                  <div class="sub">Simple now, scalable later.</div>
+                </div>
+                <span class="tag">Pitch</span>
+              </div>
+              <p class="help" style="margin-top:0;">
+                Version 1:
+                <br>• Submit a report (name, contact, location, notes)
+                <br>• Optionally attach a photo
+                <br>• Route it to an intake email or a shared sheet
+              </p>
+              <p class="help">
+                Version 2:
+                <br>• Status updates (received, triaged, assigned)
+                <br>• Basic checklist and location pin
+                <br>• Internal notes for volunteers
+              </p>
+              <div class="sep"></div>
+              <p class="small">Reminder: This demo uses mock data and does not store anything.</p>
+            </div>
+          </div>
+
+          <div class="card" style="grid-column: span 2;">
+            <div class="cardInner">
+              <form id="reportForm">
+                <div class="grid" style="grid-template-columns:1fr 1fr;">
+                  <div>
+                    <label for="rname">Your name</label>
+                    <input id="rname" name="name" placeholder="Jane Doe" required>
+                  </div>
+                  <div>
+                    <label for="rcontact">Email or phone</label>
+                    <input id="rcontact" name="contact" placeholder="jane@email.com or (555) 555-5555" required>
+                  </div>
+                </div>
+
+                <label for="rlocation">Location</label>
+                <input id="rlocation" name="location" placeholder="Cross streets, address, park name" required>
+
+                <label for="rtype">Situation type</label>
+                <select id="rtype" name="type">
+                  <option>Stray spotted (unknown)</option>
+                  <option>Injured</option>
+                  <option>Friendly, may be lost</option>
+                  <option>Needs food/water</option>
+                  <option>Other</option>
+                </select>
+
+                <label for="rdetails">Details</label>
+                <textarea id="rdetails" name="details" placeholder="What you noticed, behavior, collar/no collar, how long you've seen them"></textarea>
+
+                <label for="rphoto">Photo (optional, demo)</label>
+                <input id="rphoto" type="file" accept="image/*">
+
+                <button class="btn primary" type="submit" style="width:100%; justify-content:center; margin-top:12px;">
+                  Submit report (demo)
+                </button>
+
+                <div class="toast" id="toast">✅ Demo submitted. Next step would be routing this to Meowsers via email or a shared sheet.</div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <section class="section" id="footer">
+      <div class="sectionBody">
+        <div class="row" style="justify-content:space-between;">
+          <div class="small">© <span id="year"></span> Rescue Companion (Demo). Mock data only.</div>
+          <div class="row">
+            <a class="ext" href="https://meowserscatrescue.org/" target="_blank" rel="noopener">Meowsers website (external)</a>
+            <a class="ext" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Adoption (external)</a>
+            <a class="ext" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate (external)</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Bottom tab bar (demo navigation) -->
+  <div class="tabbar">
+    <div class="tabs">
+      <div class="tab active" data-jump="#adopt">Adopt</div>
+      <div class="tab" data-jump="#help">Help</div>
+      <div class="tab" data-jump="#report">Report</div>
+      <div class="tab" data-jump="#footer">Links</div>
+    </div>
   </div>
 
   <script>
+    // Year
     document.getElementById("year").textContent = new Date().getFullYear();
 
+    // Demo Mode toggle
+    const demoSwitch = document.getElementById("demoSwitch");
+    const phoneDot = document.getElementById("phoneDot");
+
+    function setDemoMode(isOn){
+      demoSwitch.classList.toggle("on", isOn);
+      demoSwitch.setAttribute("aria-checked", String(isOn));
+      // Just a tiny visual hint that everything is "labels / mock"
+      phoneDot.classList.toggle("off", true);
+      document.title = isOn
+        ? "Rescue Companion (Demo) | Adopt, Volunteer, Donate"
+        : "Rescue Companion | Adopt, Volunteer, Donate";
+    }
+
+    let demoMode = true;
+    setDemoMode(demoMode);
+
+    function toggleDemo(){
+      demoMode = !demoMode;
+      setDemoMode(demoMode);
+      // In a real build, you could hide "mock" badges when demoMode is off.
+    }
+
+    demoSwitch.addEventListener("click", toggleDemo);
+    demoSwitch.addEventListener("keydown", (e) => {
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        toggleDemo();
+      }
+    });
+
+    // Segmented control
+    const segBtns = Array.from(document.querySelectorAll(".seg button"));
+    segBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        segBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const focus = btn.dataset.focus;
+        const map = { adopt:"#adopt", report:"#report", donate:"#help" };
+        document.querySelector(map[focus]).scrollIntoView({behavior:"smooth", block:"start"});
+      });
+    });
+
+    // Bottom tabs
+    const tabs = Array.from(document.querySelectorAll(".tab"));
+    tabs.forEach(t => {
+      t.addEventListener("click", () => {
+        tabs.forEach(x => x.classList.remove("active"));
+        t.classList.add("active");
+        const jump = t.dataset.jump;
+        document.querySelector(jump).scrollIntoView({behavior:"smooth", block:"start"});
+      });
+    });
+
+    // Mock cat data
+    const cats = [
+      {
+        name: "Juniper",
+        age: "Kitten",
+        traits: ["playful","kitten"],
+        tags: ["Spunky", "Great with kids"],
+        note: "Loves wand toys, fearless explorer, purrs the moment you look at her."
+      },
+      {
+        name: "Mochi",
+        age: "Adult",
+        traits: ["calm","adult"],
+        tags: ["Cuddle bug", "Lap cat"],
+        note: "Quiet, gentle, and happiest in a sunny window. Low drama, high affection."
+      },
+      {
+        name: "Atlas",
+        age: "Adult",
+        traits: ["adult","special"],
+        tags: ["Special care", "Chill vibe"],
+        note: "Needs a steady routine. Once he trusts you, he becomes a total sweetheart."
+      },
+      {
+        name: "Peaches",
+        age: "Kitten",
+        traits: ["kitten","playful"],
+        tags: ["Social", "Curious"],
+        note: "Bold little gremlin, always first to greet you, always last to nap."
+      },
+      {
+        name: "Sable",
+        age: "Adult",
+        traits: ["adult","calm"],
+        tags: ["Gentle", "Quiet home"],
+        note: "Best in a calm environment. She warms up slowly, then bonds hard."
+      },
+      {
+        name: "Waffles",
+        age: "Kitten",
+        traits: ["kitten","playful"],
+        tags: ["Goofy", "Food motivated"],
+        note: "Will absolutely steal your heart, then steal your snacks if you blink."
+      }
+    ];
+
+    const catGrid = document.getElementById("catGrid");
+    const searchInput = document.getElementById("searchInput");
+    const chipRow = document.getElementById("chipRow");
+    let activeFilter = "all";
+
+    function renderCats(){
+      const q = (searchInput.value || "").trim().toLowerCase();
+      const filtered = cats.filter(c => {
+        const inSearch =
+          !q ||
+          c.name.toLowerCase().includes(q) ||
+          c.note.toLowerCase().includes(q) ||
+          c.tags.join(" ").toLowerCase().includes(q) ||
+          c.traits.join(" ").toLowerCase().includes(q);
+
+        const inFilter =
+          activeFilter === "all" ? true : c.traits.includes(activeFilter);
+
+        return inSearch && inFilter;
+      });
+
+      catGrid.innerHTML = filtered.map(c => `
+        <div class="catCard">
+          <div class="catMedia" aria-hidden="true"></div>
+          <div class="catBody">
+            <div class="catTitle">
+              <div>
+                <strong>${c.name}</strong>
+                <div class="sub">${c.age} • Mock profile</div>
+              </div>
+              <a class="ext" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener" title="External link">
+                Adoption page (external)
+              </a>
+            </div>
+            <div class="meta">
+              ${c.tags.map(t => `<span>${t}</span>`).join("")}
+            </div>
+            <div class="catNote">${c.note}</div>
+            <div class="row" style="margin-top:12px;">
+              <a class="btn small primary" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623" target="_blank" rel="noopener">
+                Apply (PDF external)
+              </a>
+              <button class="btn small" type="button" onclick="alert('Demo only: In the real app this could save favorites.')">
+                Save ♥ (demo)
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      if(filtered.length === 0){
+        catGrid.innerHTML = `
+          <div class="card" style="grid-column:1/-1;">
+            <div class="cardInner">
+              <h3>No matches</h3>
+              <p class="help">Try a different search or filter chip.</p>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    renderCats();
+
+    searchInput.addEventListener("input", renderCats);
+
+    chipRow.addEventListener("click", (e) => {
+      const chip = e.target.closest(".chip");
+      if(!chip) return;
+      Array.from(chipRow.querySelectorAll(".chip")).forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      activeFilter = chip.dataset.filter;
+      renderCats();
+    });
+
+    // Report form demo submit
     const form = document.getElementById("reportForm");
     const toast = document.getElementById("toast");
 
@@ -437,7 +1132,7 @@
       e.preventDefault();
       toast.style.display = "block";
       form.reset();
-      setTimeout(() => toast.style.display = "none", 5000);
+      setTimeout(() => toast.style.display = "none", 5200);
     });
   </script>
 </body>
