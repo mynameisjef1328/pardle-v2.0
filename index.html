@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Rescue Companion (Demo) | Adopt, Volunteer, Donate</title>
-  <meta name="description" content="A private demo mockup for a cat rescue companion app concept. Uses mock data with labeled external links." />
+  <meta name="description" content="A multi-shelter demo mockup for a cat rescue companion app concept. Uses mock data with labeled external links." />
 
   <style>
     :root{
@@ -19,8 +19,10 @@
       --muted: rgba(255,255,255,.66);
       --muted2: rgba(255,255,255,.44);
 
+      /* Theme gets overwritten per shelter */
       --accent:#7c5cff;
       --accent2:#2dd4bf;
+
       --good:#34c759;
       --warn:#ff9f0a;
 
@@ -42,8 +44,8 @@
       color:var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       background:
-        radial-gradient(900px 520px at 18% 12%, rgba(124,92,255,.20), transparent 60%),
-        radial-gradient(720px 460px at 82% 20%, rgba(45,212,191,.12), transparent 55%),
+        radial-gradient(900px 520px at 18% 12%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 60%),
+        radial-gradient(720px 460px at 82% 20%, color-mix(in srgb, var(--accent2) 12%, transparent), transparent 55%),
         radial-gradient(820px 560px at 50% 110%, rgba(255,159,10,.10), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
       line-height:1.45;
@@ -83,7 +85,7 @@
       border-radius:10px;
       background:
         radial-gradient(14px 14px at 30% 30%, rgba(255,255,255,.18), transparent 60%),
-        linear-gradient(135deg, rgba(124,92,255,.95), rgba(45,212,191,.75));
+        linear-gradient(135deg, color-mix(in srgb, var(--accent) 95%, #ffffff 0%), color-mix(in srgb, var(--accent2) 75%, #ffffff 0%));
       box-shadow: 0 10px 18px rgba(0,0,0,.25);
       border:1px solid rgba(255,255,255,.14);
     }
@@ -104,7 +106,7 @@
       text-overflow:ellipsis;
     }
 
-    .topActions{ display:flex; align-items:center; gap:10px; }
+    .topActions{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
     .pill{
       display:inline-flex;
       align-items:center;
@@ -118,6 +120,8 @@
       color:var(--muted);
       text-decoration:none;
       user-select:none;
+      cursor:pointer;
+      white-space:nowrap;
     }
     .pill:hover{ border-color: rgba(255,255,255,.16); }
     .dot{
@@ -184,6 +188,7 @@
     }
     @media (max-width: 920px){
       .hero{ grid-template-columns: 1fr; }
+      .topInner{ align-items:flex-start; }
     }
 
     .panel{
@@ -203,12 +208,13 @@
       color:var(--muted);
       letter-spacing:.4px;
       margin-bottom:10px;
+      flex-wrap:wrap;
     }
     .badge{
       padding:4px 10px;
       border-radius:999px;
-      background: rgba(124,92,255,.14);
-      border:1px solid rgba(124,92,255,.26);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+      border:1px solid color-mix(in srgb, var(--accent) 26%, transparent);
       color: rgba(255,255,255,.85);
       font-size:12px;
     }
@@ -274,10 +280,11 @@
       box-shadow: var(--shadow2);
       user-select:none;
       cursor:pointer;
+      white-space:nowrap;
     }
     .btn:hover{ border-color: rgba(255,255,255,.24); }
     .btn.primary{
-      background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(45,212,191,.78));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 95%, #ffffff 0%), color-mix(in srgb, var(--accent2) 78%, #ffffff 0%));
       border-color: rgba(255,255,255,.14);
     }
     .btn.ghost{
@@ -349,6 +356,7 @@
       gap:12px;
       border-bottom:1px solid rgba(255,255,255,.08);
       background: rgba(255,255,255,.03);
+      flex-wrap:wrap;
     }
     .sectionHead h2{
       margin:0;
@@ -442,10 +450,11 @@
       font-size:12px;
       cursor:pointer;
       user-select:none;
+      white-space:nowrap;
     }
     .chip.active{
-      background: rgba(124,92,255,.20);
-      border-color: rgba(124,92,255,.34);
+      background: color-mix(in srgb, var(--accent) 20%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 34%, transparent);
       color: rgba(255,255,255,.88);
     }
 
@@ -493,6 +502,7 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       user-select:none;
+      white-space:nowrap;
     }
     .thumbRow{
       position:absolute;
@@ -629,6 +639,7 @@
       font-size:12px;
       cursor:pointer;
       user-select:none;
+      white-space:nowrap;
     }
     .tab.active{
       background: rgba(255,255,255,.12);
@@ -642,25 +653,199 @@
     .muted{ color: var(--muted); }
     .small{ font-size:12px; color: var(--muted); }
     .sep{ height:1px; background: rgba(255,255,255,.08); margin:12px 0; }
+
+    /* Shelter Picker Modal */
+    .modalWrap{
+      position:fixed;
+      inset:0;
+      z-index:999;
+      display:none;
+      place-items:center;
+      padding:18px;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .modalWrap.show{ display:grid; }
+    .modal{
+      width:min(720px, 100%);
+      border-radius: 26px;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      box-shadow: 0 22px 60px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding:16px 18px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+    }
+    .modalHead h3{
+      margin:0;
+      font-size:16px;
+      letter-spacing:.2px;
+    }
+    .modalHead p{
+      margin:6px 0 0;
+      color: var(--muted);
+      font-size:13px;
+      max-width: 70ch;
+    }
+    .xBtn{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.85);
+      border-radius: 14px;
+      padding:8px 10px;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .xBtn:hover{ border-color: rgba(255,255,255,.22); }
+
+    .modalBody{ padding:16px 18px 18px; }
+    .modalSearch{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:12px 12px;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      margin-bottom: 12px;
+    }
+    .modalSearch input{
+      border:0;
+      background: transparent;
+      outline:none;
+      color: rgba(255,255,255,.92);
+      font-size:14px;
+      width:100%;
+    }
+
+    .shelterList{
+      display:grid;
+      gap:10px;
+      max-height: 52vh;
+      overflow:auto;
+      padding-right: 2px;
+    }
+    .shelterItem{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      padding:12px;
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+    }
+    .shelterItem:hover{ border-color: rgba(255,255,255,.18); }
+    .sMeta{
+      min-width:0;
+    }
+    .sMeta strong{
+      display:block;
+      font-size:14px;
+      letter-spacing:.15px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .sMeta span{
+      display:block;
+      margin-top:4px;
+      font-size:12px;
+      color: var(--muted);
+    }
+    .sSwatch{
+      width:46px;
+      height:18px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      flex:0 0 auto;
+      margin-top:2px;
+    }
+    .sActions{
+      display:flex;
+      gap:10px;
+      flex:0 0 auto;
+      align-items:center;
+    }
+    .selectBtn{
+      border:1px solid rgba(255,255,255,.16);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 95%, #ffffff 0%), color-mix(in srgb, var(--accent2) 78%, #ffffff 0%));
+      color: rgba(255,255,255,.92);
+      border-radius: 999px;
+      padding:10px 12px;
+      cursor:pointer;
+      user-select:none;
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .selectBtn:hover{ filter: brightness(1.02); }
+
+    .hintRow{
+      margin-top:12px;
+      color: var(--muted);
+      font-size:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
   </style>
 </head>
 
 <body>
+  <!-- Shelter Picker Modal -->
+  <div class="modalWrap" id="shelterModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Choose a rescue">
+      <div class="modalHead">
+        <div>
+          <h3>Choose a rescue</h3>
+          <p>Option B demo: one app, many shelters. Everything swaps based on the selected rescue (theme, links, contact, cat list).</p>
+        </div>
+        <button class="xBtn" id="closeModalBtn" type="button">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="modalSearch">
+          <span style="color:rgba(255,255,255,.52)">⌕</span>
+          <input id="shelterSearch" placeholder="Search rescue name, city, state..." />
+        </div>
+        <div class="shelterList" id="shelterList"></div>
+        <div class="hintRow">
+          <span>Selection saved on this device.</span>
+          <span>All cats and copy are mock data, links can be real and labeled.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Sticky top bar -->
   <div class="top">
     <div class="topInner">
       <div class="brand">
         <div class="appIcon" aria-hidden="true"></div>
         <div class="brandText">
-          <strong>Rescue Companion (Demo)</strong>
-          <span>Mock data, real cat photos, labeled links</span>
+          <strong id="appTitle">Rescue Companion (Demo)</strong>
+          <span id="appSubtitle">Mock data, real cat photos, labeled links</span>
         </div>
       </div>
 
       <div class="topActions">
-        <a class="pill" href="tel:7019795602" title="Call (label only)">
+        <button class="pill" id="changeShelterBtn" type="button" title="Change rescue">
+          🐾 Rescue: <span id="shelterNameTop">Select</span>
+        </button>
+
+        <a class="pill" id="callPill" href="#" title="Call (label only)">
           <span class="dot off" id="phoneDot"></span>
-          Call (label): 701-979-5602
+          <span id="callLabel">Call (label):</span> <span id="phoneText">000-000-0000</span>
         </a>
 
         <div class="toggle" title="Shows this is a prototype using mock data">
@@ -679,14 +864,14 @@
       <div class="panel">
         <div class="panelInner">
           <div class="eyebrow">
-            <span class="badge">Pitch prototype</span>
-            <span class="muted">Mock cats and copy, external links are real and labeled</span>
+            <span class="badge">Multi-shelter prototype</span>
+            <span class="muted" id="heroSub">Mock cats and copy, external links are real and labeled</span>
           </div>
 
-          <h1>A clean, app-like home for adopt, donate, volunteer, and reporting cats in need.</h1>
-          <p class="lede">
+          <h1 id="heroTitle">A clean, app-like home for adopt, donate, volunteer, and reporting cats in need.</h1>
+          <p class="lede" id="heroLede">
             This demo shows how a rescue could feel “native” on iPhone, without rebuilding their whole website.
-            All profiles below are mock data, and external links point to the real Meowsers pages (clearly labeled).
+            All profiles below are mock data, and external links point to the selected rescue pages (clearly labeled).
           </p>
 
           <div class="seg" role="tablist" aria-label="Primary focus">
@@ -696,23 +881,23 @@
           </div>
 
           <div class="ctaRow">
-            <a class="btn primary" href="#adopt">Browse adoptable cats (mock)</a>
-            <a class="btn" href="#report">Report a cat in need (demo)</a>
+            <a class="btn primary" href="#adopt" id="goAdoptBtn">Browse adoptable cats (mock)</a>
+            <a class="btn" href="#report" id="goReportBtn">Report a cat in need (demo)</a>
 
-            <a class="btn ghost" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Open Adoption page (external)</a>
-            <a class="btn ghost" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Open Donate page (external)</a>
+            <a class="btn ghost" id="adoptionLinkTop" href="#" target="_blank" rel="noopener">Open Adoption page (external)</a>
+            <a class="btn ghost" id="donateLinkTop" href="#" target="_blank" rel="noopener">Open Donate page (external)</a>
           </div>
 
           <div class="sep"></div>
 
           <div class="row">
-            <a class="ext" href="https://meowserscatrescue.org/" target="_blank" rel="noopener">Website (external)</a>
-            <a class="ext" href="https://meowserscatrescue.org/volunteer" target="_blank" rel="noopener">Volunteer (external)</a>
-            <a class="ext" href="https://meowserscatrescue.org/shop" target="_blank" rel="noopener">Shop (external)</a>
-            <a class="ext" href="https://meowserscatrescue.org/contact-us" target="_blank" rel="noopener">Contact page (external)</a>
+            <a class="ext" id="websiteLink" href="#" target="_blank" rel="noopener">Website (external)</a>
+            <a class="ext" id="volunteerLink" href="#" target="_blank" rel="noopener">Volunteer (external)</a>
+            <a class="ext" id="shopLink" href="#" target="_blank" rel="noopener">Shop (external)</a>
+            <a class="ext" id="contactLink" href="#" target="_blank" rel="noopener">Contact page (external)</a>
           </div>
 
-          <p class="help">
+          <p class="help" id="pitchText">
             Pitch angle: the rescue keeps their site, and this app adds a simple “Report” pipeline and a better mobile experience.
             Version 1 could route reports to email or a shared sheet, later it can grow into intake plus status updates.
           </p>
@@ -735,7 +920,7 @@
             <div class="kvRow">
               <div>
                 <strong>Real photos</strong>
-                <span>Random real cat photos (placeholder service), so it feels believable on first glance.</span>
+                <span>Placeholder real cat images so it feels believable on first glance.</span>
               </div>
               <div class="tag">Photos</div>
             </div>
@@ -751,7 +936,7 @@
             <div class="kvRow">
               <div>
                 <strong>One-tap external actions</strong>
-                <span>All Meowsers links stay intact and are labeled clearly as external.</span>
+                <span>All rescue links stay intact and are labeled clearly as external.</span>
               </div>
               <div class="tag">Links</div>
             </div>
@@ -760,16 +945,16 @@
           <div class="sep"></div>
 
           <div class="row">
-            <a class="btn small warn" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623" target="_blank" rel="noopener">
+            <a class="btn small warn" id="adoptionPdfLink" href="#" target="_blank" rel="noopener">
               Adoption Application PDF (external)
             </a>
-            <a class="btn small good" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Volunteer%20Application.pdf?ver=1761926270217" target="_blank" rel="noopener">
+            <a class="btn small good" id="volunteerPdfLink" href="#" target="_blank" rel="noopener">
               Volunteer Application PDF (external)
             </a>
           </div>
 
           <p class="small" style="margin-top:10px;">
-            Note: PDFs and site links are the real destinations, everything else here is mock.
+            Note: site and PDF links can be real destinations, everything else here is mock.
           </p>
         </div>
       </div>
@@ -779,11 +964,11 @@
     <section class="section" id="adopt">
       <div class="sectionHead">
         <div>
-          <h2>Adoptable Cats (mock data)</h2>
-          <p>App-like cards with real cat photos. In the real app, these profiles could be pulled from a Google Sheet, Airtable, Petfinder, or a lightweight admin page.</p>
+          <h2 id="adoptHeader">Adoptable Cats (mock data)</h2>
+          <p id="adoptSub">App-like cards with real cat photos. In the real app, these profiles could be pulled from a Google Sheet, Airtable, Petfinder, or a lightweight admin page.</p>
         </div>
         <div class="row">
-          <a class="ext" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">View Adoption page (external)</a>
+          <a class="ext" id="adoptionLinkInline" href="#" target="_blank" rel="noopener">View Adoption page (external)</a>
         </div>
       </div>
 
@@ -809,8 +994,8 @@
         <div class="sep"></div>
 
         <div class="row">
-          <a class="btn ghost" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Open Meowsers adoption listings (external)</a>
-          <a class="btn ghost" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623" target="_blank" rel="noopener">Adoption Application PDF (external)</a>
+          <a class="btn ghost" id="adoptionLinkBottom" href="#" target="_blank" rel="noopener">Open adoption listings (external)</a>
+          <a class="btn ghost" id="adoptionPdfLinkBottom" href="#" target="_blank" rel="noopener">Adoption Application PDF (external)</a>
         </div>
       </div>
     </section>
@@ -820,7 +1005,7 @@
       <div class="sectionHead">
         <div>
           <h2>Ways to help</h2>
-          <p>Quick actions with a native feel, while the real information stays on their website.</p>
+          <p>Quick actions with a native feel, while the real information stays on the rescue’s website.</p>
         </div>
       </div>
 
@@ -836,8 +1021,8 @@
                 <span class="tag">External</span>
               </div>
               <div class="row">
-                <a class="btn small primary" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate options (external)</a>
-                <a class="btn small ghost" href="https://meowserscatrescue.org/shop" target="_blank" rel="noopener">Shop (external)</a>
+                <a class="btn small primary" id="donateLinkCard" href="#" target="_blank" rel="noopener">Donate options (external)</a>
+                <a class="btn small ghost" id="shopLinkCard" href="#" target="_blank" rel="noopener">Shop (external)</a>
               </div>
               <p class="help">In a real app, you could add Apple Pay later (optional). Version 1 can simply route to their existing flow.</p>
             </div>
@@ -853,8 +1038,8 @@
                 <span class="tag">External</span>
               </div>
               <div class="row">
-                <a class="btn small primary" href="https://meowserscatrescue.org/volunteer" target="_blank" rel="noopener">Volunteer page (external)</a>
-                <a class="btn small ghost" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Volunteer%20Application.pdf?ver=1761926270217" target="_blank" rel="noopener">Volunteer PDF (external)</a>
+                <a class="btn small primary" id="volunteerLinkCard" href="#" target="_blank" rel="noopener">Volunteer page (external)</a>
+                <a class="btn small ghost" id="volunteerPdfLinkCard" href="#" target="_blank" rel="noopener">Volunteer PDF (external)</a>
               </div>
               <p class="help">Later you could include a lightweight “available shifts” calendar, if they want it.</p>
             </div>
@@ -870,11 +1055,11 @@
                 <span class="tag">Label</span>
               </div>
               <div class="row">
-                <a class="btn small" href="tel:7019795602">Call (label): 701-979-5602</a>
-                <a class="btn small" href="mailto:meowserscatrescue@gmail.com">Email (label): meowserscatrescue@gmail.com</a>
+                <a class="btn small" id="callBtn" href="#">Call (label)</a>
+                <a class="btn small" id="emailBtn" href="#">Email (label)</a>
               </div>
               <div class="row" style="margin-top:8px;">
-                <a class="btn small ghost" href="https://meowserscatrescue.org/contact-us" target="_blank" rel="noopener">Contact page (external)</a>
+                <a class="btn small ghost" id="contactLinkCard" href="#" target="_blank" rel="noopener">Contact page (external)</a>
               </div>
               <p class="help">If you want, we can add a “copy to clipboard” button for phone and email to feel even more app-like.</p>
             </div>
@@ -891,7 +1076,7 @@
           <p>This is the “app value-add.” Today it just demos. Later it can route to email, Google Sheets, Airtable, or a simple backend.</p>
         </div>
         <div class="row">
-          <a class="ext" href="https://meowserscatrescue.org/contact-us" target="_blank" rel="noopener">Policies and contact (external)</a>
+          <a class="ext" id="policiesLink" href="#" target="_blank" rel="noopener">Policies and contact (external)</a>
         </div>
       </div>
 
@@ -959,11 +1144,13 @@
                   Submit report (demo)
                 </button>
 
-                <div class="toast" id="toast">✅ Demo submitted. Next step would be routing this to Meowsers via email or a shared sheet.</div>
+                <div class="toast" id="toast">✅ Demo submitted. Next step would be routing this to the selected rescue via email or a shared sheet.</div>
               </form>
             </div>
           </div>
         </div>
+
+        <p class="help" id="reportHint"></p>
       </div>
     </section>
 
@@ -971,11 +1158,11 @@
     <section class="section" id="footer">
       <div class="sectionBody">
         <div class="row" style="justify-content:space-between;">
-          <div class="small">© <span id="year"></span> Rescue Companion (Demo). Mock data only.</div>
+          <div class="small">© <span id="year"></span> <span id="footerTitle">Rescue Companion (Demo)</span>. Mock data only.</div>
           <div class="row">
-            <a class="ext" href="https://meowserscatrescue.org/" target="_blank" rel="noopener">Meowsers website (external)</a>
-            <a class="ext" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Adoption (external)</a>
-            <a class="ext" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate (external)</a>
+            <a class="ext" id="footerWebsite" href="#" target="_blank" rel="noopener">Rescue website (external)</a>
+            <a class="ext" id="footerAdoption" href="#" target="_blank" rel="noopener">Adoption (external)</a>
+            <a class="ext" id="footerDonate" href="#" target="_blank" rel="noopener">Donate (external)</a>
           </div>
         </div>
       </div>
@@ -993,24 +1180,475 @@
   </div>
 
   <script>
-    // Year
-    document.getElementById("year").textContent = new Date().getFullYear();
+    // -------------------------
+    // Option B foundation: multi-shelter config
+    // -------------------------
+    const SHELTERS = {
+      meowsers: {
+        id: "meowsers",
+        name: "Meowsers Cat Rescue",
+        city: "Bowman",
+        state: "ND",
+        tagline: "Community-powered rescue, adopt and help.",
+        phone: "701-979-5602",
+        email: "meowserscatrescue@gmail.com",
+        theme: { accent: "#7c5cff", accent2: "#2dd4bf" },
+        urls: {
+          website: "https://meowserscatrescue.org/",
+          adoption: "https://meowserscatrescue.org/adoption",
+          donate: "https://meowserscatrescue.org/donate",
+          volunteer: "https://meowserscatrescue.org/volunteer",
+          shop: "https://meowserscatrescue.org/shop",
+          contact: "https://meowserscatrescue.org/contact-us",
+          adoptionPdf: "https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623",
+          volunteerPdf: "https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Volunteer%20Application.pdf?ver=1761926270217"
+        },
+        reportHint: "Version 1 routing idea: send reports to the rescue intake email or a shared sheet, then optionally notify volunteers.",
+        cats: [
+          { name:"Juniper", age:"Kitten", traits:["playful","kitten"], tags:["Spunky","Great with kids"], note:"Loves wand toys, fearless explorer, purrs the moment you look at her." },
+          { name:"Mochi", age:"Adult", traits:["calm","adult"], tags:["Cuddle bug","Lap cat"], note:"Quiet, gentle, and happiest in a sunny window. Low drama, high affection." },
+          { name:"Atlas", age:"Adult", traits:["adult","special"], tags:["Special care","Chill vibe"], note:"Needs a steady routine. Once he trusts you, he becomes a total sweetheart." },
+          { name:"Peaches", age:"Kitten", traits:["kitten","playful"], tags:["Social","Curious"], note:"Bold little gremlin, always first to greet you, always last to nap." },
+          { name:"Sable", age:"Adult", traits:["adult","calm"], tags:["Gentle","Quiet home"], note:"Best in a calm environment. She warms up slowly, then bonds hard." },
+          { name:"Waffles", age:"Kitten", traits:["kitten","playful"], tags:["Goofy","Food motivated"], note:"Will absolutely steal your heart, then steal your snacks if you blink." }
+        ]
+      },
 
-    // Demo Mode toggle (purely visual)
-    const demoSwitch = document.getElementById("demoSwitch");
-    const phoneDot = document.getElementById("phoneDot");
+      pinecrest: {
+        id: "pinecrest",
+        name: "Pinecrest Paws Rescue",
+        city: "Boulder",
+        state: "CO",
+        tagline: "Fosters first, forever homes always.",
+        phone: "303-555-0118",
+        email: "hello@pinecrestpaws.org",
+        theme: { accent: "#ff6a3d", accent2: "#ffd166" },
+        urls: {
+          website: "https://example.org/pinecrest",
+          adoption: "https://example.org/pinecrest/adopt",
+          donate: "https://example.org/pinecrest/donate",
+          volunteer: "https://example.org/pinecrest/volunteer",
+          shop: "https://example.org/pinecrest/shop",
+          contact: "https://example.org/pinecrest/contact",
+          adoptionPdf: "https://example.org/pinecrest/adoption-application.pdf",
+          volunteerPdf: "https://example.org/pinecrest/volunteer-application.pdf"
+        },
+        reportHint: "Version 1 routing idea: webhook to Airtable intake form, then auto-email the on-call foster coordinator.",
+        cats: [
+          { name:"Nova", age:"Kitten", traits:["kitten","playful"], tags:["Zoomies","Curious"], note:"Tiny rocket ship with a gentle purr motor and zero fear." },
+          { name:"Cinder", age:"Adult", traits:["adult","calm"], tags:["Soft voice","Window watcher"], note:"Polite, mellow, and loves slow head scratches." },
+          { name:"Biscuit", age:"Kitten", traits:["kitten","playful"], tags:["Snack-driven","Bold"], note:"Will sit for treats like a tiny dog, then sprint away with the prize." },
+          { name:"Opal", age:"Adult", traits:["adult","special"], tags:["Special care","Sweetheart"], note:"Needs routine and patience, repays it with full-body purr hugs." }
+        ]
+      },
+
+      harborcats: {
+        id: "harborcats",
+        name: "Harbor Cats Shelter",
+        city: "Portland",
+        state: "ME",
+        tagline: "Rescue, rehab, rehome.",
+        phone: "207-555-0191",
+        email: "contact@harborcatshelter.org",
+        theme: { accent: "#3b82f6", accent2: "#22c55e" },
+        urls: {
+          website: "https://example.org/harborcats",
+          adoption: "https://example.org/harborcats/adopt",
+          donate: "https://example.org/harborcats/donate",
+          volunteer: "https://example.org/harborcats/volunteer",
+          shop: "https://example.org/harborcats/shop",
+          contact: "https://example.org/harborcats/contact",
+          adoptionPdf: "https://example.org/harborcats/adoption-application.pdf",
+          volunteerPdf: "https://example.org/harborcats/volunteer-application.pdf"
+        },
+        reportHint: "Version 1 routing idea: submit to Google Sheet, then Zapier posts to a private Slack channel for volunteers.",
+        cats: [
+          { name:"Skipper", age:"Adult", traits:["adult","playful"], tags:["Goofy","Talkative"], note:"Will chirp at birds, then demand applause for it." },
+          { name:"Marina", age:"Adult", traits:["adult","calm"], tags:["Gentle","Easygoing"], note:"Just wants a blanket, a warm lap, and a quiet playlist." },
+          { name:"Taffy", age:"Kitten", traits:["kitten","playful"], tags:["Social","Snuggly"], note:"Falls asleep mid-play, wakes up to cuddle like it’s her job." },
+          { name:"Rune", age:"Adult", traits:["adult","special"], tags:["Special care","Sensitive"], note:"Needs a calm home, bonds deeply once she chooses you." }
+        ]
+      }
+    };
+
+    // -------------------------
+    // Helpers
+    // -------------------------
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function makePhotoUrls(seedBase){
+      // Placeholder real cat photos from a public service.
+      // For production, swap to shelter-provided photos or your own hosted images.
+      const base = encodeURIComponent(seedBase);
+      return {
+        hero: `https://cataas.com/cat?width=900&height=520&random=${base}`,
+        thumbs: [
+          `https://cataas.com/cat?width=380&height=220&random=${base}-1`,
+          `https://cataas.com/cat?width=380&height=220&random=${base}-2`,
+          `https://cataas.com/cat?width=380&height=220&random=${base}-3`
+        ]
+      };
+    }
+
+    function setCssVar(name, value){
+      document.documentElement.style.setProperty(name, value);
+    }
+
+    // -------------------------
+    // State
+    // -------------------------
+    const LS_KEY = "rc_selected_shelter";
+    let selectedShelterId = localStorage.getItem(LS_KEY) || "";
+    let activeFilter = "all";
     let demoMode = true;
 
+    // Elements
+    const appTitle = document.getElementById("appTitle");
+    const shelterNameTop = document.getElementById("shelterNameTop");
+    const appSubtitle = document.getElementById("appSubtitle");
+
+    const callPill = document.getElementById("callPill");
+    const phoneText = document.getElementById("phoneText");
+    const callBtn = document.getElementById("callBtn");
+    const emailBtn = document.getElementById("emailBtn");
+
+    const heroSub = document.getElementById("heroSub");
+    const reportHint = document.getElementById("reportHint");
+    const footerTitle = document.getElementById("footerTitle");
+
+    // Link nodes
+    const adoptionLinkTop = document.getElementById("adoptionLinkTop");
+    const donateLinkTop = document.getElementById("donateLinkTop");
+    const websiteLink = document.getElementById("websiteLink");
+    const volunteerLink = document.getElementById("volunteerLink");
+    const shopLink = document.getElementById("shopLink");
+    const contactLink = document.getElementById("contactLink");
+    const policiesLink = document.getElementById("policiesLink");
+
+    const adoptionPdfLink = document.getElementById("adoptionPdfLink");
+    const volunteerPdfLink = document.getElementById("volunteerPdfLink");
+
+    const adoptionLinkInline = document.getElementById("adoptionLinkInline");
+    const adoptionLinkBottom = document.getElementById("adoptionLinkBottom");
+    const adoptionPdfLinkBottom = document.getElementById("adoptionPdfLinkBottom");
+
+    const donateLinkCard = document.getElementById("donateLinkCard");
+    const shopLinkCard = document.getElementById("shopLinkCard");
+    const volunteerLinkCard = document.getElementById("volunteerLinkCard");
+    const volunteerPdfLinkCard = document.getElementById("volunteerPdfLinkCard");
+    const contactLinkCard = document.getElementById("contactLinkCard");
+
+    const footerWebsite = document.getElementById("footerWebsite");
+    const footerAdoption = document.getElementById("footerAdoption");
+    const footerDonate = document.getElementById("footerDonate");
+
+    const adoptHeader = document.getElementById("adoptHeader");
+
+    // Cats
+    const catGrid = document.getElementById("catGrid");
+    const searchInput = document.getElementById("searchInput");
+    const chipRow = document.getElementById("chipRow");
+
+    // Modal
+    const shelterModal = document.getElementById("shelterModal");
+    const shelterList = document.getElementById("shelterList");
+    const shelterSearch = document.getElementById("shelterSearch");
+    const changeShelterBtn = document.getElementById("changeShelterBtn");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+
+    // Toggle
+    const demoSwitch = document.getElementById("demoSwitch");
+    const phoneDot = document.getElementById("phoneDot");
+
+    // -------------------------
+    // Modal logic
+    // -------------------------
+    function openModal(){
+      shelterModal.classList.add("show");
+      shelterModal.setAttribute("aria-hidden", "false");
+      shelterSearch.value = "";
+      renderShelterList("");
+      setTimeout(() => shelterSearch.focus(), 50);
+    }
+    function closeModal(){
+      shelterModal.classList.remove("show");
+      shelterModal.setAttribute("aria-hidden", "true");
+    }
+
+    changeShelterBtn.addEventListener("click", openModal);
+    closeModalBtn.addEventListener("click", closeModal);
+    shelterModal.addEventListener("click", (e) => {
+      if(e.target === shelterModal) closeModal();
+    });
+    window.addEventListener("keydown", (e) => {
+      if(e.key === "Escape" && shelterModal.classList.contains("show")) closeModal();
+    });
+
+    function renderShelterList(query){
+      const q = (query || "").trim().toLowerCase();
+      const entries = Object.values(SHELTERS).filter(s => {
+        if(!q) return true;
+        const blob = `${s.name} ${s.city} ${s.state}`.toLowerCase();
+        return blob.includes(q);
+      });
+
+      shelterList.innerHTML = entries.map(s => {
+        const isActive = s.id === selectedShelterId;
+        const swatchStyle = `style="background: linear-gradient(90deg, ${escapeHtml(s.theme.accent)}, ${escapeHtml(s.theme.accent2)});"`;
+        return `
+          <div class="shelterItem">
+            <div class="sMeta">
+              <strong>${escapeHtml(s.name)}</strong>
+              <span>${escapeHtml(s.city)}, ${escapeHtml(s.state)} • ${escapeHtml(s.tagline)}</span>
+              <span>${isActive ? "Currently selected" : "Tap select to preview this rescue"}</span>
+            </div>
+            <div class="sActions">
+              <div class="sSwatch" ${swatchStyle} aria-hidden="true"></div>
+              <button class="selectBtn" type="button" data-shelter="${escapeHtml(s.id)}">
+                ${isActive ? "Selected" : "Select"}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      if(entries.length === 0){
+        shelterList.innerHTML = `
+          <div class="shelterItem">
+            <div class="sMeta">
+              <strong>No matches</strong>
+              <span>Try a different search (name, city, state).</span>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    shelterSearch.addEventListener("input", () => renderShelterList(shelterSearch.value));
+
+    shelterList.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-shelter]");
+      if(!btn) return;
+      const id = btn.getAttribute("data-shelter");
+      selectShelter(id);
+      closeModal();
+    });
+
+    // -------------------------
+    // Apply shelter config
+    // -------------------------
+    function selectShelter(id){
+      if(!SHELTERS[id]) return;
+      selectedShelterId = id;
+      localStorage.setItem(LS_KEY, id);
+      applyShelter(SHELTERS[id]);
+    }
+
+    function applyShelter(s){
+      // Theme
+      setCssVar("--accent", s.theme.accent);
+      setCssVar("--accent2", s.theme.accent2);
+
+      // Top labels
+      shelterNameTop.textContent = s.name;
+      appTitle.textContent = "Rescue Companion (Demo)";
+      appSubtitle.textContent = `Selected rescue: ${s.name}`;
+
+      // Contact label actions
+      phoneText.textContent = s.phone;
+      callPill.href = `tel:${s.phone.replaceAll(/[^0-9+]/g,"")}`;
+      callBtn.href = `tel:${s.phone.replaceAll(/[^0-9+]/g,"")}`;
+      callBtn.textContent = `Call (label): ${s.phone}`;
+
+      emailBtn.href = `mailto:${s.email}`;
+      emailBtn.textContent = `Email (label): ${s.email}`;
+
+      // Hero copy
+      heroSub.textContent = `Selected rescue: ${s.name} • Cats and copy are mock, external links are labeled`;
+
+      // Adopt header
+      adoptHeader.textContent = `Adoptable Cats (mock) for ${s.name}`;
+
+      // Report hint
+      reportHint.textContent = `Selected rescue routing idea: ${s.reportHint}`;
+
+      // Footer
+      footerTitle.textContent = s.name;
+
+      // Links
+      adoptionLinkTop.href = s.urls.adoption;
+      donateLinkTop.href = s.urls.donate;
+
+      websiteLink.href = s.urls.website;
+      volunteerLink.href = s.urls.volunteer;
+      shopLink.href = s.urls.shop;
+      contactLink.href = s.urls.contact;
+      policiesLink.href = s.urls.contact;
+
+      adoptionPdfLink.href = s.urls.adoptionPdf;
+      volunteerPdfLink.href = s.urls.volunteerPdf;
+
+      adoptionLinkInline.href = s.urls.adoption;
+      adoptionLinkBottom.href = s.urls.adoption;
+      adoptionPdfLinkBottom.href = s.urls.adoptionPdf;
+
+      donateLinkCard.href = s.urls.donate;
+      shopLinkCard.href = s.urls.shop;
+      volunteerLinkCard.href = s.urls.volunteer;
+      volunteerPdfLinkCard.href = s.urls.volunteerPdf;
+      contactLinkCard.href = s.urls.contact;
+
+      footerWebsite.href = s.urls.website;
+      footerAdoption.href = s.urls.adoption;
+      footerDonate.href = s.urls.donate;
+
+      footerWebsite.textContent = `${s.name} website (external)`;
+
+      // Clear search and re-render cats
+      searchInput.value = "";
+      activeFilter = "all";
+      Array.from(chipRow.querySelectorAll(".chip")).forEach(c => c.classList.remove("active"));
+      chipRow.querySelector('.chip[data-filter="all"]').classList.add("active");
+
+      renderCats();
+    }
+
+    // -------------------------
+    // Cats rendering
+    // -------------------------
+    function currentShelter(){
+      return SHELTERS[selectedShelterId] || null;
+    }
+
+    function renderCats(){
+      const s = currentShelter();
+      if(!s){
+        catGrid.innerHTML = `
+          <div class="card" style="grid-column:1/-1;">
+            <div class="cardInner">
+              <h3>Select a rescue to begin</h3>
+              <p class="help">Tap the “Rescue” button in the top bar.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const q = (searchInput.value || "").trim().toLowerCase();
+      const cats = s.cats || [];
+
+      const filtered = cats.filter(c => {
+        const inSearch =
+          !q ||
+          c.name.toLowerCase().includes(q) ||
+          c.note.toLowerCase().includes(q) ||
+          c.tags.join(" ").toLowerCase().includes(q) ||
+          c.traits.join(" ").toLowerCase().includes(q);
+
+        const inFilter =
+          activeFilter === "all" ? true : c.traits.includes(activeFilter);
+
+        return inSearch && inFilter;
+      });
+
+      catGrid.innerHTML = filtered.map((c, idx) => {
+        const seed = `${s.id}-${idx}-${c.name}`.replaceAll(" ", "-").toLowerCase();
+        const photos = makePhotoUrls(seed);
+
+        return `
+          <div class="catCard">
+            <div class="catMedia">
+              <img class="hero" src="${escapeHtml(photos.hero)}" alt="Photo of ${escapeHtml(c.name)}" loading="lazy" />
+              <div class="mediaLabel">Photos: demo placeholder</div>
+              <div class="thumbRow">
+                <div class="thumb"><img src="${escapeHtml(photos.thumbs[0])}" alt="Thumbnail 1 of ${escapeHtml(c.name)}" loading="lazy"></div>
+                <div class="thumb"><img src="${escapeHtml(photos.thumbs[1])}" alt="Thumbnail 2 of ${escapeHtml(c.name)}" loading="lazy"></div>
+                <div class="thumb"><img src="${escapeHtml(photos.thumbs[2])}" alt="Thumbnail 3 of ${escapeHtml(c.name)}" loading="lazy"></div>
+              </div>
+            </div>
+
+            <div class="catBody">
+              <div class="catTitle">
+                <div>
+                  <strong>${escapeHtml(c.name)}</strong>
+                  <div class="sub">${escapeHtml(c.age)} • Mock profile</div>
+                </div>
+                <a class="ext" href="${escapeHtml(s.urls.adoption)}" target="_blank" rel="noopener" title="External link">
+                  Adoption page (external)
+                </a>
+              </div>
+
+              <div class="meta">
+                ${c.tags.map(t => `<span>${escapeHtml(t)}</span>`).join("")}
+              </div>
+
+              <div class="catNote">${escapeHtml(c.note)}</div>
+
+              <div class="row" style="margin-top:12px;">
+                <a class="btn small primary" href="${escapeHtml(s.urls.adoptionPdf)}" target="_blank" rel="noopener">
+                  Apply (PDF external)
+                </a>
+                <button class="btn small" type="button" data-save="${escapeHtml(c.name)}">
+                  Save ♥ (demo)
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      if(filtered.length === 0){
+        catGrid.innerHTML = `
+          <div class="card" style="grid-column:1/-1;">
+            <div class="cardInner">
+              <h3>No matches</h3>
+              <p class="help">Try a different search or filter chip.</p>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Save button event delegation
+    catGrid.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-save]");
+      if(!btn) return;
+      const name = btn.getAttribute("data-save");
+      alert("Demo only: Saved " + name + " to favorites (pretend).");
+    });
+
+    searchInput.addEventListener("input", renderCats);
+
+    chipRow.addEventListener("click", (e) => {
+      const chip = e.target.closest(".chip");
+      if(!chip) return;
+      Array.from(chipRow.querySelectorAll(".chip")).forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      activeFilter = chip.dataset.filter;
+      renderCats();
+    });
+
+    // -------------------------
+    // Demo Mode toggle (purely visual)
+    // -------------------------
     function setDemoMode(isOn){
       demoSwitch.classList.toggle("on", isOn);
       demoSwitch.setAttribute("aria-checked", String(isOn));
       phoneDot.classList.toggle("off", true);
-      document.title = isOn
-        ? "Rescue Companion (Demo) | Adopt, Volunteer, Donate"
-        : "Rescue Companion | Adopt, Volunteer, Donate";
-    }
-    setDemoMode(demoMode);
 
+      const s = currentShelter();
+      const rescueName = s ? s.name : "Select a rescue";
+      document.title = isOn
+        ? `Rescue Companion (Demo) | ${rescueName}`
+        : `Rescue Companion | ${rescueName}`;
+    }
     function toggleDemo(){
       demoMode = !demoMode;
       setDemoMode(demoMode);
@@ -1023,7 +1661,9 @@
       }
     });
 
+    // -------------------------
     // Segmented control scroll
+    // -------------------------
     const segBtns = Array.from(document.querySelectorAll(".seg button"));
     segBtns.forEach(btn => {
       btn.addEventListener("click", () => {
@@ -1046,203 +1686,33 @@
       });
     });
 
-    // Mock cat data, with real cat photos from a public placeholder service (random cats)
-    // If you want the photos to be consistent (not changing), replace these URLs later with your own hosted images.
-    const cats = [
-      {
-        name: "Juniper",
-        age: "Kitten",
-        traits: ["playful","kitten"],
-        tags: ["Spunky", "Great with kids"],
-        note: "Loves wand toys, fearless explorer, purrs the moment you look at her.",
-        hero: "https://cataas.com/cat?width=900&height=520&random=11",
-        thumbs: [
-          "https://cataas.com/cat?width=380&height=220&random=111",
-          "https://cataas.com/cat?width=380&height=220&random=112",
-          "https://cataas.com/cat?width=380&height=220&random=113"
-        ]
-      },
-      {
-        name: "Mochi",
-        age: "Adult",
-        traits: ["calm","adult"],
-        tags: ["Cuddle bug", "Lap cat"],
-        note: "Quiet, gentle, and happiest in a sunny window. Low drama, high affection.",
-        hero: "https://cataas.com/cat?width=900&height=520&random=21",
-        thumbs: [
-          "https://cataas.com/cat?width=380&height=220&random=211",
-          "https://cataas.com/cat?width=380&height=220&random=212",
-          "https://cataas.com/cat?width=380&height=220&random=213"
-        ]
-      },
-      {
-        name: "Atlas",
-        age: "Adult",
-        traits: ["adult","special"],
-        tags: ["Special care", "Chill vibe"],
-        note: "Needs a steady routine. Once he trusts you, he becomes a total sweetheart.",
-        hero: "https://cataas.com/cat?width=900&height=520&random=31",
-        thumbs: [
-          "https://cataas.com/cat?width=380&height=220&random=311",
-          "https://cataas.com/cat?width=380&height=220&random=312",
-          "https://cataas.com/cat?width=380&height=220&random=313"
-        ]
-      },
-      {
-        name: "Peaches",
-        age: "Kitten",
-        traits: ["kitten","playful"],
-        tags: ["Social", "Curious"],
-        note: "Bold little gremlin, always first to greet you, always last to nap.",
-        hero: "https://cataas.com/cat?width=900&height=520&random=41",
-        thumbs: [
-          "https://cataas.com/cat?width=380&height=220&random=411",
-          "https://cataas.com/cat?width=380&height=220&random=412",
-          "https://cataas.com/cat?width=380&height=220&random=413"
-        ]
-      },
-      {
-        name: "Sable",
-        age: "Adult",
-        traits: ["adult","calm"],
-        tags: ["Gentle", "Quiet home"],
-        note: "Best in a calm environment. She warms up slowly, then bonds hard.",
-        hero: "https://cataas.com/cat?width=900&height=520&random=51",
-        thumbs: [
-          "https://cataas.com/cat?width=380&height=220&random=511",
-          "https://cataas.com/cat?width=380&height=220&random=512",
-          "https://cataas.com/cat?width=380&height=220&random=513"
-        ]
-      },
-      {
-        name: "Waffles",
-        age: "Kitten",
-        traits: ["kitten","playful"],
-        tags: ["Goofy", "Food motivated"],
-        note: "Will absolutely steal your heart, then steal your snacks if you blink.",
-        hero: "https://cataas.com/cat?width=900&height=520&random=61",
-        thumbs: [
-          "https://cataas.com/cat?width=380&height=220&random=611",
-          "https://cataas.com/cat?width=380&height=220&random=612",
-          "https://cataas.com/cat?width=380&height=220&random=613"
-        ]
-      }
-    ];
-
-    const catGrid = document.getElementById("catGrid");
-    const searchInput = document.getElementById("searchInput");
-    const chipRow = document.getElementById("chipRow");
-    let activeFilter = "all";
-
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    function renderCats(){
-      const q = (searchInput.value || "").trim().toLowerCase();
-      const filtered = cats.filter(c => {
-        const inSearch =
-          !q ||
-          c.name.toLowerCase().includes(q) ||
-          c.note.toLowerCase().includes(q) ||
-          c.tags.join(" ").toLowerCase().includes(q) ||
-          c.traits.join(" ").toLowerCase().includes(q);
-
-        const inFilter =
-          activeFilter === "all" ? true : c.traits.includes(activeFilter);
-
-        return inSearch && inFilter;
-      });
-
-      catGrid.innerHTML = filtered.map(c => `
-        <div class="catCard">
-          <div class="catMedia">
-            <img class="hero" src="${escapeHtml(c.hero)}" alt="Photo of ${escapeHtml(c.name)}" loading="lazy" />
-            <div class="mediaLabel">Photos: demo placeholder</div>
-            <div class="thumbRow">
-              <div class="thumb"><img src="${escapeHtml(c.thumbs[0])}" alt="Thumbnail 1 of ${escapeHtml(c.name)}" loading="lazy"></div>
-              <div class="thumb"><img src="${escapeHtml(c.thumbs[1])}" alt="Thumbnail 2 of ${escapeHtml(c.name)}" loading="lazy"></div>
-              <div class="thumb"><img src="${escapeHtml(c.thumbs[2])}" alt="Thumbnail 3 of ${escapeHtml(c.name)}" loading="lazy"></div>
-            </div>
-          </div>
-
-          <div class="catBody">
-            <div class="catTitle">
-              <div>
-                <strong>${escapeHtml(c.name)}</strong>
-                <div class="sub">${escapeHtml(c.age)} • Mock profile</div>
-              </div>
-              <a class="ext" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener" title="External link">
-                Adoption page (external)
-              </a>
-            </div>
-
-            <div class="meta">
-              ${c.tags.map(t => `<span>${escapeHtml(t)}</span>`).join("")}
-            </div>
-
-            <div class="catNote">${escapeHtml(c.note)}</div>
-
-            <div class="row" style="margin-top:12px;">
-              <a class="btn small primary" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623" target="_blank" rel="noopener">
-                Apply (PDF external)
-              </a>
-              <button class="btn small" type="button" data-save="${escapeHtml(c.name)}">
-                Save ♥ (demo)
-              </button>
-            </div>
-          </div>
-        </div>
-      `).join("");
-
-      if(filtered.length === 0){
-        catGrid.innerHTML = `
-          <div class="card" style="grid-column:1/-1;">
-            <div class="cardInner">
-              <h3>No matches</h3>
-              <p class="help">Try a different search or filter chip.</p>
-            </div>
-          </div>
-        `;
-      }
-
-      // Wire save buttons
-      Array.from(catGrid.querySelectorAll("button[data-save]")).forEach(btn => {
-        btn.addEventListener("click", () => {
-          const name = btn.getAttribute("data-save");
-          alert("Demo only: Saved " + name + " to favorites (pretend).");
-        });
-      });
-    }
-
-    renderCats();
-
-    searchInput.addEventListener("input", renderCats);
-
-    chipRow.addEventListener("click", (e) => {
-      const chip = e.target.closest(".chip");
-      if(!chip) return;
-      Array.from(chipRow.querySelectorAll(".chip")).forEach(c => c.classList.remove("active"));
-      chip.classList.add("active");
-      activeFilter = chip.dataset.filter;
-      renderCats();
-    });
-
     // Report form demo submit
     const form = document.getElementById("reportForm");
     const toast = document.getElementById("toast");
-
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       toast.style.display = "block";
       form.reset();
       setTimeout(() => toast.style.display = "none", 5200);
     });
+
+    // Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Init
+    setDemoMode(true);
+
+    if(selectedShelterId && SHELTERS[selectedShelterId]){
+      applyShelter(SHELTERS[selectedShelterId]);
+    } else {
+      // No selection yet, force the picker
+      openModal();
+      // Render once so the Adopt section isn't empty
+      renderCats();
+    }
+
+    // Populate modal list initially
+    renderShelterList("");
   </script>
 </body>
 </html>
