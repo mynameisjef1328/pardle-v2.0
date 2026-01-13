@@ -510,6 +510,49 @@
       font-size: 16px;
     }
 
+    /* ================================
+   PLAYER ROW COLORS (left stripe + colored names)
+   Paste BELOW .player-name + .player-name:disabled
+   ================================ */
+
+/* slot colors */
+.player-row[data-slot="0"] { --pcolor: #ff9800; } /* orange */
+.player-row[data-slot="1"] { --pcolor: #00c853; } /* green */
+.player-row[data-slot="2"] { --pcolor: #29b6f6; } /* cyan */
+.player-row[data-slot="3"] { --pcolor: #ab47bc; } /* purple */
+
+/* make the left label cell able to host the stripe (works for th or td) */
+.player-row .player-label{
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  padding-left: 14px; /* room for stripe */
+  overflow: hidden;
+}
+
+/* vertical color stripe */
+.player-row .player-label::before{
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--pcolor);
+  opacity: 0.95;
+}
+
+/* color the player name text */
+.player-row .player-name{
+  color: var(--pcolor);
+  font-weight: 800;
+}
+
+/* keep disabled readable */
+.player-row .player-name:disabled{
+  opacity: 0.85;
+}
+
     .player-name:disabled {
       opacity: 0.7;
     }
