@@ -692,11 +692,14 @@ body[data-mode="dark"] .sheet-header-row button {
 }
 
 /* Bigger, more readable chat */
-
 .chat-thread{
-  max-height: 46vh;        /* taller thread area */
+  max-height: 46vh;                 /* taller thread area */
   padding: 10px 10px;
-  font-size: 14px;         /* base size for thread */
+  font-size: 14px;                  /* base size for thread */
+  overflow-y: auto;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  background: rgba(0,0,0,0.03);
 }
 
 body[data-mode="dark"] .chat-thread{
@@ -714,45 +717,65 @@ body[data-mode="dark"] .chat-thread{
 }
 
 .chat-message span.meta{
-  font-size: 12px;         /* timestamp/name line */
+  font-size: 12px;                  /* timestamp/name line */
   opacity: 0.72;
 }
 
 .chat-message span.text{
-  font-size: 15px;         /* actual message text */
+  font-size: 15px;                  /* actual message text */
   line-height: 1.35;
 }
 
 .chat-input{
-  min-height: 84px;        /* bigger input box */
-  font-size: 16px;         /* iOS-friendly, readable */
+  width: 100%;
+  min-height: 84px;                 /* bigger input box */
+  font-size: 16px;                  /* iOS-friendly, readable */
   padding: 10px 12px;
   line-height: 1.3;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
+  background: var(--input-bg);
+  color: var(--input-text);
+  resize: vertical;
+}
+
+/* This is the missing piece from your screenshot */
+.chat-actions{
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 /* Bigger buttons in chat sheet */
 .chat-actions .small-btn{
+  flex: 1;
   font-size: 15px;
   padding: 12px 12px;
 }
 
-    .chat-targets {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 6px;
-    }
-
-    /* Optional: make the target pills easier to tap/read */
-.chat-target-pill{
-  font-size: 13px;
-  padding: 6px 12px;
+/* Targets row */
+.chat-targets{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
-    .chat-target-pill.selected {
-      background: var(--accent-soft);
-      border-color: var(--accent);
-    }
+/* Target pills: easier to tap/read */
+.chat-target-pill{
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  background: var(--bg-card);
+  color: var(--text);
+}
+
+.chat-target-pill.selected{
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
 
     /* ================================
    SETTINGS SHEET (Wordle-style)
