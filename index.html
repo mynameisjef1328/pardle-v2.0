@@ -1,1960 +1,3126 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
+  <title>Pardle</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Rescue Companion (Demo) | Adopt, Volunteer, Donate</title>
-  <meta name="description" content="A private demo mockup for a cat rescue companion app concept. Mock cats, labeled external links, and demo shelter directory." />
+
+  <!-- Firebase compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
   <style>
-    :root{
-      /* iOS-ish palette */
-      --bg0:#0b0c10;
-      --bg1:#12141b;
-      --card: rgba(255,255,255,.06);
-      --card2: rgba(255,255,255,.08);
-      --stroke: rgba(255,255,255,.10);
-      --stroke2: rgba(255,255,255,.14);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.66);
-      --muted2: rgba(255,255,255,.44);
-
-      --accent:#7c5cff;
-      --accent2:#2dd4bf;
-      --good:#34c759;
-      --warn:#ff9f0a;
-
-      --radius:18px;
-      --radius2:24px;
-      --max: 1120px;
-
-      --shadow: 0 14px 40px rgba(0,0,0,.35);
-      --shadow2: 0 10px 24px rgba(0,0,0,.28);
-
-      --blur: 14px;
+    :root {
+      /* default: light mode, normal accents */
+      --bg: #f5f5f5;
+      --bg-card: #ffffff;
+      --text: #111111;
+      --accent: #ff9800;
+      --accent-soft: #ffe0b2;
+      --border-soft: #dddddd;
+      --header-bg: #ffffff;
+      --sync-bg: #00c853;
+      --sync-text: #ffffff;
+      --table-header-bg: #e0e0e0;
+      --table-header-text: #111111;
+      --table-player-header-bg: #000000;
+      --table-player-header-text: #ffffff;
+      --input-bg: #ffffff;
+      --input-text: #000000;
+      --par-bg: #cde8cf;
+      --active-hole-bg: rgba(255, 152, 0, 0.14);
     }
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-
-    body{
-      margin:0;
-      color:var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background:
-        radial-gradient(900px 520px at 18% 12%, rgba(124,92,255,.20), transparent 60%),
-        radial-gradient(720px 460px at 82% 20%, rgba(45,212,191,.12), transparent 55%),
-        radial-gradient(820px 560px at 50% 110%, rgba(255,159,10,.10), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      line-height:1.45;
+    /* Dark mode overrides */
+    body[data-mode="dark"] {
+      --bg: #101010;
+      --bg-card: #1f1f1f;
+      --text: #f5f5f5;
+      --accent: #ff9800;
+      --accent-soft: #664200;
+      --border-soft: #333333;
+      --header-bg: #181818;
+      --sync-bg: #00c853;
+      --sync-text: #ffffff;
+      --table-header-bg: #333333;
+      --table-header-text: #ffffff;
+      --input-bg: #202020;
+      --input-text: #ffffff;
+      --par-bg: #2e3b2f;
+      --active-hole-bg: rgba(255, 152, 0, 0.24);
     }
 
-    a{ color:inherit; }
-    .wrap{ max-width:var(--max); margin:0 auto; padding:20px 16px 92px; }
-
-    /* Top nav */
-    .top{
-      position:sticky;
-      top:0;
-      z-index:30;
-      backdrop-filter: blur(var(--blur));
-      -webkit-backdrop-filter: blur(var(--blur));
-      background: rgba(15,16,22,.55);
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
-    .topInner{
-      max-width:var(--max);
-      margin:0 auto;
-      padding:12px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
+    /* Accent invert: green primary, orange sync */
+    body[data-accent="invert"] {
+      --accent: #00c853;
+      --accent-soft: #b9f6ca;
+      --sync-bg: #ff9800;
+      --sync-text: #111111;
     }
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
-    .appIcon{
-      width:34px; height:34px;
-      border-radius:10px;
-      background:
-        radial-gradient(14px 14px at 30% 30%, rgba(255,255,255,.18), transparent 60%),
-        linear-gradient(135deg, rgba(124,92,255,.95), rgba(45,212,191,.75));
-      box-shadow: 0 10px 18px rgba(0,0,0,.25);
-      border:1px solid rgba(255,255,255,.14);
-      flex:0 0 auto;
-    }
-    .brandText{ display:flex; flex-direction:column; line-height:1.1; min-width:0; }
-    .brandText strong{
-      font-size:13px;
-      letter-spacing:.2px;
-      font-weight:720;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .brandText span{
-      font-size:12px;
-      color:var(--muted);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
     }
 
-    .topActions{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:9px 12px;
-      border-radius:999px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow: 0 10px 22px rgba(0,0,0,.18);
-      font-size:12px;
-      color:var(--muted);
-      text-decoration:none;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .pill:hover{ border-color: rgba(255,255,255,.16); }
-    .dot{
-      width:8px; height:8px; border-radius:99px;
-      background: var(--good);
-      box-shadow: 0 0 0 4px rgba(52,199,89,.12);
-    }
-    .dot.off{
-      background: rgba(255,255,255,.28);
-      box-shadow:none;
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
     }
 
-    /* Toggle (iOS-ish) */
-    .toggle{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:8px 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-    }
-    .toggle label{
-      font-size:12px;
-      color:var(--muted);
-      user-select:none;
-      letter-spacing:.2px;
-    }
-    .switch{
-      position:relative;
-      width:42px;
-      height:24px;
-      border-radius:999px;
-      background: rgba(255,255,255,.18);
-      border:1px solid rgba(255,255,255,.10);
-      cursor:pointer;
-      flex:0 0 auto;
-      transition: background .18s ease, border-color .18s ease;
-    }
-    .knob{
-      position:absolute;
-      top:2px;
-      left:2px;
-      width:20px;
-      height:20px;
-      border-radius:999px;
-      background: rgba(255,255,255,.92);
-      box-shadow: 0 8px 16px rgba(0,0,0,.25);
-      transition: transform .18s ease;
-    }
-    .switch.on{
-      background: rgba(52,199,89,.85);
-      border-color: rgba(52,199,89,.45);
-    }
-    .switch.on .knob{ transform: translateX(18px); }
-
-    /* Hero */
-    .hero{
-      padding:18px 0 0;
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap:14px;
-      align-items:start;
-    }
-    @media (max-width: 920px){
-      .hero{ grid-template-columns: 1fr; }
+    .app-shell {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 12px 24px;
+      gap: 12px;
     }
 
-    .panel{
-      border-radius: var(--radius2);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .panelInner{ padding:18px; }
-
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size:12px;
-      color:var(--muted);
-      letter-spacing:.4px;
-      margin-bottom:10px;
-      flex-wrap:wrap;
-    }
-    .badge{
-      padding:4px 10px;
-      border-radius:999px;
-      background: rgba(124,92,255,.14);
-      border:1px solid rgba(124,92,255,.26);
-      color: rgba(255,255,255,.85);
-      font-size:12px;
-    }
-    h1{
-      margin:0 0 10px;
-      font-size:34px;
-      letter-spacing:-.4px;
-      line-height:1.08;
-      font-weight:780;
-    }
-    .lede{
-      margin:0 0 14px;
-      color:var(--muted);
-      font-size:14px;
-      max-width:68ch;
+    /* Start screen overlay */
+    #startModal {
+      position: fixed;
+      inset: 0;
+      background: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      transition: opacity 0.25s ease, transform 0.25s ease;
     }
 
-    /* Segmented control */
-    .seg{
-      display:inline-flex;
-      gap:0;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:999px;
-      padding:3px;
-      margin:6px 0 14px;
-      width:100%;
-      max-width:520px;
-    }
-    .seg button{
-      flex:1;
-      border:0;
-      background: transparent;
-      color: var(--muted);
-      font-size:13px;
-      padding:10px 12px;
-      border-radius:999px;
-      cursor:pointer;
-      transition: background .18s ease, color .18s ease;
-      white-space:nowrap;
-    }
-    .seg button.active{
-      background: rgba(255,255,255,.16);
-      color: rgba(255,255,255,.92);
-      box-shadow: 0 10px 18px rgba(0,0,0,.18);
-    }
-
-    /* Buttons */
-    .ctaRow{ display:flex; flex-wrap:wrap; gap:10px; }
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:12px 14px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.90);
-      text-decoration:none;
-      font-size:14px;
-      letter-spacing:.2px;
-      box-shadow: var(--shadow2);
-      user-select:none;
-      cursor:pointer;
-      white-space:nowrap;
-    }
-    .btn:hover{ border-color: rgba(255,255,255,.24); }
-    .btn.primary{
-      background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(45,212,191,.78));
-      border-color: rgba(255,255,255,.14);
-    }
-    .btn.ghost{
-      background: transparent;
-      border-color: rgba(255,255,255,.14);
-    }
-    .btn.small{
-      padding:9px 12px;
-      font-size:13px;
-    }
-    .btn.warn{
-      background: rgba(255,159,10,.14);
-      border-color: rgba(255,159,10,.28);
-    }
-    .btn.good{
-      background: rgba(52,199,89,.14);
-      border-color: rgba(52,199,89,.28);
-    }
-
-    /* Right hero card */
-    .miniTitle{
-      font-size:12px;
-      letter-spacing:1.8px;
-      text-transform:uppercase;
-      color: var(--muted);
-      margin:0 0 10px;
-    }
-    .kv{
-      display:grid;
-      gap:10px;
-    }
-    .kvRow{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      padding:12px;
-      border-radius:16px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-    }
-    .kvRow strong{ font-size:13px; }
-    .kvRow span{ font-size:12px; color:var(--muted); display:block; margin-top:4px; max-width:44ch; }
-    .tag{
-      font-size:12px;
-      padding:6px 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.12);
-      color: rgba(255,255,255,.78);
-      white-space:nowrap;
-      height:fit-content;
-    }
-
-    /* Sections */
-    .section{
-      margin-top:14px;
-      border-radius: var(--radius2);
-      background: rgba(255,255,255,.045);
-      border:1px solid rgba(255,255,255,.08);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
-    }
-    .sectionHead{
-      padding:16px 18px;
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:12px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.03);
-    }
-    .sectionHead h2{
-      margin:0;
-      font-size:16px;
-      letter-spacing:.2px;
-    }
-    .sectionHead p{
-      margin:2px 0 0;
-      color: var(--muted);
-      font-size:13px;
-      max-width:70ch;
-    }
-    .sectionBody{ padding:16px 18px; }
-
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:12px;
-    }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-    }
-
-    .card{
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      overflow:hidden;
-      box-shadow: 0 10px 20px rgba(0,0,0,.18);
-    }
-    .cardInner{ padding:14px; }
-    .cardTop{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:10px;
-    }
-    .card h3{
-      margin:0;
-      font-size:15px;
-      letter-spacing:.1px;
-    }
-    .sub{
-      font-size:12px;
-      color: var(--muted);
-      margin-top:4px;
-    }
-
-    /* Featured shelters row */
-    .featuredWrap{
-      display:flex;
-      gap:12px;
-      overflow:auto;
-      padding-bottom:6px;
-      scroll-snap-type:x mandatory;
-      -webkit-overflow-scrolling: touch;
-    }
-    .featuredWrap::-webkit-scrollbar{ height:8px; }
-    .featuredWrap::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.10); border-radius:999px; }
-
-    .featuredCard{
-      scroll-snap-align:start;
-      min-width: 260px;
-      max-width: 320px;
-      border-radius: var(--radius2);
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
-    }
-    .featuredTop{
-      padding:14px 14px 12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .logoBubble{
-      width:40px; height:40px;
-      border-radius:14px;
-      background:
-        radial-gradient(18px 18px at 30% 30%, rgba(255,255,255,.18), transparent 60%),
-        linear-gradient(135deg, rgba(124,92,255,.85), rgba(45,212,191,.55));
-      border:1px solid rgba(255,255,255,.14);
-      box-shadow: 0 12px 18px rgba(0,0,0,.18);
-      display:grid;
-      place-items:center;
-      font-weight:800;
-      letter-spacing:.3px;
-      color: rgba(255,255,255,.92);
-      flex:0 0 auto;
-    }
-    .featuredMeta{
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-    .featuredMeta strong{
-      font-size:13px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .featuredMeta span{
-      font-size:12px;
-      color: var(--muted);
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .featuredBottom{
-      padding:0 14px 14px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-    }
-    .featuredPill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.78);
-      font-size:12px;
-      user-select:none;
-    }
-
-    /* Cat list */
-    .catsHeader{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:12px;
-      flex-wrap:wrap;
-    }
-    .search{
-      flex: 1 1 240px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 12px;
-      border-radius:14px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-    }
-    .search input{
-      width:100%;
-      border:0;
-      outline:none;
-      background: transparent;
-      color: rgba(255,255,255,.92);
-      font-size:14px;
-    }
-    .search input::placeholder{ color: rgba(255,255,255,.40); }
-
-    .chips{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .chip{
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      color: rgba(255,255,255,.74);
-      font-size:12px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .chip.active{
-      background: rgba(124,92,255,.20);
-      border-color: rgba(124,92,255,.34);
-      color: rgba(255,255,255,.88);
-    }
-
-    .catGrid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:12px;
-    }
-    @media (max-width: 980px){
-      .catGrid{ grid-template-columns: 1fr; }
-    }
-    .catCard{
-      border-radius: var(--radius2);
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      box-shadow: var(--shadow2);
-    }
-
-    /* Real thumbnails */
-    .catMedia{
-      position:relative;
-      height:170px;
-      overflow:hidden;
-      background: rgba(255,255,255,.06);
-    }
-    .catMedia img.hero{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      filter: saturate(1.05) contrast(1.02);
+    #startModal.hidden {
+      opacity: 0;
+      pointer-events: none;
       transform: scale(1.02);
     }
-    .mediaLabel{
-      position:absolute;
-      left:12px;
-      top:10px;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      color: rgba(255,255,255,.90);
-      background: rgba(0,0,0,.28);
-      border:1px solid rgba(255,255,255,.16);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      user-select:none;
-    }
-    .thumbRow{
-      position:absolute;
-      left:12px;
-      right:12px;
-      bottom:12px;
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:10px;
-    }
-    .thumb{
-      height:56px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.16);
-      box-shadow: 0 12px 20px rgba(0,0,0,.20);
-      overflow:hidden;
-      background: rgba(255,255,255,.06);
-    }
-    .thumb img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      filter: saturate(1.02) contrast(1.02);
+
+    .start-main-btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
-    .catBody{ padding:14px; }
-    .catTitle{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .catTitle strong{ font-size:15px; }
-    .meta{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-    .meta span{
-      font-size:12px;
-      color: rgba(255,255,255,.74);
-      padding:6px 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-    }
-    .catNote{
-      margin-top:10px;
-      font-size:13px;
-      color: var(--muted);
+    .start-secondary-btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
-    /* Form */
-    form label{
-      display:block;
-      font-size:12px;
-      color: var(--muted);
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      margin:10px 0 6px;
-    }
-    input, textarea, select{
-      width:100%;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      color: rgba(255,255,255,.92);
-      border-radius:14px;
-      padding:12px 12px;
-      font-size:14px;
-      outline:none;
-    }
-    textarea{ min-height:120px; resize:vertical; }
-    input::placeholder, textarea::placeholder{ color: rgba(255,255,255,.38); }
-    .help{
-      margin-top:10px;
-      color: var(--muted);
-      font-size:13px;
-    }
-    .toast{
-      display:none;
-      margin-top:12px;
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid rgba(52,199,89,.28);
-      background: rgba(52,199,89,.12);
-      color: rgba(255,255,255,.90);
-      font-size:13px;
+    .start-join-link:active {
+      opacity: 0.7;
     }
 
-    /* External link labels */
-    .ext{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      font-size:12px;
-      color: var(--muted);
-      text-decoration:none;
-      padding:6px 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
-      user-select:none;
-      white-space:nowrap;
+    .start-secondary-btn{
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.10);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.45);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+      margin-bottom: 12px;
     }
-    .ext:hover{ border-color: rgba(255,255,255,.18); }
 
-    /* Shelter picker */
-    .pickerRow{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      margin:12px 0 14px;
+.start-secondary-btn:active{
+  transform: scale(0.97);
+  opacity: 0.9;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.55);
+}
+
+/* Light orange (similar “secondary” vibe to your light green New Game) */
+.start-secondary-btn.join{
+  background: #ffd9a6;
+  color: #111111;
+  border: 1px solid rgba(255,152,0,0.35);
+}
+
+
+    .start-rules-btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.6);
     }
-    .picker{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 12px;
-      border-radius:16px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      flex: 1 1 320px;
-      min-width: 240px;
+
+    .app-header {
+      background: var(--bg-card);
+      padding: 10px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .picker span{
-      font-size:12px;
-      color: var(--muted);
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      white-space:nowrap;
+
+    .app-title {
+      font-size: 20px;
+      font-weight: 700;
     }
-    .picker select{
-      border:0;
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: none;
       background: transparent;
-      padding:0;
-      margin:0;
-      min-height:auto;
-      color: rgba(255,255,255,.92);
-      font-size:14px;
-      width:100%;
-      outline:none;
-      cursor:pointer;
-    }
-    .picker select option{ color:#0b0c10; }
-
-    /* Modal */
-    .modalOverlay{
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,.55);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      z-index:60;
-      display:none;
-      padding:18px;
-    }
-    .modalOverlay.show{ display:grid; place-items:center; }
-    .modal{
-      width:min(820px, 100%);
-      border-radius: var(--radius2);
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(18,20,27,.92);
-      box-shadow: 0 24px 60px rgba(0,0,0,.55);
-      overflow:hidden;
-    }
-    .modalHead{
-      padding:14px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-    }
-    .modalHead strong{ font-size:13px; letter-spacing:.2px; }
-    .modalHead .small{ color: var(--muted); font-size:12px; }
-    .modalBody{ padding:14px 16px 16px; }
-    .modalBody textarea{
-      min-height:240px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size:13px;
-      line-height:1.4;
-    }
-    .modalFoot{
-      padding:14px 16px 16px;
-      border-top:1px solid rgba(255,255,255,.10);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .err{
-      display:none;
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid rgba(255,69,58,.28);
-      background: rgba(255,69,58,.12);
-      color: rgba(255,255,255,.92);
-      font-size:13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+      transition: background 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
     }
 
-    /* Bottom tab bar */
-    .tabbar{
-      position:fixed;
-      left:0; right:0; bottom:0;
-      z-index:40;
-      padding:10px 12px 14px;
-      backdrop-filter: blur(var(--blur));
-      -webkit-backdrop-filter: blur(var(--blur));
-      background: rgba(12,12,18,.62);
-      border-top:1px solid rgba(255,255,255,.10);
-    }
-    .tabs{
-      max-width:var(--max);
-      margin:0 auto;
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:10px;
-    }
-    .tab{
-      border-radius:16px;
-      padding:10px 10px;
-      text-align:center;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      color: rgba(255,255,255,.70);
-      font-size:12px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .tab.active{
-      background: rgba(255,255,255,.12);
-      color: rgba(255,255,255,.92);
-      border-color: rgba(255,255,255,.18);
-      box-shadow: 0 12px 24px rgba(0,0,0,.20);
+    .icon-btn:active {
+      transform: scale(0.95);
+      opacity: 0.85;
     }
 
-    /* Utility */
-    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .muted{ color: var(--muted); }
-    .small{ font-size:12px; color: var(--muted); }
-    .sep{ height:1px; background: rgba(255,255,255,.08); margin:12px 0; }
+    .icon-btn:hover {
+      background: rgba(0,0,0,0.04);
+    }
+
+    body[data-mode="dark"] .icon-btn:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .icon-btn-gear span {
+      font-size: 33px;
+      color: var(--sync-bg);
+    }
+
+    .icon-btn-analytics {
+      gap: 2px;
+      position: relative;
+      top: 3px;
+    }
+
+    .icon-btn-analytics .bar {
+      display: inline-block;
+      width: 4px;
+      border-radius: 999px;
+      background: var(--sync-bg);
+    }
+
+    .icon-btn-analytics .bar.left {
+      height: 10px;
+    }
+    .icon-btn-analytics .bar.middle {
+      height: 16px;
+    }
+    .icon-btn-analytics .bar.right {
+      height: 10px;
+    }
+
+    .pardle-pill {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .sync-pill {
+      background: var(--sync-bg);
+      color: var(--sync-text);
+    }
+
+    .app-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 12px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    /* online controls */
+    .online-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .online-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .online-row label {
+      min-width: 80px;
+      font-size: 14px;
+    }
+
+    .online-input {
+      flex: 1;
+      min-width: 0;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      background: var(--input-bg);
+      color: var(--input-text);
+      font-size: 16px;
+    }
+
+    .online-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .small-btn {
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #000000;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .small-btn.secondary {
+      background: var(--accent-soft);
+      color: #000000;
+    }
+
+    .online-status {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #555;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .online-status.error-text {
+      color: #d32f2f;
+    }
+
+    .online-status strong {
+      color: var(--text);
+    }
+
+    .gameid-pill {
+      align-self: flex-start;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      padding: 4px 10px;
+      background: var(--bg-card);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .gameid-pill .icon {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .gameid-pill:active {
+      transform: scale(0.97);
+      opacity: 0.85;
+    }
+
+    /* course selector */
+    .course-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .course-select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      font-size: 16px;
+      background: var(--input-bg);
+      color: var(--input-text);
+    }
+
+    /* scorecard */
+    .scorecard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .scorecard-header .section-title {
+      margin-bottom: 0;
+    }
+
+    .chat-btn {
+      border: none;
+      background: var(--accent);
+      color: #000000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.18);
+      cursor: pointer;
+      position: relative;
+      gap: 4px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .chat-btn:active {
+      transform: scale(0.96);
+      opacity: 0.85;
+    }
+
+    .chat-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #2ecc71;
+      display: none;
+    }
+
+    .scorecard-wrapper {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--bg-card);
+    }
+
+    .scorecard-scroll {
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .scorecard-table {
+      border-collapse: collapse;
+      min-width: 1000px;
+      width: 100%;
+      font-size: 13px;
+    }
+
+    .scorecard-table th,
+    .scorecard-table td {
+      border: 1px solid var(--border-soft);
+      text-align: center;
+      vertical-align: middle;
+      padding: 6px 4px;
+      white-space: nowrap;
+      transition: background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .scorecard-table th.course-label {
+      background: var(--table-header-bg);
+      color: var(--table-header-text);
+      text-align: left;
+      padding-left: 8px;
+      position: sticky;
+      left: 0;
+      z-index: 3;
+    }
+
+    .scorecard-table th.player-label {
+      background: var(--table-player-header-bg);
+      color: var(--table-player-header-text);
+      text-align: left;
+      padding-left: 8px;
+      position: sticky;
+      left: 0;
+      z-index: 3;
+    }
+
+    .scorecard-table th.hole-header {
+      background: var(--table-header-bg);
+      color: var(--table-header-text);
+      font-weight: 600;
+    }
+
+    .hole-header.active-hole,
+    .scorecard-table td.active-hole {
+      background: var(--active-hole-bg);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    }
+
+    .par-cell {
+      background: var(--par-bg);
+      font-weight: 600;
+    }
+
+    .score-input {
+      width: 34px;
+      height: 30px;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      background: var(--input-bg);
+      color: var(--input-text);
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .score-input:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .player-name {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: var(--table-player-header-text);
+      text-align: left;
+      padding: 0;
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    .player-name:disabled {
+      opacity: 0.7;
+    }
+
+    .player-row + .player-row th.player-label,
+    .player-row + .player-row td {
+      border-top-width: 2px;
+    }
+
+    .total-col {
+      background: #212121;
+      color: #ffffff;
+      font-weight: 700;
+      min-width: 52px;
+      font-size: 14px;
+    }
+
+    .player-row.saved-pulse td,
+    .player-row.saved-pulse th.player-label {
+      animation: savedPulse 0.35s ease-out;
+    }
+
+    @keyframes savedPulse {
+      0% { background-color: var(--active-hole-bg); }
+      100% { background-color: transparent; }
+    }
+
+    .swipe-hint {
+      margin-top: 6px;
+      font-size: 11px;
+      text-align: right;
+      opacity: 0.7;
+    }
+
+    .rules-card {
+      display: none;
+    }
+
+    #rulesCard .rules-text h2 {
+      margin-top: 6px;
+      margin-bottom: 10px;
+    }
+
+       #rulesCard .rules-text h3 {
+      margin-top: 14px;
+      margin-bottom: 6px;
+      color: var(--accent);
+    } 
+
+    #rulesCard .rules-text p {
+      margin: 6px 0;
+    }
+
+    #rulesCard .rules-text ul {
+      margin: 6px 0 6px 20px;
+      padding-left: 0;
+    }
+
+    #rulesCard .rules-text li {
+      margin: 3px 0;
+    }
+
+    .rules-card.visible {
+      display: block;
+    }
+
+    .rules-text {
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    /* generic bottom sheet styling (iOS-safe backdrop blur) */
+.chat-sheet {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  /* Keep it in the DOM for iOS, toggle via opacity/visibility */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 20;
+}
+    /* Obfuscate underlying app content when any sheet/modal is open (works even if iOS disables blur) */
+    body.sheet-open .app-header,
+    body.sheet-open .app-content {
+      -webkit-filter: blur(10px);
+      filter: blur(10px);
+      transform: scale(0.995);
+      opacity: 0.98;
+      pointer-events: none;
+      transition: filter 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+      will-change: filter, transform, opacity;
+    }
+
+
+.chat-sheet.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Separate backdrop layer fixes iOS Safari blur inconsistencies */
+.chat-sheet .sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.62);
+
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+
+  /* Encourage compositor layer on iOS */
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+/* If blur is unsupported, fall back to heavier dim */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .chat-sheet .sheet-backdrop {
+    background-color: rgba(0, 0, 0, 0.78);
+  }
+}
+
+.chat-sheet-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg-card);
+  border-radius: 16px 16px 0 0;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-soft);
+  max-height: 85vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+
+/* Sheet header: title left, close icon right */
+.sheet-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sheet-header-row button {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  background: rgba(0,0,0,0.04);
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease, opacity 0.12s ease, background 0.12s ease;
+}
+
+body[data-mode="dark"] .sheet-header-row button {
+  background: rgba(255,255,255,0.06);
+}
+
+.sheet-header-row button:active {
+  transform: scale(0.96);
+  opacity: 0.85;
+}
+
+/* chat specific */
+    .chat-thread {
+      max-height: 180px;
+      overflow-y: auto;
+      padding: 6px 8px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.03);
+      font-size: 12px;
+    }
+
+    body[data-mode="dark"] .chat-thread {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .chat-message {
+      margin-bottom: 4px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-message.me {
+      text-align: right;
+    }
+
+    .chat-message span.meta {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    .chat-message span.text {
+      font-size: 12px;
+    }
+
+    .chat-input {
+      width: 100%;
+      min-height: 60px;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      padding: 6px 8px;
+      font-size: 16px;
+      margin-bottom: 8px;
+      background: var(--input-bg);
+      color: var(--input-text);
+      resize: vertical;
+    }
+
+    .chat-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-targets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .chat-target-pill {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      padding: 4px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      background: var(--bg-card);
+      color: var(--text);
+    }
+
+    .chat-target-pill.selected {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+    }
+
+    /* ================================
+   SETTINGS SHEET (Wordle-style)
+   ================================ */
+
+.settings-section {
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.settings-section:last-of-type {
+  border-bottom: none;
+}
+
+/* Row layout: label left, toggle right */
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.settings-row-btn {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.settings-chevron {
+  margin-left: auto;
+  opacity: 0.6;
+  font-size: 18px;
+  line-height: 1;
+}
+
+
+/* Left-side label */
+.settings-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Optional helper or link button */
+.settings-link-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+/* ================================
+   TOGGLE (Wordle-style)
+   ================================ */
+
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+
+/* Hide native checkbox */
+.theme-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+/* Toggle track */
+.theme-toggle .slider {
+  width: 40px;
+  height: 20px;
+  border-radius: 999px;
+  background-color: #2a2a2a; /* dark gray, not black */
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Toggle thumb */
+.theme-toggle .slider::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  top: 2px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* ON state (Wordle green) */
+.theme-toggle input:checked + .slider {
+  background-color: #6aaa64;
+}
+
+.theme-toggle input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+    /* analytics sheet */
+    .analytics-intro {
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+
+    .analytics-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .analytics-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.03);
+    }
+
+    body[data-mode="dark"] .analytics-row {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .analytics-name {
+      font-weight: 600;
+    }
+
+    .analytics-score {
+      font-weight: 700;
+    }
+
+    /* New game confirmation modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+    }
+
+    .modal-backdrop.visible {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 14px 16px 12px;
+      max-width: 320px;
+      width: 90%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+      border: 1px solid var(--border-soft);
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .modal-body {
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .modal-actions .small-btn {
+      flex: 1;
+    }
+
+    .modal-actions .secondary {
+      background: var(--accent-soft);
+      color: #000000;
+    }
+
+    @media (min-width: 520px) {
+      .app-shell {
+        padding-inline: 16px;
+      }
+    }
+
+/* Start menu theme vars (SCOPED so they don't override app theme vars) */
+#startModal{
+  --bg-0: #050506;
+  --bg-1: #0d0d10;
+
+  --panel-top: #1b1b1e;
+  --panel-bot: #0f0f12;
+
+  --text: rgba(255,255,255,0.92);
+
+  --orange-0: #ffb000;
+  --orange-1: #ff8c00;
+
+  --orange-border: rgba(255, 159, 10, 0.26);
+  --orange-border-hover: rgba(255, 159, 10, 0.55);
+
+  --btn-dark-top: #2c2722;
+  --btn-dark-bot: #1f1b18;
+
+  --shadow-1: 0 28px 70px rgba(0,0,0,0.62);
+  --shadow-2: 0 10px 26px rgba(0,0,0,0.45);
+}
+
+/* Make sure the start modal uses its scoped text color */
+#startModal .start-modal,
+#startModal .start-inner{
+  color: var(--text);
+}
+
+/* overlay */
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(900px 600px at 50% 30%, rgba(255,159,10,0.06), transparent 60%),
+              linear-gradient(180deg, rgba(0,0,0,0.70), rgba(0,0,0,0.85));
+  z-index: 9999;
+}
+
+/* modal panel */
+.start-modal{
+  width: min(520px, calc(100vw - 48px));
+  border-radius: 28px;
+  background: linear-gradient(180deg, var(--panel-top), var(--panel-bot));
+  box-shadow: var(--shadow-1);
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+/* soft inner vignette */
+.start-modal::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 50% 10%, rgba(255,255,255,0.08), transparent 55%);
+  pointer-events: none;
+}
+
+.start-inner{
+  position: relative;
+  padding: 44px 42px 40px;
+}
+
+.start-title{
+  text-align: center;
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  font-size: clamp(40px, 6vw, 54px);
+  margin: 0 0 26px 0;
+  text-shadow: 0 6px 22px rgba(0,0,0,0.55);
+}
+
+/* stack */
+.menu-stack{
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+}
+
+/* buttons (base) */
+.menu-btn{
+  width: min(420px, 100%);
+  height: 64px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: 0.2px;
+
+  display: grid;
+  place-items: center;
+
+  transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+  box-shadow: var(--shadow-2);
+}
+
+.menu-btn:active{
+  transform: translateY(1px);
+}
+
+/* primary (New Game) */
+.menu-btn.primary{
+  color: rgba(255,255,255,0.95);
+  background: linear-gradient(180deg, var(--orange-0), var(--orange-1));
+  text-shadow: 0 2px 0 rgba(0,0,0,0.25);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.55);
+}
+
+.menu-btn.primary:hover{
+  filter: brightness(1.03);
+  transform: translateY(-1px);
+}
+
+/* secondary (Rejoin, Join, Rules) */
+.menu-btn.secondary{
+  color: rgba(255,255,255,0.72);
+  background: linear-gradient(180deg, var(--btn-dark-top), var(--btn-dark-bot));
+
+  /* subtle orange border without changing size */
+  box-shadow:
+    0 12px 28px rgba(0,0,0,0.52),
+    inset 0 0 0 1px var(--orange-border),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.menu-btn.secondary:hover{
+  transform: translateY(-1px);
+  box-shadow:
+    0 14px 34px rgba(0,0,0,0.58),
+    inset 0 0 0 1px var(--orange-border-hover),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+}
+
+/* rules is a touch smaller like the mock */
+.menu-btn.rules{
+  height: 58px;
+  font-size: 24px;
+}
+
+/* extra space and faint line between Join and Rules */
+.menu-divider{
+  width: min(420px, 100%);
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 10px 0 10px;
+}
+
+/* keyboard focus */
+.menu-btn:focus-visible{
+  outline: none;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,0.58),
+    inset 0 0 0 1px rgba(255,159,10,0.70),
+    0 0 0 5px rgba(255,159,10,0.22);
+}
+
+/* optional: hide modal when needed */
+.modal-overlay.hidden{
+  display: none;
+}
+
+.start-title{
+  margin: 0 0 6px; /* was 8px, tighter */
+}
+
+.start-tagline{
+  align-self: center; 
+  margin: -2px auto 20px;  /* auto centers the box, -2 nudges up */
+  max-width: 34ch;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.25;
+  opacity: 0.85;
+}
+
   </style>
 </head>
+<body data-mode="dark" data-accent="normal">
 
-<body>
-  <!-- Sticky top bar -->
-  <div class="top">
-    <div class="topInner">
-      <div class="brand">
-        <div class="appIcon" aria-hidden="true"></div>
-        <div class="brandText">
-          <strong>Rescue Companion (Demo)</strong>
-          <span id="brandSub">Mock cats, demo shelter picker, labeled external links</span>
-        </div>
-      </div>
+  <!-- Start screen overlay -->
+<div id="startModal" class="modal-overlay">
+  <div class="start-modal" role="dialog" aria-modal="true" aria-label="Pardle start menu">
+    <div class="start-inner">
+      <div class="start-title">Pardle</div>
+<p class="start-tagline">
+  Pardle is what happens when Wordle and golf have a beautiful, competitive baby.
+</p>
+      <div class="menu-stack">
+        <button id="newGameBtn" class="menu-btn primary">Create Game</button>
 
-      <div class="topActions">
-        <a class="pill" id="callPill" href="tel:7019795602" title="Call (label only)">
-          <span class="dot off" id="phoneDot"></span>
-          <span id="callLabel">Call (label): 701-979-5602</span>
-        </a>
+        <button id="rejoinGameBtn" class="menu-btn secondary">Rejoin Game</button>
+        <button id="startJoinBtn" type="button" class="menu-btn secondary">Join Game</button>
 
-        <div class="toggle" title="Shows this is a prototype using mock data">
-          <label for="demoSwitch">Demo Mode</label>
-          <div class="switch on" id="demoSwitch" role="switch" aria-checked="true" tabindex="0">
-            <div class="knob"></div>
-          </div>
-        </div>
+        <div class="menu-divider" aria-hidden="true"></div>
+
+        <button id="rulesBtn" class="menu-btn secondary rules">Game Rules</button>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="wrap">
-    <!-- HERO -->
-    <section class="hero">
-      <div class="panel">
-        <div class="panelInner">
-          <div class="eyebrow">
-            <span class="badge">Option B prototype</span>
-            <span class="muted">One app, many shelters, demo-only local import</span>
-            <span class="tag" id="activeShelterTag">Selected: Meowsers Cat Rescue</span>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="app-title">Pardle</div>
+      <div class="header-actions">
+        <button id="analyticsButton" class="icon-btn icon-btn-analytics" type="button" aria-label="View round stats">
+          <span class="bar left"></span>
+          <span class="bar middle"></span>
+          <span class="bar right"></span>
+        </button>
+        <button id="settingsButton" class="icon-btn icon-btn-gear" type="button" aria-label="Settings">
+          <span>⚙︎</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="app-content">
+      <!-- Online game controls -->
+      <section class="card">
+        <div class="online-grid">
+          <div class="online-row">
+            <label for="playerNameInput">Your name</label>
+            <input id="playerNameInput" class="online-input" placeholder="Name" />
           </div>
 
-          <h1>A clean, app-like home for adopt, donate, volunteer, and reporting cats in need.</h1>
-          <p class="lede">
-            This demo shows the "one look for all shelters" approach. You can switch shelters, the labeled external links update instantly,
-            and you can add a new shelter via JSON import for demo purposes.
-          </p>
-
-          <div class="pickerRow">
-            <div class="picker" aria-label="Shelter picker">
-              <span>Shelter</span>
-              <select id="shelterSelect" aria-label="Choose a shelter"></select>
-            </div>
-            <button class="btn small" type="button" id="openImport">Add your shelter (JSON)</button>
-            <button class="btn small ghost" type="button" id="clearCustom">Reset custom shelters</button>
+          <div class="online-row online-buttons">
+            <button id="createGameBtn" class="small-btn" type="button">Create Game</button>
+            <input id="joinGameIdInput" class="online-input" placeholder="Enter ID" />
+            <button id="joinGameBtn" class="small-btn secondary" type="button">Join Game</button>
           </div>
 
-          <div class="seg" role="tablist" aria-label="Primary focus">
-            <button class="active" data-focus="featured" type="button">Featured</button>
-            <button data-focus="adopt" type="button">Adopt</button>
-            <button data-focus="report" type="button">Report</button>
+          <div class="online-status" id="onlineStatusText">
+            <button class="gameid-pill" id="gameIdPill" type="button">
+              <span class="icon">⧉</span>
+              <span id="gameIdValue">none</span>
+            </button>
+            <span id="statusMessage">Not in a game. Create or join to start.</span>
           </div>
+        </div>
+      </section>
 
-          <div class="ctaRow">
-            <a class="btn primary" href="#featured" id="goFeatured">Featured shelters</a>
-            <a class="btn" href="#adopt" id="goAdopt">Browse adoptable cats (mock)</a>
-            <a class="btn ghost" id="linkAdoption" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Open Adoption page (external)</a>
-            <a class="btn ghost" id="linkDonate" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Open Donate page (external)</a>
+      <!-- Course selector -->
+      <section class="card">
+        <div class="section-title">Course</div>
+        <div class="course-row">
+          <select class="course-select" id="courseSelect" disabled>
+            <option value="st-andrews">St. Androos Links</option>
+            <option value="augusta">Azalea National</option>
+            <option value="bully-pulpit">Badlands Pulpit</option>
+            <option value="torrey-pines">Torrey Pints</option>
+            <option value="bethpage-black">Bethpage Back Tees</option>
+            <option value="sweetwater">Sweetwater Country Klub</option>
+            <option value="tpc-sawgrass">TPC Strawgrass</option>
+            <option value="whistling-straits">Whistling Straights</option>
+            <option value="pebble-beach">Pebble Reach</option>
+            <option value="congressional">Congress-ish National</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Scorecard -->
+      <section class="card">
+        <div class="scorecard-header">
+          <div class="section-title">Scorecard</div>
+          <button id="chatButton" class="chat-btn pardle-pill" type="button">
+            💬 Chat
+            <span id="chatBadge" class="chat-badge"></span>
+          </button>
+        </div>
+
+        <div class="scorecard-wrapper">
+          <div class="scorecard-scroll">
+            <table class="scorecard-table">
+              <thead>
+                <tr>
+                  <th class="course-label">Course</th>
+                  <th class="hole-header">1</th>
+                  <th class="hole-header">2</th>
+                  <th class="hole-header">3</th>
+                  <th class="hole-header">4</th>
+                  <th class="hole-header">5</th>
+                  <th class="hole-header">6</th>
+                  <th class="hole-header">7</th>
+                  <th class="hole-header">8</th>
+                  <th class="hole-header">9</th>
+                  <th class="hole-header">10</th>
+                  <th class="hole-header">11</th>
+                  <th class="hole-header">12</th>
+                  <th class="hole-header">13</th>
+                  <th class="hole-header">14</th>
+                  <th class="hole-header">15</th>
+                  <th class="hole-header">16</th>
+                  <th class="hole-header">17</th>
+                  <th class="hole-header">18</th>
+                  <th class="hole-header">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="parRow">
+                  <th class="course-label">Par</th>
+                  <td class="par-cell" data-hole="0"></td>
+                  <td class="par-cell" data-hole="1"></td>
+                  <td class="par-cell" data-hole="2"></td>
+                  <td class="par-cell" data-hole="3"></td>
+                  <td class="par-cell" data-hole="4"></td>
+                  <td class="par-cell" data-hole="5"></td>
+                  <td class="par-cell" data-hole="6"></td>
+                  <td class="par-cell" data-hole="7"></td>
+                  <td class="par-cell" data-hole="8"></td>
+                  <td class="par-cell" data-hole="9"></td>
+                  <td class="par-cell" data-hole="10"></td>
+                  <td class="par-cell" data-hole="11"></td>
+                  <td class="par-cell" data-hole="12"></td>
+                  <td class="par-cell" data-hole="13"></td>
+                  <td class="par-cell" data-hole="14"></td>
+                  <td class="par-cell" data-hole="15"></td>
+                  <td class="par-cell" data-hole="16"></td>
+                  <td class="par-cell" data-hole="17"></td>
+                  <td class="par-cell par-total">-</td>
+                </tr>
+
+                <!-- Player rows -->
+                <tr class="player-row" data-slot="0">
+                  <th class="player-label">
+                    <input class="player-name" placeholder="Player 1" disabled />
+                  </th>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td class="total-col">E</td>
+                </tr>
+                <tr class="player-row" data-slot="1">
+                  <th class="player-label">
+                    <input class="player-name" placeholder="Player 2" disabled />
+                  </th>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td class="total-col">E</td>
+                </tr>
+                <tr class="player-row" data-slot="2">
+                  <th class="player-label">
+                    <input class="player-name" placeholder="Player 3" disabled />
+                  </th>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td class="total-col">E</td>
+                </tr>
+                <tr class="player-row" data-slot="3">
+                  <th class="player-label">
+                    <input class="player-name" placeholder="+ Add Player" disabled />
+                  </th>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td><input class="score-input" type="number" min="1" disabled /></td>
+                  <td class="total-col">E</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
+        </div>
+        <p class="swipe-hint">Swipe sideways to see all holes ⟶</p>
+      </section>
 
-          <div class="sep"></div>
+      <!-- Rules card -->
+      <section class="card rules-card" id="rulesCard">
+        <div class="section-title">Follow The Rules Or Follow The Fools</div>
+        <div class="rules-text">
+          <h2>PARDLE RULES</h2>
+          <p>Pardle is what happens when Wordle and golf have a beautiful, competitive baby.</p>
 
-          <div class="row">
-            <a class="ext" id="linkWebsite" href="https://meowserscatrescue.org/" target="_blank" rel="noopener">Website (external)</a>
-            <a class="ext" id="linkVolunteer" href="https://meowserscatrescue.org/volunteer" target="_blank" rel="noopener">Volunteer (external)</a>
-            <a class="ext" id="linkShop" href="https://meowserscatrescue.org/shop" target="_blank" rel="noopener">Shop (external)</a>
-            <a class="ext" id="linkContact" href="https://meowserscatrescue.org/contact-us" target="_blank" rel="noopener">Contact page (external)</a>
-          </div>
+          <h3>The Basics</h3>
+          <ul>
+            <li>Each “hole” is one Wordle puzzle.</li>
+            <li>Your score for the hole equals the number of guesses it took you to solve that day’s Wordle.</li>
+            <li>Did not crack it? Mark it as a 7 or an “X” (just make sure your group agrees).</li>
+            <li>Par is the number of guesses you are aiming for.</li>
+          </ul>
 
-          <p class="help" id="pitchNote">
-            Pitch angle: shelters keep their site. This app adds a unified directory, a better mobile experience, and a report intake pipeline.
-            Version 1 can route reports to email or a shared sheet later.
-          </p>
+          <h3>Scoring</h3>
+          <ul>
+            <li>Your total score is the sum of guesses across all holes in the round.</li>
+            <li>Relative score equals total score vs. par. Lower is better.</li>
+            <li>
+              Score breakdown:
+              <ul>
+                <li>“E” equals even with par</li>
+                <li>“+2” equals two over par</li>
+                <li>“-1” equals one under par</li>
+              </ul>
+            </li>
+          </ul>
+
+          <p>Pardle is perfect for tracking daily scores with your crew, flexing your vocab game, and delivering top tier trash talk.</p>
+
+<div class="start-help">
+  <h3>Not sure which to tap?</h3>
+  <p><strong>New Game Button</strong><br>
+    Use this if you are the one setting up the match or coming back on the same device you used last time.<br>
+    • If you already have a Pardle game on this device, click Rejoin Game.<br>
+    • If you do not have a game yet, you will go to the main screen where you can tap <strong>Create Game</strong> and get a game code to share.
+  </p>
+  <p><strong>Join Game Link</strong><br>
+    Use this if someone else already created a game and sent you a game code.<br>
+    • Tap <strong>Join Game</strong>.<br>
+    • Enter the code they gave you.<br>
+    • You will join their existing match on this device.
+  </p>
+</div>
+</div>
+</section>
+</main>
+
+    <!-- Chat sheet -->
+    <div id="chatSheet" class="chat-sheet">
+      <div class="sheet-backdrop" aria-hidden="true"></div>
+      <div class="chat-sheet-inner">
+        <div class="sheet-header-row">
+          <span>Game chat</span>
+          <button id="chatCloseBtn" type="button">✕</button>
+        </div>
+        <div id="chatTargets" class="chat-targets"></div>
+        <div id="chatThread" class="chat-thread"></div>
+        <textarea id="chatText" class="chat-input" placeholder="Type your masterpiece…"></textarea>
+        <div class="chat-actions">
+          <button id="chatCancelBtn" class="small-btn secondary" type="button">Cancel</button>
+          <button id="chatSendBtn" class="small-btn" type="button">Send</button>
         </div>
       </div>
+    </div>
 
-      <div class="panel">
-        <div class="panelInner">
-          <p class="miniTitle">What this demo includes</p>
+    <!-- Settings sheet -->
+<div id="settingsSheet" class="chat-sheet" role="dialog" aria-modal="true" aria-label="Settings">
+  <div class="sheet-backdrop" aria-hidden="true"></div>
+  <div class="chat-sheet-inner">
+    <div class="sheet-header-row">
+      <span>Settings</span>
+      <button id="settingsCloseBtn" type="button">✕</button>
+    </div>
 
-          <div class="kv">
-            <div class="kvRow">
-              <div>
-                <strong>Shelter directory</strong>
-                <span>Picker switches shelters instantly, links and contact update across the UI.</span>
-              </div>
-              <div class="tag">Demo</div>
-            </div>
+    <div class="settings-section">
+      <div class="settings-label">Appearance</div>
 
-            <div class="kvRow">
-              <div>
-                <strong>Add your shelter (JSON)</strong>
-                <span>Paste a shelter config, it appears in the picker immediately. Stored locally on device.</span>
-              </div>
-              <div class="tag">Local</div>
-            </div>
-
-            <div class="kvRow">
-              <div>
-                <strong>Featured shelters row</strong>
-                <span>Horizontal row on the home screen, tap to select and jump to adopt.</span>
-              </div>
-              <div class="tag">Home</div>
-            </div>
-
-            <div class="kvRow">
-              <div>
-                <strong>Adoptable list</strong>
-                <span>Mock profiles with real cat photos (placeholder service), so it feels believable fast.</span>
-              </div>
-              <div class="tag">Mock</div>
-            </div>
-          </div>
-
-          <div class="sep"></div>
-
-          <div class="row">
-            <a class="btn small warn" id="linkAdoptionPdf" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623" target="_blank" rel="noopener">
-              Adoption Application PDF (external)
-            </a>
-            <a class="btn small good" id="linkVolunteerPdf" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Volunteer%20Application.pdf?ver=1761926270217" target="_blank" rel="noopener">
-              Volunteer Application PDF (external)
-            </a>
-          </div>
-
-          <p class="small" style="margin-top:10px;">
-            Note: All shelter data in this demo is mock, except the Meowsers links which are real and clearly labeled as external.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- FEATURED -->
-    <section class="section" id="featured">
-      <div class="sectionHead">
-        <div>
-          <h2>Featured shelters</h2>
-          <p>Demo-only showcase row, tap a shelter to select it, then jump into Adopt, Donate, Volunteer, or Report.</p>
-        </div>
-        <div class="row">
-          <span class="tag" id="featuredCount">0 featured</span>
-        </div>
+      <div class="settings-row">
+        <span class="settings-label">Dark Theme</span>
+        <label class="theme-toggle">
+          <input type="checkbox" id="themeSwitch">
+          <span class="slider"></span>
+        </label>
       </div>
 
-      <div class="sectionBody">
-        <div class="featuredWrap" id="featuredRow"></div>
-        <p class="help" style="margin-top:10px;">
-          In a real app, this row could be curated, promoted, or tied to a subscription tier.
-        </p>
+      <div class="settings-row">
+        <span class="settings-label">Invert accents</span>
+        <label class="theme-toggle">
+          <input type="checkbox" id="accentSwitch">
+          <span class="slider"></span>
+        </label>
       </div>
-    </section>
+    </div>
 
-    <!-- ADOPT -->
-    <section class="section" id="adopt">
-      <div class="sectionHead">
-        <div>
-          <h2>Adoptable Cats (mock data)</h2>
-          <p>App-like cards with real cat photos. In a real build, these could pull from a Google Sheet, Airtable, Petfinder, or a lightweight admin page.</p>
-        </div>
-        <div class="row">
-          <a class="ext" id="linkAdoptionInline" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">View Adoption page (external)</a>
-        </div>
-      </div>
-
-      <div class="sectionBody">
-        <div class="catsHeader">
-          <div class="search">
-            <span style="color:rgba(255,255,255,.52)">⌕</span>
-            <input id="searchInput" placeholder="Search names, traits (example: calm, playful, shy)..." />
-          </div>
-
-          <div class="chips" id="chipRow">
-            <div class="chip active" data-filter="all">All</div>
-            <div class="chip" data-filter="kitten">Kittens</div>
-            <div class="chip" data-filter="adult">Adults</div>
-            <div class="chip" data-filter="calm">Calm</div>
-            <div class="chip" data-filter="playful">Playful</div>
-            <div class="chip" data-filter="special">Special care</div>
-          </div>
-        </div>
-
-        <div class="catGrid" id="catGrid"></div>
-
-        <div class="sep"></div>
-
-        <div class="row">
-          <a class="btn ghost" id="linkAdoptionBottom" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Open adoption listings (external)</a>
-          <a class="btn ghost" id="linkAdoptionPdf2" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623" target="_blank" rel="noopener">Adoption Application PDF (external)</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- WAYS TO HELP -->
-    <section class="section" id="help">
-      <div class="sectionHead">
-        <div>
-          <h2>Ways to help</h2>
-          <p>Quick actions with a native feel, while the real information stays on each shelter's website.</p>
-        </div>
-      </div>
-
-      <div class="sectionBody">
-        <div class="grid">
-          <div class="card">
-            <div class="cardInner">
-              <div class="cardTop">
-                <div>
-                  <h3>Donate</h3>
-                  <div class="sub">Fast, repeatable giving, routes to the shelter's real donate options.</div>
-                </div>
-                <span class="tag">External</span>
-              </div>
-              <div class="row">
-                <a class="btn small primary" id="linkDonateCard" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate options (external)</a>
-                <a class="btn small ghost" id="linkShopCard" href="https://meowserscatrescue.org/shop" target="_blank" rel="noopener">Shop (external)</a>
-              </div>
-              <p class="help">Later, you could add Apple Pay for supported shelters. Version 1 can simply route to existing flows.</p>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="cardInner">
-              <div class="cardTop">
-                <div>
-                  <h3>Volunteer</h3>
-                  <div class="sub">Quick access to volunteer info and the shelter's application PDF.</div>
-                </div>
-                <span class="tag">External</span>
-              </div>
-              <div class="row">
-                <a class="btn small primary" id="linkVolunteerCard" href="https://meowserscatrescue.org/volunteer" target="_blank" rel="noopener">Volunteer page (external)</a>
-                <a class="btn small ghost" id="linkVolunteerPdf2" href="https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Volunteer%20Application.pdf?ver=1761926270217" target="_blank" rel="noopener">Volunteer PDF (external)</a>
-              </div>
-              <p class="help">Later, you could include a lightweight "available shifts" calendar, if a shelter wants it.</p>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="cardInner">
-              <div class="cardTop">
-                <div>
-                  <h3>Contact</h3>
-                  <div class="sub">Labelled actions, easy to reach the shelter.</div>
-                </div>
-                <span class="tag">Label</span>
-              </div>
-              <div class="row">
-                <a class="btn small" id="callBtn" href="tel:7019795602">Call (label)</a>
-                <a class="btn small" id="emailBtn" href="mailto:meowserscatrescue@gmail.com">Email (label)</a>
-              </div>
-              <div class="row" style="margin-top:8px;">
-                <a class="btn small ghost" id="linkContactCard" href="https://meowserscatrescue.org/contact-us" target="_blank" rel="noopener">Contact page (external)</a>
-              </div>
-              <p class="help">For a more app-like feel, you can add "copy to clipboard" buttons later.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- REPORT -->
-    <section class="section" id="report">
-      <div class="sectionHead">
-        <div>
-          <h2>Report a cat in need (demo form)</h2>
-          <p>This is the "app value-add." Today it just demos. Later it can route to email, Google Sheets, Airtable, or a simple backend.</p>
-        </div>
-        <div class="row">
-          <a class="ext" id="linkPolicies" href="https://meowserscatrescue.org/contact-us" target="_blank" rel="noopener">Policies and contact (external)</a>
-        </div>
-      </div>
-
-      <div class="sectionBody">
-        <div class="grid">
-          <div class="card">
-            <div class="cardInner">
-              <div class="cardTop">
-                <div>
-                  <h3>How it would work</h3>
-                  <div class="sub">Simple now, scalable later.</div>
-                </div>
-                <span class="tag">Pitch</span>
-              </div>
-              <p class="help" style="margin-top:0;">
-                Version 1:
-                <br>• Submit a report (name, contact, location, notes)
-                <br>• Optionally attach a photo
-                <br>• Route it to an intake email or a shared sheet
-              </p>
-              <p class="help">
-                Version 2:
-                <br>• Status updates (received, triaged, assigned)
-                <br>• Basic checklist and location pin
-                <br>• Internal notes for volunteers
-              </p>
-              <div class="sep"></div>
-              <p class="small">Reminder: This demo uses mock data and does not store anything.</p>
-            </div>
-          </div>
-
-          <div class="card" style="grid-column: span 2;">
-            <div class="cardInner">
-              <form id="reportForm">
-                <div class="grid" style="grid-template-columns:1fr 1fr;">
-                  <div>
-                    <label for="rname">Your name</label>
-                    <input id="rname" name="name" placeholder="Jane Doe" required>
-                  </div>
-                  <div>
-                    <label for="rcontact">Email or phone</label>
-                    <input id="rcontact" name="contact" placeholder="jane@email.com or (555) 555-5555" required>
-                  </div>
-                </div>
-
-                <label for="rlocation">Location</label>
-                <input id="rlocation" name="location" placeholder="Cross streets, address, park name" required>
-
-                <label for="rtype">Situation type</label>
-                <select id="rtype" name="type">
-                  <option>Stray spotted (unknown)</option>
-                  <option>Injured</option>
-                  <option>Friendly, may be lost</option>
-                  <option>Needs food/water</option>
-                  <option>Other</option>
-                </select>
-
-                <label for="rdetails">Details</label>
-                <textarea id="rdetails" name="details" placeholder="What you noticed, behavior, collar or no collar, how long you've seen them"></textarea>
-
-                <label for="rphoto">Photo (optional, demo)</label>
-                <input id="rphoto" type="file" accept="image/*">
-
-                <button class="btn primary" type="submit" style="width:100%; justify-content:center; margin-top:12px;">
-                  Submit report (demo)
-                </button>
-
-                <div class="toast" id="toast">✅ Demo submitted. Next step would be routing this to the shelter's intake email or a shared sheet.</div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FOOTER -->
-    <section class="section" id="footer">
-      <div class="sectionBody">
-        <div class="row" style="justify-content:space-between;">
-          <div class="small">© <span id="year"></span> Rescue Companion (Demo). Mock data only.</div>
-          <div class="row">
-            <a class="ext" id="footWebsite" href="https://meowserscatrescue.org/" target="_blank" rel="noopener">Shelter website (external)</a>
-            <a class="ext" id="footAdopt" href="https://meowserscatrescue.org/adoption" target="_blank" rel="noopener">Adoption (external)</a>
-            <a class="ext" id="footDonate" href="https://meowserscatrescue.org/donate" target="_blank" rel="noopener">Donate (external)</a>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- Bottom tab bar (demo navigation) -->
-  <div class="tabbar">
-    <div class="tabs">
-      <div class="tab active" data-jump="#featured">Featured</div>
-      <div class="tab" data-jump="#adopt">Adopt</div>
-      <div class="tab" data-jump="#help">Help</div>
-      <div class="tab" data-jump="#report">Report</div>
+    <div class="settings-section">
+      <div class="settings-label">Help</div>
+      <button id="rulesFromSettingsBtn" class="settings-row settings-row-btn" type="button">
+        <span class="settings-label">Game Rules</span>
+        <span class="settings-chevron">›</span>
+      </button>
     </div>
   </div>
+</div>
 
-  <!-- JSON Import Modal -->
-  <div class="modalOverlay" id="importOverlay" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-label="Add your shelter via JSON import">
-      <div class="modalHead">
-        <div>
-          <strong>Add your shelter (JSON import)</strong>
-          <div class="small">Demo-only, this stores locally on your device</div>
+<!-- Rules sheet -->
+<div id="rulesSheet" class="chat-sheet">
+      <div class="sheet-backdrop" aria-hidden="true"></div>
+  <div class="chat-sheet-inner">
+    <div class="sheet-header-row">
+      <span>Game Rules</span>
+      <button id="rulesCloseBtn" type="button">✕</button>
+    </div>
+
+    <div id="rulesSheetContent" class="rules-text"></div>
+  </div>
+</div>
+
+          
+    <!-- Analytics sheet -->
+    <div id="analyticsSheet" class="chat-sheet">
+      <div class="sheet-backdrop" aria-hidden="true"></div>
+      <div class="chat-sheet-inner">
+        <div class="sheet-header-row">
+          <span>Round stats</span>
+          <button id="analyticsCloseBtn" type="button">✕</button>
         </div>
-        <button class="btn small ghost" type="button" id="closeImport">Close</button>
-      </div>
-      <div class="modalBody">
-        <label for="jsonInput">Paste shelter config JSON</label>
-        <textarea id="jsonInput" spellcheck="false"></textarea>
-        <div class="err" id="jsonErr"></div>
-        <p class="help">
-          Required fields: id, name, cityState, phone, email, links (website, adoption, donate, volunteer, shop, contact).
-          PDFs are optional, but recommended.
+        <p class="analytics-intro">
+          Pardle handicap and deeper analytics are coming soon. For now, here is a quick summary of this round.
         </p>
+        <div id="analyticsList" class="analytics-list"></div>
       </div>
-      <div class="modalFoot">
-        <div class="row">
-          <button class="btn small" type="button" id="fillSample">Fill sample JSON</button>
-          <button class="btn small ghost" type="button" id="copySample">Copy sample</button>
+    </div>
+
+    <!-- Create game flow sheet -->
+<div id="createFlowSheet" class="chat-sheet" role="dialog" aria-modal="true" aria-label="Create Game">
+  <div class="sheet-backdrop" aria-hidden="true"></div>
+  <div class="chat-sheet-inner">
+    <div class="sheet-header-row">
+      <span>Create Game</span>
+      <button id="createFlowCloseBtn" type="button">✕</button>
+    </div>
+
+    <div class="section-title">Player 1 name</div>
+    <input id="createNameInput" class="online-input" placeholder="Your name" autocomplete="name" />
+
+    <div style="height:10px;"></div>
+
+    <div class="online-status" style="margin-bottom:10px;">
+      <span style="opacity:0.8; font-size:12px;">Next you’ll get a code to share with your group.</span>
+    </div>
+
+    <div class="chat-actions">
+      <button id="createFlowCancelBtn" class="small-btn secondary" type="button">Cancel</button>
+      <button id="createFlowStartBtn" class="small-btn" type="button">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- Join game flow sheet -->
+<div id="joinFlowSheet" class="chat-sheet" role="dialog" aria-modal="true" aria-label="Join Game">
+  <div class="sheet-backdrop" aria-hidden="true"></div>
+  <div class="chat-sheet-inner">
+    <div class="sheet-header-row">
+      <span>Join Game</span>
+      <button id="joinFlowCloseBtn" type="button">✕</button>
+    </div>
+
+    <div class="section-title">Your name</div>
+    <input id="joinNameInput" class="online-input" placeholder="Your name" autocomplete="name" />
+
+    <div style="height:10px;"></div>
+
+    <div class="section-title">Game code</div>
+    <input id="joinCodeInput" class="online-input" placeholder="Paste the code" autocapitalize="none" />
+
+    <div style="height:12px;"></div>
+
+    <div class="chat-actions">
+      <button id="joinFlowCancelBtn" class="small-btn secondary" type="button">Cancel</button>
+      <button id="joinFlowGoBtn" class="small-btn" type="button">Join</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invite players sheet -->
+<div id="inviteSheet" class="chat-sheet" role="dialog" aria-modal="true" aria-label="Invite Players">
+  <div class="sheet-backdrop" aria-hidden="true"></div>
+  <div class="chat-sheet-inner">
+    <div class="sheet-header-row">
+      <span>Invite your crew</span>
+      <button id="inviteCloseBtn" type="button">✕</button>
+    </div>
+
+    <div class="online-status" style="margin-bottom:10px;">
+      <strong style="font-size:13px;">Share this code</strong>
+      <span style="opacity:0.85;">Your friends tap Join Game and enter it.</span>
+    </div>
+
+    <button class="gameid-pill" id="inviteCodePill" type="button" style="font-size:14px; padding:10px 12px;">
+      <span class="icon">⧉</span>
+      <span id="inviteCodeValue">none</span>
+    </button>
+
+    <div style="height:12px;"></div>
+
+    <div class="online-status" style="margin-bottom:10px;">
+      <span style="opacity:0.8; font-size:12px;">Pro move, use Share to open Messages or Mail with the code prefilled.</span>
+    </div>
+
+    <div class="chat-actions">
+      <button id="inviteCopyBtn" class="small-btn secondary" type="button">Copy</button>
+      <button id="inviteShareBtn" class="small-btn" type="button">Share</button>
+    </div>
+
+    <div style="height:10px;"></div>
+
+    <button id="inviteDoneBtn" class="small-btn secondary" type="button">Done</button>
+  </div>
+</div>
+
+    <!-- New Game confirmation modal -->
+    <div id="newGameConfirm" class="modal-backdrop">
+      <div class="modal-card">
+        <div class="modal-title">Start a new game?</div>
+        <div class="modal-body">
+          <p>This will clear all player names and scores on this device.</p>
+          <p>If you are mid round, tap Cancel. If you are ready to wipe the slate and that triple bogey, tap Start New Game.</p>
         </div>
-        <div class="row">
-          <button class="btn small primary" type="button" id="importJson">Import shelter</button>
+        <div class="modal-actions">
+          <button id="newGameCancelBtn" class="small-btn secondary" type="button">Cancel</button>
+          <button id="newGameConfirmBtn" class="small-btn" type="button">Start New Game</button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Year
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // Demo Mode toggle (purely visual)
-    const demoSwitch = document.getElementById("demoSwitch");
-    const phoneDot = document.getElementById("phoneDot");
-    let demoMode = true;
-
-    function setDemoMode(isOn){
-      demoSwitch.classList.toggle("on", isOn);
-      demoSwitch.setAttribute("aria-checked", String(isOn));
-      phoneDot.classList.toggle("off", true);
-      document.title = isOn
-        ? "Rescue Companion (Demo) | Adopt, Volunteer, Donate"
-        : "Rescue Companion | Adopt, Volunteer, Donate";
-    }
-    setDemoMode(demoMode);
-
-    function toggleDemo(){
-      demoMode = !demoMode;
-      setDemoMode(demoMode);
-    }
-    demoSwitch.addEventListener("click", toggleDemo);
-    demoSwitch.addEventListener("keydown", (e) => {
-      if(e.key === "Enter" || e.key === " "){
-        e.preventDefault();
-        toggleDemo();
-      }
-    });
-
-    // Helpers
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-    function initials(name){
-      const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
-      const a = (parts[0] || "R")[0];
-      const b = (parts[1] || parts[0] || "C")[0];
-      return (a + b).toUpperCase();
-    }
-    function normalizePhone(phone){
-      const digits = String(phone || "").replace(/\D/g,"");
-      if(!digits) return "";
-      return digits;
-    }
-    function safeUrl(u){
-      const s = String(u || "").trim();
-      return s || "#";
-    }
-
-    // Shelter directory (defaults + local custom imports)
-    const STORAGE_KEY = "rc_custom_shelters_v1";
-    const ACTIVE_KEY = "rc_active_shelter_v1";
-
-    const DEFAULT_SHELTERS = [
-      {
-        id: "meowsers",
-        featured: true,
-        name: "Meowsers Cat Rescue",
-        cityState: "Bowman, ND",
-        phone: "701-979-5602",
-        email: "meowserscatrescue@gmail.com",
-        links: {
-          website: "https://meowserscatrescue.org/",
-          adoption: "https://meowserscatrescue.org/adoption",
-          donate: "https://meowserscatrescue.org/donate",
-          volunteer: "https://meowserscatrescue.org/volunteer",
-          shop: "https://meowserscatrescue.org/shop",
-          contact: "https://meowserscatrescue.org/contact-us"
-        },
-        pdfs: {
-          adoptionApp: "https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Adoption%20Application.pdf?ver=1761926270623",
-          volunteerApp: "https://img1.wsimg.com/blobby/go/9dd7ccac-599b-4487-8e06-01b1cbf3db2d/downloads/Volunteer%20Application.pdf?ver=1761926270217"
-        }
-      },
-      {
-        id: "pawsandwhiskers",
-        featured: true,
-        name: "Paws & Whiskers Rescue",
-        cityState: "Fort Collins, CO",
-        phone: "970-555-0142",
-        email: "hello@pawsandwhiskers.example",
-        links: {
-          website: "https://example.com/",
-          adoption: "https://example.com/",
-          donate: "https://example.com/",
-          volunteer: "https://example.com/",
-          shop: "https://example.com/",
-          contact: "https://example.com/"
-        },
-        pdfs: {
-          adoptionApp: "https://example.com/",
-          volunteerApp: "https://example.com/"
-        }
-      },
-      {
-        id: "midnightmitten",
-        featured: true,
-        name: "Midnight Mitten Society",
-        cityState: "Madison, WI",
-        phone: "608-555-0188",
-        email: "team@midnightmitten.example",
-        links: {
-          website: "https://example.com/",
-          adoption: "https://example.com/",
-          donate: "https://example.com/",
-          volunteer: "https://example.com/",
-          shop: "https://example.com/",
-          contact: "https://example.com/"
-        },
-        pdfs: {
-          adoptionApp: "https://example.com/",
-          volunteerApp: "https://example.com/"
-        }
-      },
-      {
-        id: "coastalcats",
-        featured: false,
-        name: "Coastal Cats Collective",
-        cityState: "San Diego, CA",
-        phone: "619-555-0120",
-        email: "info@coastalcats.example",
-        links: {
-          website: "https://example.com/",
-          adoption: "https://example.com/",
-          donate: "https://example.com/",
-          volunteer: "https://example.com/",
-          shop: "https://example.com/",
-          contact: "https://example.com/"
-        },
-        pdfs: {
-          adoptionApp: "https://example.com/",
-          volunteerApp: "https://example.com/"
-        }
-      }
-    ];
-
-    function loadCustomShelters(){
-      try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if(!raw) return [];
-        const arr = JSON.parse(raw);
-        if(!Array.isArray(arr)) return [];
-        return arr;
-      }catch(_){
-        return [];
-      }
-    }
-
-    function saveCustomShelters(arr){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
-    }
-
-    function getShelters(){
-      const custom = loadCustomShelters();
-      const merged = [...DEFAULT_SHELTERS];
-
-      // prevent duplicate IDs
-      const used = new Set(merged.map(s => s.id));
-      for(const c of custom){
-        if(c && typeof c === "object" && c.id && !used.has(c.id)){
-          merged.push(c);
-          used.add(c.id);
-        }
-      }
-      return merged;
-    }
-
-    let shelters = getShelters();
-
-    // Active shelter
-    function getActiveShelterId(){
-      return localStorage.getItem(ACTIVE_KEY) || "meowsers";
-    }
-    function setActiveShelterId(id){
-      localStorage.setItem(ACTIVE_KEY, id);
-    }
-
-    let activeShelterId = getActiveShelterId();
-
-    function findShelter(id){
-      return shelters.find(s => s.id === id) || shelters[0];
-    }
-
-    // Wire DOM link targets
-    const activeShelterTag = document.getElementById("activeShelterTag");
-    const brandSub = document.getElementById("brandSub");
-    const callPill = document.getElementById("callPill");
-    const callLabel = document.getElementById("callLabel");
-    const callBtn = document.getElementById("callBtn");
-    const emailBtn = document.getElementById("emailBtn");
-
-    const linkWebsite = document.getElementById("linkWebsite");
-    const linkAdoption = document.getElementById("linkAdoption");
-    const linkDonate = document.getElementById("linkDonate");
-    const linkVolunteer = document.getElementById("linkVolunteer");
-    const linkShop = document.getElementById("linkShop");
-    const linkContact = document.getElementById("linkContact");
-
-    const linkAdoptionInline = document.getElementById("linkAdoptionInline");
-    const linkAdoptionBottom = document.getElementById("linkAdoptionBottom");
-    const linkDonateCard = document.getElementById("linkDonateCard");
-    const linkShopCard = document.getElementById("linkShopCard");
-    const linkVolunteerCard = document.getElementById("linkVolunteerCard");
-    const linkContactCard = document.getElementById("linkContactCard");
-    const linkPolicies = document.getElementById("linkPolicies");
-
-    const linkAdoptionPdf = document.getElementById("linkAdoptionPdf");
-    const linkVolunteerPdf = document.getElementById("linkVolunteerPdf");
-    const linkAdoptionPdf2 = document.getElementById("linkAdoptionPdf2");
-    const linkVolunteerPdf2 = document.getElementById("linkVolunteerPdf2");
-
-    const footWebsite = document.getElementById("footWebsite");
-    const footAdopt = document.getElementById("footAdopt");
-    const footDonate = document.getElementById("footDonate");
-
-    const pitchNote = document.getElementById("pitchNote");
-
-    // Populate shelter select
-    const shelterSelect = document.getElementById("shelterSelect");
-
-    function populateShelterSelect(){
-      shelters = getShelters();
-      shelterSelect.innerHTML = shelters.map(s => {
-        const label = `${s.name} (${s.cityState})`;
-        const sel = s.id === activeShelterId ? "selected" : "";
-        return `<option value="${escapeHtml(s.id)}" ${sel}>${escapeHtml(label)}</option>`;
-      }).join("");
-    }
-
-    function applyShelterToUI(s){
-      activeShelterTag.textContent = `Selected: ${s.name}`;
-      brandSub.textContent = `${s.name}, ${s.cityState}, demo shelter directory with labeled external links`;
-
-      const tel = normalizePhone(s.phone);
-      callPill.href = tel ? `tel:${tel}` : "#";
-      callLabel.textContent = `Call (label): ${s.phone || "N/A"}`;
-      callBtn.href = tel ? `tel:${tel}` : "#";
-      callBtn.textContent = `Call (label): ${s.phone || "N/A"}`;
-
-      emailBtn.href = s.email ? `mailto:${s.email}` : "#";
-      emailBtn.textContent = `Email (label): ${s.email || "N/A"}`;
-
-      linkWebsite.href = safeUrl(s.links?.website);
-      linkAdoption.href = safeUrl(s.links?.adoption);
-      linkDonate.href = safeUrl(s.links?.donate);
-      linkVolunteer.href = safeUrl(s.links?.volunteer);
-      linkShop.href = safeUrl(s.links?.shop);
-      linkContact.href = safeUrl(s.links?.contact);
-
-      linkAdoptionInline.href = safeUrl(s.links?.adoption);
-      linkAdoptionBottom.href = safeUrl(s.links?.adoption);
-      linkDonateCard.href = safeUrl(s.links?.donate);
-      linkShopCard.href = safeUrl(s.links?.shop);
-      linkVolunteerCard.href = safeUrl(s.links?.volunteer);
-      linkContactCard.href = safeUrl(s.links?.contact);
-      linkPolicies.href = safeUrl(s.links?.contact);
-
-      // PDF links (optional)
-      const adoptPdf = safeUrl(s.pdfs?.adoptionApp);
-      const volPdf = safeUrl(s.pdfs?.volunteerApp);
-
-      linkAdoptionPdf.href = adoptPdf;
-      linkAdoptionPdf2.href = adoptPdf;
-
-      linkVolunteerPdf.href = volPdf;
-      linkVolunteerPdf2.href = volPdf;
-
-      footWebsite.href = safeUrl(s.links?.website);
-      footAdopt.href = safeUrl(s.links?.adoption);
-      footDonate.href = safeUrl(s.links?.donate);
-
-      // Slightly personalize the pitch note
-      pitchNote.textContent = `Pitch angle: ${s.name} keeps their site. This app adds a unified directory, a better mobile experience, and a report intake pipeline. Version 1 can route reports to an intake email or a shared sheet later.`;
-    }
-
-    function setActiveShelter(id, scrollToFeatured=false){
-      activeShelterId = id;
-      setActiveShelterId(id);
-      populateShelterSelect();
-      const s = findShelter(id);
-      applyShelterToUI(s);
-      renderFeatured();
-      renderCats(); // refresh adoption links inside cards
-      if(scrollToFeatured){
-        document.querySelector("#featured").scrollIntoView({behavior:"smooth", block:"start"});
-      }
-    }
-
-    shelterSelect.addEventListener("change", () => {
-      setActiveShelter(shelterSelect.value);
-    });
-
-    // Featured shelters
-    const featuredRow = document.getElementById("featuredRow");
-    const featuredCount = document.getElementById("featuredCount");
-
-    function renderFeatured(){
-      const featured = shelters.filter(s => !!s.featured);
-      featuredCount.textContent = `${featured.length} featured`;
-
-      featuredRow.innerHTML = featured.map(s => `
-        <div class="featuredCard">
-          <div class="featuredTop">
-            <div class="row" style="flex-wrap:nowrap; gap:10px; min-width:0;">
-              <div class="logoBubble" aria-hidden="true">${escapeHtml(initials(s.name))}</div>
-              <div class="featuredMeta">
-                <strong title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</strong>
-                <span title="${escapeHtml(s.cityState)}">${escapeHtml(s.cityState)}</span>
-              </div>
-            </div>
-            <span class="tag">Featured</span>
-          </div>
-          <div class="featuredBottom">
-            <span class="featuredPill">Adopt, Donate, Volunteer</span>
-            <button class="btn small primary" type="button" data-pick="${escapeHtml(s.id)}">Select</button>
-          </div>
-        </div>
-      `).join("");
-
-      Array.from(featuredRow.querySelectorAll("button[data-pick]")).forEach(btn => {
-        btn.addEventListener("click", () => {
-          const id = btn.getAttribute("data-pick");
-          setActiveShelter(id);
-          document.querySelector("#adopt").scrollIntoView({behavior:"smooth", block:"start"});
-        });
-      });
-    }
-
-    // Segmented control scroll
-    const segBtns = Array.from(document.querySelectorAll(".seg button"));
-    segBtns.forEach(btn => {
-      btn.addEventListener("click", () => {
-        segBtns.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const focus = btn.dataset.focus;
-        const map = { featured:"#featured", adopt:"#adopt", report:"#report" };
-        document.querySelector(map[focus]).scrollIntoView({behavior:"smooth", block:"start"});
-      });
-    });
-
-    // Bottom tabs
-    const tabs = Array.from(document.querySelectorAll(".tab"));
-    tabs.forEach(t => {
-      t.addEventListener("click", () => {
-        tabs.forEach(x => x.classList.remove("active"));
-        t.classList.add("active");
-        const jump = t.dataset.jump;
-        document.querySelector(jump).scrollIntoView({behavior:"smooth", block:"start"});
-      });
-    });
-
-    // Mock cat data, with real cat photos from a public placeholder service (random cats)
-    // If you want consistent photos (not changing), replace these URLs later with your own hosted images.
-    const cats = [
-      {
-        name: "Juniper",
-        age: "Kitten",
-        traits: ["playful","kitten"],
-        tags: ["Spunky", "Great with kids"],
-        note: "Loves wand toys, fearless explorer, purrs the moment you look at her.",
-        hero: "https://cataas.com/cat?width=900&height=520&random=11",
-        thumbs: [
-          "https://cataas.com/cat?width=380&height=220&random=111",
-          "https://cataas.com/cat?width=380&height=220&random=112",
-          "https://cataas.com/cat?width=380&height=220&random=113"
-        ]
-      },
-      {
-        name: "Mochi",
-        age: "Adult",
-        traits: ["calm","adult"],
-        tags: ["Cuddle bug", "Lap cat"],
-        note: "Quiet, gentle, and happiest in a sunny window. Low drama, high affection.",
-        hero: "https://cataas.com/cat?width=900&height=520&random=21",
-        thumbs: [
-          "https://cataas.com/cat?width=380&height=220&random=211",
-          "https://cataas.com/cat?width=380&height=220&random=212",
-          "https://cataas.com/cat?width=380&height=220&random=213"
-        ]
-      },
-      {
-        name: "Atlas",
-        age: "Adult",
-        traits: ["adult","special"],
-        tags: ["Special care", "Chill vibe"],
-        note: "Needs a steady routine. Once he trusts you, he becomes a total sweetheart.",
-        hero: "https://cataas.com/cat?width=900&height=520&random=31",
-        thumbs: [
-          "https://cataas.com/cat?width=380&height=220&random=311",
-          "https://cataas.com/cat?width=380&height=220&random=312",
-          "https://cataas.com/cat?width=380&height=220&random=313"
-        ]
-      },
-      {
-        name: "Peaches",
-        age: "Kitten",
-        traits: ["kitten","playful"],
-        tags: ["Social", "Curious"],
-        note: "Bold little gremlin, always first to greet you, always last to nap.",
-        hero: "https://cataas.com/cat?width=900&height=520&random=41",
-        thumbs: [
-          "https://cataas.com/cat?width=380&height=220&random=411",
-          "https://cataas.com/cat?width=380&height=220&random=412",
-          "https://cataas.com/cat?width=380&height=220&random=413"
-        ]
-      },
-      {
-        name: "Sable",
-        age: "Adult",
-        traits: ["adult","calm"],
-        tags: ["Gentle", "Quiet home"],
-        note: "Best in a calm environment. She warms up slowly, then bonds hard.",
-        hero: "https://cataas.com/cat?width=900&height=520&random=51",
-        thumbs: [
-          "https://cataas.com/cat?width=380&height=220&random=511",
-          "https://cataas.com/cat?width=380&height=220&random=512",
-          "https://cataas.com/cat?width=380&height=220&random=513"
-        ]
-      },
-      {
-        name: "Waffles",
-        age: "Kitten",
-        traits: ["kitten","playful"],
-        tags: ["Goofy", "Food motivated"],
-        note: "Will absolutely steal your heart, then steal your snacks if you blink.",
-        hero: "https://cataas.com/cat?width=900&height=520&random=61",
-        thumbs: [
-          "https://cataas.com/cat?width=380&height=220&random=611",
-          "https://cataas.com/cat?width=380&height=220&random=612",
-          "https://cataas.com/cat?width=380&height=220&random=613"
-        ]
-      }
-    ];
-
-    const catGrid = document.getElementById("catGrid");
-    const searchInput = document.getElementById("searchInput");
-    const chipRow = document.getElementById("chipRow");
-    let activeFilter = "all";
-
-    function renderCats(){
-      const q = (searchInput.value || "").trim().toLowerCase();
-      const filtered = cats.filter(c => {
-        const inSearch =
-          !q ||
-          c.name.toLowerCase().includes(q) ||
-          c.note.toLowerCase().includes(q) ||
-          c.tags.join(" ").toLowerCase().includes(q) ||
-          c.traits.join(" ").toLowerCase().includes(q);
-
-        const inFilter =
-          activeFilter === "all" ? true : c.traits.includes(activeFilter);
-
-        return inSearch && inFilter;
-      });
-
-      const shelter = findShelter(activeShelterId);
-      const adoptionUrl = safeUrl(shelter.links?.adoption);
-      const adoptionPdf = safeUrl(shelter.pdfs?.adoptionApp);
-
-      catGrid.innerHTML = filtered.map(c => `
-        <div class="catCard">
-          <div class="catMedia">
-            <img class="hero" src="${escapeHtml(c.hero)}" alt="Photo of ${escapeHtml(c.name)}" loading="lazy" />
-            <div class="mediaLabel">Photos: demo placeholder</div>
-            <div class="thumbRow">
-              <div class="thumb"><img src="${escapeHtml(c.thumbs[0])}" alt="Thumbnail 1 of ${escapeHtml(c.name)}" loading="lazy"></div>
-              <div class="thumb"><img src="${escapeHtml(c.thumbs[1])}" alt="Thumbnail 2 of ${escapeHtml(c.name)}" loading="lazy"></div>
-              <div class="thumb"><img src="${escapeHtml(c.thumbs[2])}" alt="Thumbnail 3 of ${escapeHtml(c.name)}" loading="lazy"></div>
-            </div>
-          </div>
-
-          <div class="catBody">
-            <div class="catTitle">
-              <div>
-                <strong>${escapeHtml(c.name)}</strong>
-                <div class="sub">${escapeHtml(c.age)} • Mock profile</div>
-              </div>
-              <a class="ext" href="${escapeHtml(adoptionUrl)}" target="_blank" rel="noopener" title="External link">
-                Adoption page (external)
-              </a>
-            </div>
-
-            <div class="meta">
-              ${c.tags.map(t => `<span>${escapeHtml(t)}</span>`).join("")}
-            </div>
-
-            <div class="catNote">${escapeHtml(c.note)}</div>
-
-            <div class="row" style="margin-top:12px;">
-              <a class="btn small primary" href="${escapeHtml(adoptionPdf)}" target="_blank" rel="noopener">
-                Apply (PDF external)
-              </a>
-              <button class="btn small" type="button" data-save="${escapeHtml(c.name)}">
-                Save ♥ (demo)
-              </button>
-            </div>
-          </div>
-        </div>
-      `).join("");
-
-      if(filtered.length === 0){
-        catGrid.innerHTML = `
-          <div class="card" style="grid-column:1/-1;">
-            <div class="cardInner">
-              <h3>No matches</h3>
-              <p class="help">Try a different search or filter chip.</p>
-            </div>
-          </div>
-        `;
-      }
-
-      // Wire save buttons
-      Array.from(catGrid.querySelectorAll("button[data-save]")).forEach(btn => {
-        btn.addEventListener("click", () => {
-          const name = btn.getAttribute("data-save");
-          alert("Demo only: Saved " + name + " to favorites (pretend).");
-        });
-      });
-    }
-
-    searchInput.addEventListener("input", renderCats);
-
-    chipRow.addEventListener("click", (e) => {
-      const chip = e.target.closest(".chip");
-      if(!chip) return;
-      Array.from(chipRow.querySelectorAll(".chip")).forEach(c => c.classList.remove("active"));
-      chip.classList.add("active");
-      activeFilter = chip.dataset.filter;
-      renderCats();
-    });
-
-    // Report form demo submit
-    const form = document.getElementById("reportForm");
-    const toast = document.getElementById("toast");
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      toast.style.display = "block";
-      form.reset();
-      setTimeout(() => toast.style.display = "none", 5200);
-    });
-
-    // JSON Import
-    const importOverlay = document.getElementById("importOverlay");
-    const openImportBtn = document.getElementById("openImport");
-    const closeImportBtn = document.getElementById("closeImport");
-    const jsonInput = document.getElementById("jsonInput");
-    const jsonErr = document.getElementById("jsonErr");
-    const importJsonBtn = document.getElementById("importJson");
-    const fillSampleBtn = document.getElementById("fillSample");
-    const copySampleBtn = document.getElementById("copySample");
-    const clearCustomBtn = document.getElementById("clearCustom");
-
-    const SAMPLE_SHELTER = {
-      id: "sunnytails",
-      featured: true,
-      name: "Sunny Tails Rescue",
-      cityState: "Austin, TX",
-      phone: "512-555-0177",
-      email: "hello@sunnytails.example",
-      links: {
-        website: "https://example.com/",
-        adoption: "https://example.com/",
-        donate: "https://example.com/",
-        volunteer: "https://example.com/",
-        shop: "https://example.com/",
-        contact: "https://example.com/"
-      },
-      pdfs: {
-        adoptionApp: "https://example.com/",
-        volunteerApp: "https://example.com/"
-      }
+    // ==============================
+    // Firebase setup
+    // ==============================
+    const firebaseConfig = {
+      apiKey: "AIzaSyDxmmTSpvM1xvVRb8qiOQfbbQWHSJEgIrk",
+      authDomain: "pardle-online.firebaseapp.com",
+      projectId: "pardle-online",
+      storageBucket: "pardle-online.firebasestorage.app",
+      messagingSenderId: "552026596516",
+      appId: "1:552026596516:web:779d08f94ef455eda7f231",
+      measurementId: "G-SJLZZ84L8F"
     };
 
-    function showImport(){
-      jsonErr.style.display = "none";
-      jsonErr.textContent = "";
-      importOverlay.classList.add("show");
-      importOverlay.setAttribute("aria-hidden", "false");
-      if(!jsonInput.value.trim()){
-        jsonInput.value = JSON.stringify(SAMPLE_SHELTER, null, 2);
-      }
-      setTimeout(() => jsonInput.focus(), 50);
-    }
-    function hideImport(){
-      importOverlay.classList.remove("show");
-      importOverlay.setAttribute("aria-hidden", "true");
-    }
+   let db = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
 
-    openImportBtn.addEventListener("click", showImport);
-    closeImportBtn.addEventListener("click", hideImport);
-    importOverlay.addEventListener("click", (e) => {
-      if(e.target === importOverlay) hideImport();
-    });
-    document.addEventListener("keydown", (e) => {
-      if(e.key === "Escape" && importOverlay.classList.contains("show")) hideImport();
+  firebase.auth().signInAnonymously()
+    .then(() => {
+      console.log("Anonymous auth OK");
+    })
+    .catch((error) => {
+      console.error("Anonymous auth failed:", error);
     });
 
-    fillSampleBtn.addEventListener("click", () => {
-      jsonInput.value = JSON.stringify(SAMPLE_SHELTER, null, 2);
-      jsonErr.style.display = "none";
-      jsonErr.textContent = "";
-    });
+} catch (e) {
+  console.error("Firebase init error:", e);
+}
 
-    copySampleBtn.addEventListener("click", async () => {
-      try{
-        await navigator.clipboard.writeText(JSON.stringify(SAMPLE_SHELTER, null, 2));
-        alert("Copied sample JSON.");
-      }catch(_){
-        alert("Could not copy automatically. You can manually select and copy.");
-      }
-    });
+    // ==============================
+    // Constants and state
+    // ==============================
+    const STORAGE_PLAYER_ID_KEY = "pardle_online_player_id";
+    const STORAGE_LAST_GAME_ID_KEY = "pardle_online_last_game_id";
+    const STORAGE_LAST_SLOT_KEY = "pardle_online_last_player_slot";
+    const STORAGE_MODE_KEY = "pardle_mode";
+    const STORAGE_ACCENT_KEY = "pardle_accent";
 
-    function validateShelter(obj){
-      const requiredTop = ["id","name","cityState","phone","email","links"];
-      for(const k of requiredTop){
-        if(!obj || typeof obj !== "object" || !(k in obj)) return `Missing required field: ${k}`;
+    const COURSES = {
+      "st-andrews": [4,4,4,4,5,4,4,3,4,4,3,4,4,5,4,4,4,4],
+      "augusta": [4,5,4,3,4,3,4,5,4,4,4,3,5,4,5,3,4,4],
+      "bully-pulpit": [4,4,4,5,5,3,4,3,4,4,5,3,4,4,3,4,5,4],
+      "torrey-pines": [4,4,3,4,5,4,4,3,5,5,4,3,4,4,3,4,5,4],
+      "bethpage-black": [4,4,3,5,4,4,5,3,4,4,4,4,5,3,4,4,3,4],
+      "sweetwater": [4,4,3,4,5,3,4,4,3,4,4,3,4,5,3,4,4,3],
+      "tpc-sawgrass": [4,5,3,4,4,4,4,3,5,4,5,4,3,4,4,5,3,4],
+      "whistling-straits": [4,5,3,4,5,4,3,4,4,4,5,3,4,4,4,5,3,4],
+      "pebble-beach": [4,5,4,4,3,5,3,4,4,4,4,3,4,5,4,4,3,5],
+      "congressional": [4,3,4,5,4,5,3,4,5,3,5,4,3,4,5,5,4,4]
+    };
+
+    const MAX_PLAYERS = 4;
+    const HOLES = 18;
+
+    let currentGameId = null;
+    let currentPlayerId = null;
+    let currentPlayerSlot = null;
+    let currentGameData = null;
+    let unsubscribeGame = null;
+    let unsubscribeMessages = null;
+    let hasUnreadMessages = false;
+    let messagesInitialized = false;
+
+    // ==============================
+    // DOM references
+    // ==============================
+    const body = document.body;
+
+    const startModal = document.getElementById("startModal");
+    const startPlayButton = document.getElementById("newGameBtn");
+    const startRejoinButton = document.getElementById("rejoinGameBtn");
+    const startJoinButton = document.getElementById("startJoinBtn");
+    const startRulesButton = document.getElementById("rulesBtn");
+
+// Reference: https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById
+
+    const createFlowSheet = document.getElementById("createFlowSheet");
+    const createFlowCloseBtn = document.getElementById("createFlowCloseBtn");
+    const createFlowCancelBtn = document.getElementById("createFlowCancelBtn");
+    const createFlowStartBtn = document.getElementById("createFlowStartBtn");
+    const createNameInput = document.getElementById("createNameInput");
+    
+    const joinFlowSheet = document.getElementById("joinFlowSheet");
+    const joinFlowCloseBtn = document.getElementById("joinFlowCloseBtn");
+    const joinFlowCancelBtn = document.getElementById("joinFlowCancelBtn");
+    const joinFlowGoBtn = document.getElementById("joinFlowGoBtn");
+    const joinNameInput = document.getElementById("joinNameInput");
+    const joinCodeInput = document.getElementById("joinCodeInput");
+    
+    const inviteSheet = document.getElementById("inviteSheet");
+    const inviteCloseBtn = document.getElementById("inviteCloseBtn");
+    const inviteDoneBtn = document.getElementById("inviteDoneBtn");
+    const inviteCopyBtn = document.getElementById("inviteCopyBtn");
+    const inviteShareBtn = document.getElementById("inviteShareBtn");
+    const inviteCodePill = document.getElementById("inviteCodePill");
+    const inviteCodeValue = document.getElementById("inviteCodeValue");
+
+    const playerNameInput = document.getElementById("playerNameInput");
+    const createGameBtn = document.getElementById("createGameBtn");
+    const joinGameBtn = document.getElementById("joinGameBtn");
+    const joinGameIdInput = document.getElementById("joinGameIdInput");
+    const onlineStatusText = document.getElementById("onlineStatusText");
+    const gameIdPill = document.getElementById("gameIdPill");
+    const gameIdValue = document.getElementById("gameIdValue");
+    const statusMessage = document.getElementById("statusMessage");
+
+    const courseSelect = document.getElementById("courseSelect");
+    const parCells = document.querySelectorAll(".par-cell[data-hole]");
+    const parTotalCell = document.querySelector(".par-total");
+    const playerRows = document.querySelectorAll(".player-row");
+
+    const chatButton = document.getElementById("chatButton");
+    const chatBadge = document.getElementById("chatBadge");
+    const chatSheet = document.getElementById("chatSheet");
+    const chatCloseBtn = document.getElementById("chatCloseBtn");
+    const chatCancelBtn = document.getElementById("chatCancelBtn");
+    const chatTargets = document.getElementById("chatTargets");
+    const chatThread = document.getElementById("chatThread");
+    const chatText = document.getElementById("chatText");
+    const chatSendBtn = document.getElementById("chatSendBtn");
+
+    const newGameConfirm = document.getElementById("newGameConfirm");
+    const newGameCancelBtn = document.getElementById("newGameCancelBtn");
+    const newGameConfirmBtn = document.getElementById("newGameConfirmBtn");
+
+    const settingsButton = document.getElementById("settingsButton");
+    const settingsSheet = document.getElementById("settingsSheet");
+    const settingsCloseBtn = document.getElementById("settingsCloseBtn");
+    const themeSwitch = document.getElementById("themeSwitch");
+    const accentSwitch = document.getElementById("accentSwitch");
+
+    const rulesCard = document.getElementById("rulesCard");
+    const rulesFromSettingsBtn = document.getElementById("rulesFromSettingsBtn");
+    const rulesSheet = document.getElementById("rulesSheet");
+    const rulesCloseBtn = document.getElementById("rulesCloseBtn");
+    const rulesSheetContent = document.getElementById("rulesSheetContent");
+    const analyticsButton = document.getElementById("analyticsButton");
+    const analyticsSheet = document.getElementById("analyticsSheet");
+    const analyticsCloseBtn = document.getElementById("analyticsCloseBtn");
+    const analyticsList = document.getElementById("analyticsList");
+
+    // ==============================
+    // Appearance init
+    // ==============================
+    (function initAppearance() {
+      const savedMode = localStorage.getItem(STORAGE_MODE_KEY) || "dark";
+      const savedAccent = localStorage.getItem(STORAGE_ACCENT_KEY) || "normal";
+      body.dataset.mode = savedMode;
+      body.dataset.accent = savedAccent;
+      if (themeSwitch) themeSwitch.checked = savedMode === "dark";
+      if (accentSwitch) accentSwitch.checked = savedAccent === "invert";
+    })();
+
+    // ==============================
+    // Helpers
+    // ==============================
+    function generateId(len = 20) {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let out = "";
+      for (let i = 0; i < len; i++) {
+        out += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      if(typeof obj.id !== "string" || !obj.id.trim()) return "Field 'id' must be a non-empty string.";
-      if(!/^[a-z0-9\-_.]+$/i.test(obj.id.trim())) return "Field 'id' should only use letters, numbers, and - _ . characters.";
-      if(typeof obj.links !== "object") return "Field 'links' must be an object.";
-      const requiredLinks = ["website","adoption","donate","volunteer","shop","contact"];
-      for(const k of requiredLinks){
-        if(!(k in obj.links)) return `Missing links.${k}`;
-        if(typeof obj.links[k] !== "string" || !obj.links[k].trim()) return `links.${k} must be a non-empty string.`;
-      }
-      return null;
+      return out;
     }
 
-    function loadCustomShelters(){
-      try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if(!raw) return [];
-        const arr = JSON.parse(raw);
-        if(!Array.isArray(arr)) return [];
-        return arr;
-      }catch(_){
-        return [];
+    function getOrCreatePlayerId() {
+      let id = localStorage.getItem(STORAGE_PLAYER_ID_KEY);
+      if (!id) {
+        id = generateId(16);
+        localStorage.setItem(STORAGE_PLAYER_ID_KEY, id);
+      }
+      return id;
+    }
+
+    function setStatus(msg, isError = false) {
+      const gameIdText = currentGameId || "none";
+
+      if (gameIdValue) {
+        gameIdValue.textContent = gameIdText;
+      }
+      if (statusMessage) {
+        statusMessage.textContent = msg;
+      }
+
+      if (isError) {
+        onlineStatusText.classList.add("error-text");
+      } else {
+        onlineStatusText.classList.remove("error-text");
       }
     }
 
-    function saveCustomShelters(arr){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    function enableScorecard(enabled) {
+      courseSelect.disabled = !enabled;
+      playerRows.forEach(row => {
+        const slot = parseInt(row.dataset.slot, 10);
+        const isMine = enabled && currentPlayerSlot === slot;
+        const nameInput = row.querySelector(".player-name");
+        const scoreInputs = row.querySelectorAll(".score-input");
+        nameInput.disabled = !isMine;
+        scoreInputs.forEach(inp => inp.disabled = !isMine);
+      });
     }
 
-    function getShelters(){
-      const custom = loadCustomShelters();
-      const merged = [...DEFAULT_SHELTERS];
+    function scrollChatToBottom() {
+      if (!chatThread) return;
+      chatThread.scrollTop = chatThread.scrollHeight;
+    }
 
-      const used = new Set(merged.map(s => s.id));
-      for(const c of custom){
-        if(c && typeof c === "object" && c.id && !used.has(c.id)){
-          merged.push(c);
-          used.add(c.id);
+    function updateParRow() {
+      const courseId = currentGameData ? currentGameData.courseId : courseSelect.value;
+      const pars = COURSES[courseId];
+      if (!pars) return;
+
+      let parTotal = 0;
+
+      parCells.forEach(cell => {
+        const idx = parseInt(cell.dataset.hole, 10);
+        const value = pars[idx];
+        if (typeof value === "number") {
+          cell.textContent = value;
+          parTotal += value;
+        } else {
+          cell.textContent = "";
+        }
+      });
+
+      parTotalCell.textContent = parTotal > 0 ? parTotal : "-";
+      recalcAllTotals();
+    }
+
+    function recalcAllTotals() {
+      const courseId = currentGameData ? currentGameData.courseId : courseSelect.value;
+      const pars = COURSES[courseId] || [];
+
+      const rows = document.querySelectorAll("tbody tr");
+      rows.forEach(row => {
+        if (row.id === "parRow") return;
+
+        const scoreInputs = row.querySelectorAll(".score-input");
+        if (!scoreInputs.length) return;
+
+        let scoreTotal = 0;
+        let parTotalPlayed = 0;
+
+        scoreInputs.forEach((input, idx) => {
+          const val = parseInt(input.value, 10);
+          if (!isNaN(val) && val > 0) {
+            scoreTotal += val;
+            const parVal = pars[idx];
+            if (typeof parVal === "number") {
+              parTotalPlayed += parVal;
+            }
+          }
+        });
+
+        const totalCell = row.querySelector(".total-col");
+        if (!totalCell) return;
+
+        if (scoreTotal === 0) {
+          totalCell.textContent = "E";
+          return;
+        }
+
+        if (parTotalPlayed === 0) {
+          totalCell.textContent = String(scoreTotal);
+          return;
+        }
+
+        const diff = scoreTotal - parTotalPlayed;
+        if (diff === 0) {
+          totalCell.textContent = "E";
+        } else if (diff > 0) {
+          totalCell.textContent = "+" + diff;
+        } else {
+          totalCell.textContent = diff.toString();
+        }
+      });
+    }
+
+    function readScoresFromSlot(slot) {
+      const row = document.querySelector('.player-row[data-slot="' + slot + '"]');
+      if (!row) return Array(HOLES).fill(null);
+
+      const inputs = row.querySelectorAll(".score-input");
+      const scores = [];
+      inputs.forEach(inp => {
+        const v = inp.value;
+        scores.push(v === "" ? null : Number(v));
+      });
+      return scores;
+    }
+
+    function setActiveHole(holeIndex) {
+      if (holeIndex < 0 || holeIndex >= HOLES) return;
+
+      const headerRow = document.querySelector(".scorecard-table thead tr");
+      if (!headerRow) return;
+
+      headerRow.querySelectorAll(".hole-header").forEach(h => h.classList.remove("active-hole"));
+      document.querySelectorAll(".scorecard-table td.active-hole").forEach(td => td.classList.remove("active-hole"));
+
+      const headerCells = headerRow.querySelectorAll("th");
+      const targetHeader = headerCells[1 + holeIndex];
+      if (targetHeader) {
+        targetHeader.classList.add("active-hole");
+      }
+
+      document.querySelectorAll(".scorecard-table tbody tr").forEach(row => {
+        const cells = row.querySelectorAll("th, td");
+        const targetCell = cells[1 + holeIndex];
+        if (targetCell && targetCell.tagName === "TD") {
+          targetCell.classList.add("active-hole");
+        }
+      });
+    }
+
+    function applyGameToUI(data) {
+      if (!data) return;
+
+      currentGameData = data;
+
+      const courseId = data.courseId || "st-andrews";
+      if (COURSES[courseId]) {
+        courseSelect.value = courseId;
+      }
+      updateParRow();
+
+      const players = Array.isArray(data.players) ? data.players : [];
+
+      for (let i = 0; i < MAX_PLAYERS; i++) {
+        const row = document.querySelector('.player-row[data-slot="' + i + '"]');
+        if (!row) continue;
+        const nameInput = row.querySelector(".player-name");
+        const scoreInputs = row.querySelectorAll(".score-input");
+
+        const p = players[i];
+        if (p && p.id) {
+          nameInput.value = p.name || "";
+          const scores = Array.isArray(p.scores) ? p.scores : [];
+          for (let h = 0; h < HOLES; h++) {
+            if (!scoreInputs[h]) continue;
+            const score = scores[h];
+            scoreInputs[h].value = score == null ? "" : score;
+          }
+        } else {
+          nameInput.value = "";
+          scoreInputs.forEach(inp => inp.value = "");
         }
       }
-      return merged;
+
+      if (currentPlayerSlot != null && players[currentPlayerSlot]) {
+        playerNameInput.value = players[currentPlayerSlot].name || "";
+      }
+
+      let holeForHighlight = 0;
+      if (currentPlayerSlot != null) {
+        const myRow = document.querySelector('.player-row[data-slot="' + currentPlayerSlot + '"]');
+        if (myRow) {
+          const myInputs = myRow.querySelectorAll(".score-input");
+          let firstEmpty = -1;
+
+          for (let i = 0; i < myInputs.length; i++) {
+            if (!myInputs[i].value) {
+              firstEmpty = i;
+              break;
+            }
+          }
+
+          if (firstEmpty !== -1) {
+            holeForHighlight = firstEmpty;
+          } else if (myInputs.length > 0) {
+            holeForHighlight = myInputs.length - 1;
+          }
+        }
+      }
+
+      setActiveHole(holeForHighlight);
+      recalcAllTotals();
+      renderChatTargets();
     }
 
-    importJsonBtn.addEventListener("click", () => {
-      jsonErr.style.display = "none";
-      jsonErr.textContent = "";
+    function setUnreadBadge(flag) {
+      hasUnreadMessages = flag;
+      if (!chatBadge) return;
+      chatBadge.style.display = flag ? "inline-block" : "none";
+    }
 
-      let parsed;
-      try{
-        parsed = JSON.parse(jsonInput.value);
-      }catch(err){
-        jsonErr.style.display = "block";
-        jsonErr.textContent = "Invalid JSON. Fix syntax and try again.";
+    // ==============================
+    // Score input binding
+    // ==============================
+    function bindScoreInputs() {
+      playerRows.forEach(row => {
+        const slot = parseInt(row.dataset.slot, 10);
+        const nameInput = row.querySelector(".player-name");
+        const scoreInputs = row.querySelectorAll(".score-input");
+
+        nameInput.addEventListener("input", () => {
+          if (currentGameId && currentPlayerSlot === slot) {
+            updatePlayerInGame();
+          }
+        });
+
+        scoreInputs.forEach(inp => {
+          inp.addEventListener("focus", () => {
+            const cell = inp.closest("td");
+            if (!cell) return;
+            const rowEl = cell.parentElement;
+            const allCells = Array.from(rowEl.querySelectorAll("th, td"));
+            const holeIndex = allCells.indexOf(cell) - 1;
+            if (holeIndex >= 0 && holeIndex < HOLES) {
+              setActiveHole(holeIndex);
+            }
+          });
+
+          inp.addEventListener("input", () => {
+            if (currentGameId && currentPlayerSlot === slot) {
+              updatePlayerInGame();
+            }
+          });
+
+          // over par logic
+          inp.addEventListener("change", () => {
+            const raw = inp.value;
+            const score = parseInt(raw, 10);
+            if (isNaN(score) || score <= 0) return;
+
+            const cell = inp.closest("td");
+            if (!cell) return;
+            const rowEl = cell.parentElement;
+            const allCells = Array.from(rowEl.querySelectorAll("th, td"));
+            const holeIndex = allCells.indexOf(cell) - 1;
+            if (holeIndex < 0 || holeIndex >= HOLES) return;
+
+            const courseId = currentGameData ? currentGameData.courseId : courseSelect.value;
+            const pars = COURSES[courseId];
+            if (!pars) return;
+
+            const parVal = pars[holeIndex];
+            if (typeof parVal !== "number") return;
+
+            if (score > parVal) {
+          const diff = score - parVal;
+          showToast("Bruh. " + score + " on a par " + parVal + " is " + diff + " over. That is rough. Do better.");
+        }
+          });
+        });
+      });
+
+      courseSelect.addEventListener("change", () => {
+        if (!currentGameId || !currentGameData) {
+          updateParRow();
+          return;
+        }
+        const newCourseId = courseSelect.value;
+        const updated = Object.assign({}, currentGameData, { courseId: newCourseId });
+        currentGameData = updated;
+        if (!db) return;
+        db.collection("games").doc(currentGameId).set(updated);
+      });
+    }
+
+    // ==============================
+    // Game create / join
+    // ==============================
+    async function updatePlayerInGame() {
+      if (!db) {
+        setStatus("Connection error. Reload the page to sync.", true);
+        return;
+      }
+      if (!currentGameId || currentPlayerSlot == null || !currentGameData) return;
+
+      const row = document.querySelector('.player-row[data-slot="' + currentPlayerSlot + '"]');
+      if (!row) return;
+
+      const nameInput = row.querySelector(".player-name");
+      const scores = readScoresFromSlot(currentPlayerSlot);
+
+      const updated = Object.assign({}, currentGameData);
+      const players = Array.isArray(updated.players) ? updated.players.slice() : [];
+
+      while (players.length < MAX_PLAYERS) {
+        players.push({ id: null, name: "", scores: Array(HOLES).fill(null) });
+      }
+
+      players[currentPlayerSlot] = {
+        id: currentPlayerId,
+        name: nameInput.value || "",
+        scores
+      };
+
+      updated.players = players;
+      currentGameData = updated;
+
+      await db.collection("games").doc(currentGameId).set(updated, { merge: true });
+      recalcAllTotals();
+
+      row.classList.remove("saved-pulse");
+      void row.offsetWidth;
+      row.classList.add("saved-pulse");
+    }
+
+    async function createGame() {
+      if (!db) {
+        setStatus("Connection error. Check your network and reload.", true);
         return;
       }
 
-      const msg = validateShelter(parsed);
-      if(msg){
-        jsonErr.style.display = "block";
-        jsonErr.textContent = msg;
+      const name = playerNameInput.value.trim();
+      if (!name) {
+        setStatus("Enter your name before creating a game.", true);
         return;
       }
 
-      const custom = loadCustomShelters();
-      const idx = custom.findIndex(s => s && s.id === parsed.id);
-      if(idx >= 0){
-        custom[idx] = parsed;
-      }else{
-        custom.push(parsed);
+      currentPlayerId = getOrCreatePlayerId();
+      currentPlayerSlot = 0;
+
+      const emptyScores = Array(HOLES).fill(null);
+      const players = [];
+      for (let i = 0; i < MAX_PLAYERS; i++) {
+        players.push({ id: null, name: "", scores: emptyScores });
       }
-      saveCustomShelters(custom);
+      players[0] = { id: currentPlayerId, name, scores: emptyScores };
 
-      shelters = getShelters();
-      populateShelterSelect();
-      hideImport();
-      setActiveShelter(parsed.id, true);
+      const initialCourseId = courseSelect.value || "st-andrews";
 
-      alert("Imported! Shelter added to the picker on this device (demo).");
+      const docRef = await db.collection("games").add({
+        courseId: initialCourseId,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        players
+      });
+
+      currentGameId = docRef.id;
+
+      localStorage.setItem(STORAGE_LAST_GAME_ID_KEY, currentGameId);
+      localStorage.setItem(STORAGE_LAST_SLOT_KEY, String(currentPlayerSlot));
+
+      setStatus("Game created. Share this code with your friends.");
+      openInviteSheet(currentGameId);
+
+      if (unsubscribeGame) unsubscribeGame();
+      unsubscribeGame = docRef.onSnapshot(snap => {
+        if (!snap.exists) {
+          setStatus("Game was deleted or not found.", true);
+          enableScorecard(false);
+          return;
+        }
+        applyGameToUI(snap.data());
+        enableScorecard(true);
+      });
+
+      setUnreadBadge(false);
+      messagesInitialized = false;
+      attachMessageListener(currentGameId);
+    }
+
+    async function joinGame() {
+      if (!db) {
+        setStatus("Connection error. Check your network and reload.", true);
+        return;
+      }
+
+      const name = playerNameInput.value.trim();
+      if (!name) {
+        setStatus("Enter your name before joining a game.", true);
+        return;
+      }
+
+      const joinId = joinGameIdInput.value.trim();
+      if (!joinId) {
+        setStatus("Enter a game code to join.", true);
+        return;
+      }
+
+      currentPlayerId = getOrCreatePlayerId();
+
+      const docRef = db.collection("games").doc(joinId);
+      const snap = await docRef.get();
+      if (!snap.exists) {
+        setStatus("Game not found. Check the code and try again.", true);
+        return;
+      }
+
+      const data = snap.data() || {};
+      let players = Array.isArray(data.players) ? data.players.slice() : [];
+      while (players.length < MAX_PLAYERS) {
+        players.push({ id: null, name: "", scores: Array(HOLES).fill(null) });
+      }
+
+      let slot = players.findIndex(p => p && p.id === currentPlayerId);
+
+      if (slot === -1) {
+        slot = players.findIndex(p => !p || !p.id);
+        if (slot === -1) {
+          setStatus("This game already has 4 players.", true);
+          return;
+        }
+
+        const emptyScores = Array(HOLES).fill(null);
+        players[slot] = {
+          id: currentPlayerId,
+          name,
+          scores: emptyScores
+        };
+      } else {
+        const existing = players[slot] || {};
+        players[slot] = {
+          id: existing.id || currentPlayerId,
+          name: name || existing.name || "",
+          scores: Array.isArray(existing.scores)
+            ? existing.scores
+            : Array(HOLES).fill(null)
+        };
+      }
+
+      await docRef.set(
+        Object.assign({}, data, { players })
+      );
+
+      currentGameId = joinId;
+      currentPlayerSlot = slot;
+
+      localStorage.setItem(STORAGE_LAST_GAME_ID_KEY, currentGameId);
+      localStorage.setItem(STORAGE_LAST_SLOT_KEY, String(currentPlayerSlot));
+
+      setStatus("Joined game in slot " + (slot + 1) + ".");
+
+      if (unsubscribeGame) unsubscribeGame();
+      unsubscribeGame = docRef.onSnapshot(s => {
+        if (!s.exists) {
+          setStatus("Game was deleted or not found.", true);
+          enableScorecard(false);
+          return;
+        }
+        applyGameToUI(s.data());
+        enableScorecard(true);
+      });
+
+      setUnreadBadge(false);
+      messagesInitialized = false;
+      attachMessageListener(currentGameId);
+    }
+
+  async function attemptAutoRejoin() {
+  const savedGameId = localStorage.getItem(STORAGE_LAST_GAME_ID_KEY);
+  const savedSlotStr = localStorage.getItem(STORAGE_LAST_SLOT_KEY);
+
+  if (!savedGameId) {
+    setStatus("Not in a game. Create or join to start.");
+    return;
+  }
+
+  currentPlayerId = getOrCreatePlayerId();
+  currentGameId = savedGameId;
+
+  const docRef = db.collection("games").doc(savedGameId);
+  const snap = await docRef.get();
+
+  if (!snap.exists) {
+    // old game is gone, clean up and bail
+    localStorage.removeItem(STORAGE_LAST_GAME_ID_KEY);
+    localStorage.removeItem(STORAGE_LAST_SLOT_KEY);
+    currentGameId = null;
+    currentPlayerSlot = null;
+    setStatus("Last saved game not found. Create or join a new one.");
+    enableScorecard(false);
+    setUnreadBadge(false);
+    return;
+  }
+
+  const data = snap.data() || {};
+  currentGameData = data;
+
+  const players = Array.isArray(data.players) ? data.players : [];
+  const myId = currentPlayerId;
+
+  // 1) best case, find by player id
+  let slot = players.findIndex(p => p && p.id === myId);
+
+  // 2) fall back to stored slot if it exists and looks valid
+  if (slot === -1 && savedSlotStr != null) {
+    const storedSlot = parseInt(savedSlotStr, 10);
+    if (!Number.isNaN(storedSlot) && players[storedSlot]) {
+      slot = storedSlot;
+    }
+  }
+
+  // 3) final fallback, default to slot 0 if someone is there
+  if (slot === -1 && players[0]) {
+    slot = 0;
+  }
+
+  if (slot !== -1) {
+    currentPlayerSlot = slot;
+    localStorage.setItem(STORAGE_LAST_SLOT_KEY, String(slot));
+  } else {
+    currentPlayerSlot = null;
+  }
+
+  // paint the UI with the game and enable your row
+  applyGameToUI(currentGameData);
+  enableScorecard(true);
+  setStatus("Rejoined your last game. Enter scores as normal.");
+
+  // live updates
+  if (unsubscribeGame) unsubscribeGame();
+  unsubscribeGame = docRef.onSnapshot(s => {
+    if (!s.exists) {
+      setStatus("Game was deleted or not found.", true);
+      enableScorecard(false);
+      return;
+    }
+    applyGameToUI(s.data());
+    enableScorecard(true);
+  });
+
+  setUnreadBadge(false);
+  messagesInitialized = false;
+  attachMessageListener(currentGameId);
+}
+
+    // ==============================
+    // Messaging and chat
+    // ==============================
+    function attachMessageListener(gameId) {
+      if (!db || !gameId) return;
+
+      if (unsubscribeMessages) {
+        unsubscribeMessages();
+        unsubscribeMessages = null;
+      }
+
+      messagesInitialized = false;
+
+      unsubscribeMessages = db.collection("games")
+        .doc(gameId)
+        .collection("messages")
+        .orderBy("createdAt", "desc")
+        .limit(50)
+        .onSnapshot(snapshot => {
+          const all = [];
+          snapshot.forEach(doc => {
+            const msg = doc.data();
+            if (!msg) return;
+
+            const targets = Array.isArray(msg.toSlots) ? msg.toSlots : [];
+            const isBroadcast = targets.length === 0;
+            const isTargeted = currentPlayerSlot != null && targets.includes(currentPlayerSlot);
+            const isMine = msg.fromId === currentPlayerId;
+
+            if (isMine || isBroadcast || isTargeted) {
+              all.push(
+                Object.assign({}, msg, { isMine })
+              );
+            }
+          });
+
+          renderChatThreadMessages(all);
+
+          if (!messagesInitialized) {
+            messagesInitialized = true;
+            return;
+          }
+
+          snapshot.docChanges().forEach(change => {
+            if (change.type !== "added") return;
+
+            const msg = change.doc.data();
+            if (!msg || msg.fromId === currentPlayerId) return;
+
+            const targets = Array.isArray(msg.toSlots) ? msg.toSlots : [];
+            const isBroadcast = targets.length === 0;
+            const isTargeted = currentPlayerSlot != null && targets.includes(currentPlayerSlot);
+
+            if ((isBroadcast || isTargeted) && chatSheet && !chatSheet.classList.contains("visible")) {
+              setUnreadBadge(true);
+            }
+          });
+        });
+    }
+
+    function renderChatThreadMessages(messages) {
+      if (!chatThread) return;
+      chatThread.innerHTML = "";
+
+      if (!messages || messages.length === 0) {
+        const empty = document.createElement("div");
+        empty.style.opacity = "0.7";
+        empty.style.fontSize = "11px";
+        empty.textContent = "No messages yet. Start the smack talk.";
+        chatThread.appendChild(empty);
+        return;
+      }
+
+      const sorted = messages.slice().sort((a, b) => {
+        const ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
+        const tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
+        return ta - tb;
+      });
+
+      sorted.forEach(msg => {
+        const wrap = document.createElement("div");
+        wrap.className = "chat-message" + (msg.isMine ? " me" : "");
+
+        const meta = document.createElement("span");
+        meta.className = "meta";
+        const name = msg.fromName || "Player";
+        let scope = "all";
+        if (Array.isArray(msg.toSlots) && msg.toSlots.length) {
+          scope = "to " + msg.toSlots.map(s => "P" + (s + 1)).join(", ");
+        }
+        meta.textContent = msg.isMine ? (name + " (" + scope + ")") : name;
+
+        const text = document.createElement("span");
+        text.className = "text";
+        text.textContent = msg.text || "";
+
+        wrap.appendChild(meta);
+        wrap.appendChild(text);
+        chatThread.appendChild(wrap);
+      });
+
+      scrollChatToBottom();
+    }
+
+    function renderChatTargets() {
+      if (!chatTargets) return;
+      chatTargets.innerHTML = "";
+
+      if (!currentGameData || !Array.isArray(currentGameData.players)) return;
+
+      currentGameData.players.forEach((p, idx) => {
+        if (!p || !p.id) return;
+
+        const pill = document.createElement("button");
+        pill.type = "button";
+        pill.className = "chat-target-pill";
+        pill.dataset.slot = String(idx);
+        pill.textContent = p.name || ("Player " + (idx + 1));
+        if (idx === currentPlayerSlot) {
+          pill.textContent += " (you)";
+        }
+        pill.addEventListener("click", () => {
+          pill.classList.toggle("selected");
+        });
+        chatTargets.appendChild(pill);
+      });
+    }
+
+    function enableBackdropTapToClose(sheetEl, closeFn) {
+  if (!sheetEl) return;
+
+  const handler = (e) => {
+    const t = e.target;
+    if (t === sheetEl || (t && t.classList && t.classList.contains("sheet-backdrop"))) {
+      closeFn();
+    }
+  };
+
+  sheetEl.addEventListener("click", handler);
+  sheetEl.addEventListener("touchstart", handler, { passive: true });
+}
+
+function syncSheetOpenClass() {
+  const anySheetOpen = !!document.querySelector(".chat-sheet.visible");
+  const anyModalOpen =
+    (typeof newGameConfirm !== "undefined" && newGameConfirm && newGameConfirm.classList.contains("visible")) ||
+    (typeof startModal !== "undefined" && startModal && !startModal.classList.contains("hidden"));
+
+  document.body.classList.toggle("sheet-open", anySheetOpen || anyModalOpen);
+}
+
+function showChatSheet() {
+      if (!chatSheet) return;
+      renderChatTargets();
+      setUnreadBadge(false);
+      chatSheet.classList.add("visible");
+  syncSheetOpenClass();
+      chatText.value = "";
+      chatText.focus();
+      setTimeout(scrollChatToBottom, 50);
+    }
+
+    function hideChatSheet() {
+      if (!chatSheet) return;
+      chatSheet.classList.remove("visible");
+  syncSheetOpenClass();
+    }
+
+    async function sendChatMessage() {
+      if (!db) return;
+      if (!currentGameId || currentPlayerSlot == null || !currentPlayerId) return;
+
+      const text = chatText.value.trim();
+      if (!text) return;
+
+      const selectedSlots = Array.from(
+        document.querySelectorAll(".chat-target-pill.selected")
+      ).map(pill => parseInt(pill.dataset.slot, 10));
+
+      const toSlots = selectedSlots.length ? selectedSlots : [];
+
+      await db.collection("games")
+        .doc(currentGameId)
+        .collection("messages")
+        .add({
+          fromId: currentPlayerId,
+          fromName: playerNameInput.value || "Player",
+          fromSlot: currentPlayerSlot,
+          toSlots,
+          text,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+      chatText.value = "";
+      hideChatSheet();
+    }
+
+    // ==============================
+    // New game confirmation
+    // ==============================
+    function hasExistingGameData() {
+      if (currentGameId) return true;
+
+      let hasStuff = false;
+
+      document.querySelectorAll(".player-name").forEach(inp => {
+        if (inp.value && inp.value.trim() !== "") {
+          hasStuff = true;
+        }
+      });
+
+      document.querySelectorAll(".score-input").forEach(inp => {
+        if (inp.value && inp.value.trim() !== "") {
+          hasStuff = true;
+        }
+      });
+
+      return hasStuff;
+    }
+
+    function clearSavedGame() {
+  // Remove “rejoin” pointers
+  localStorage.removeItem(STORAGE_LAST_GAME_ID_KEY);
+  localStorage.removeItem(STORAGE_LAST_SLOT_KEY);
+
+  // Drop in-memory state
+  currentGameId = null;
+  currentPlayerSlot = null;
+  currentGameData = null;
+
+  // Stop listeners
+  if (unsubscribeGame) { unsubscribeGame(); unsubscribeGame = null; }
+  if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
+
+  // Reset UI state
+  enableScorecard(false);
+  setUnreadBadge(false);
+  setStatus("Not in a game. Create or join to start.");
+}
+
+function showNewGameConfirm() {
+  const confirmed = window.confirm(
+    "This device will leave the current game and start fresh.\n\nGot the old code saved? You’ll need it to come back."
+  );
+
+  if (!confirmed) return;
+
+  clearSavedGame();
+  openCreateFlow();
+}
+
+    function handleCreateGameClick() {
+      if (hasExistingGameData()) {
+        showNewGameConfirm();
+      } else {
+        createGame().catch(err => {
+          console.error(err);
+          setStatus("Error creating game.", true);
+        });
+      }
+    }
+
+    function hasSavedGame() {
+  return !!localStorage.getItem(STORAGE_LAST_GAME_ID_KEY);
+}
+
+function updateStartModalButtons() {
+  const saved = hasSavedGame();
+
+  // Top button should always be Create Game
+  if (startPlayButton) startPlayButton.textContent = "Create Game";
+
+  // Rejoin button only enabled if there’s actually something to rejoin
+  if (startRejoinButton) {
+    startRejoinButton.disabled = !saved;
+    startRejoinButton.style.opacity = saved ? "1" : "0.45";
+    startRejoinButton.style.pointerEvents = saved ? "auto" : "none";
+  }
+}
+
+    updateStartModalButtons();
+    syncSheetOpenClass();
+
+// If someone opened an invite link, pop Join flow with code filled
+(function initJoinFromUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const gid = params.get("game");
+    if (gid) {
+      hideStartModal();
+      openJoinFlow(gid);
+      setStatus("Enter your name, then join the game.");
+    }
+  } catch (e) {}
+})();
+
+function openCreateFlow() {
+  if (!createFlowSheet) return;
+  createFlowSheet.classList.add("visible");
+  syncSheetOpenClass();
+  if (createNameInput) {
+    createNameInput.value = playerNameInput ? (playerNameInput.value || "") : "";
+    setTimeout(() => createNameInput.focus(), 50);
+  }
+}
+
+function closeCreateFlow() {
+  if (!createFlowSheet) return;
+  createFlowSheet.classList.remove("visible");
+  syncSheetOpenClass();
+}
+
+function openJoinFlow(prefillCode = "") {
+  if (!joinFlowSheet) return;
+  joinFlowSheet.classList.add("visible");
+  syncSheetOpenClass();
+
+  if (joinNameInput) joinNameInput.value = playerNameInput ? (playerNameInput.value || "") : "";
+  if (joinCodeInput) joinCodeInput.value = prefillCode || "";
+
+  setTimeout(() => {
+    if (joinNameInput && !joinNameInput.value) joinNameInput.focus();
+    else if (joinCodeInput) joinCodeInput.focus();
+  }, 60);
+}
+
+function closeJoinFlow() {
+  if (!joinFlowSheet) return;
+  joinFlowSheet.classList.remove("visible");
+  syncSheetOpenClass();
+}
+
+function getShareLink(gameId) {
+  const base = window.location.origin + window.location.pathname;
+  return base + "?game=" + encodeURIComponent(gameId);
+}
+
+function openInviteSheet(gameId) {
+  if (!inviteSheet) return;
+  if (inviteCodeValue) inviteCodeValue.textContent = gameId || "none";
+  inviteSheet.classList.add("visible");
+  syncSheetOpenClass();
+}
+
+function closeInviteSheet() {
+  if (!inviteSheet) return;
+  inviteSheet.classList.remove("visible");
+  syncSheetOpenClass();
+}
+
+async function copyTextSmart(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+}
+
+
+    // ==============================
+    // Settings, theme
+    // ==============================
+    function openSettingsSheet() {
+      if (!settingsSheet) return;
+      if (themeSwitch) {
+        themeSwitch.checked = body.dataset.mode === "dark";
+      }
+      if (accentSwitch) {
+        accentSwitch.checked = body.dataset.accent === "invert";
+      }
+      settingsSheet.classList.add("visible");
+  syncSheetOpenClass();
+    }
+
+    function closeSettingsSheet() {
+      if (!settingsSheet) return;
+      settingsSheet.classList.remove("visible");
+  syncSheetOpenClass();
+    }
+
+    function openRulesSheet() {
+  if (!rulesSheet || !rulesSheetContent) return;
+
+  // Pull your existing rules HTML from the rulesCard and show it in the sheet
+  const rulesTextEl = document.querySelector("#rulesCard .rules-text");
+  rulesSheetContent.innerHTML = rulesTextEl ? rulesTextEl.innerHTML : "<p>Rules not found.</p>";
+
+  closeSettingsSheet();
+  rulesSheet.classList.add("visible");
+  syncSheetOpenClass();
+}
+
+function closeRulesSheet() {
+  if (!rulesSheet) return;
+  rulesSheet.classList.remove("visible");
+  syncSheetOpenClass();
+}
+
+    // ==============================
+    // Analytics
+    // ==============================
+    function buildAnalyticsSummary() {
+      if (!analyticsList) return;
+      analyticsList.innerHTML = "";
+
+      const rows = document.querySelectorAll(".player-row");
+      let hasAny = false;
+
+      rows.forEach(row => {
+        const nameInput = row.querySelector(".player-name");
+        const totalCell = row.querySelector(".total-col");
+        if (!nameInput || !totalCell) return;
+
+        const name = nameInput.value.trim();
+        if (!name) return;
+
+        const totalText = totalCell.textContent || "E";
+
+        const rowDiv = document.createElement("div");
+        rowDiv.className = "analytics-row";
+
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "analytics-name";
+        nameSpan.textContent = name;
+
+        const scoreSpan = document.createElement("span");
+        scoreSpan.className = "analytics-score";
+        scoreSpan.textContent = totalText;
+
+        rowDiv.appendChild(nameSpan);
+        rowDiv.appendChild(scoreSpan);
+        analyticsList.appendChild(rowDiv);
+        hasAny = true;
+      });
+
+      if (!hasAny) {
+        const empty = document.createElement("div");
+        empty.style.fontSize = "13px";
+        empty.style.opacity = "0.7";
+        empty.textContent = "No scores yet. Fill in a few holes and your Pardle recap will appear here.";
+        analyticsList.appendChild(empty);
+      }
+    }
+
+    function openAnalyticsSheet() {
+      if (!analyticsSheet) return;
+      buildAnalyticsSummary();
+      analyticsSheet.classList.add("visible");
+  syncSheetOpenClass();
+    }
+
+    function closeAnalyticsSheet() {
+      if (!analyticsSheet) return;
+      analyticsSheet.classList.remove("visible");
+  syncSheetOpenClass();
+    }
+
+    // ==============================
+    // Start modal helpers
+    // ==============================
+    function hideStartModal() {
+      if (!startModal) return;
+      startModal.classList.add("hidden");
+    }
+
+    function handleStartPlayClick() {
+    hideStartModal();
+    syncSheetOpenClass();
+  
+    if (hasSavedGame()) {
+      showNewGameConfirm();
+      return;
+    }
+  
+    openCreateFlow();
+  }
+
+    function handleStartNewGameClick() {
+      hideStartModal();
+      syncSheetOpenClass();
+      openCreateFlow();
+    }
+
+function handleStartJoinClick() {
+  hideStartModal();
+  syncSheetOpenClass();
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      openJoinFlow();
+
+      setStatus("Enter your name, then join the game.");
+
+      setTimeout(() => {
+        if (joinNameInput && !joinNameInput.value) joinNameInput.focus();
+        else if (joinCodeInput) joinCodeInput.focus();
+      }, 80);
     });
+  });
+}
+    
+    function handleStartRejoinClick() {
+  hideStartModal();
+  syncSheetOpenClass();
 
-    clearCustomBtn.addEventListener("click", () => {
-      const ok = confirm("Reset custom shelters on this device? This removes any imported shelters from the picker.");
-      if(!ok) return;
-      localStorage.removeItem(STORAGE_KEY);
-      shelters = getShelters();
-      populateShelterSelect();
-      setActiveShelter(activeShelterId);
-      alert("Custom shelters cleared (demo).");
+  if (!hasSavedGame()) {
+    setStatus("No saved game found to rejoin. Create a new game or join one.", true);
+    openJoinFlow();
+    return;
+  }
+
+  attemptAutoRejoin().catch(err => {
+    console.error(err);
+    setStatus("Could not rejoin. Create a new game or join one instead.", true);
+    openJoinFlow();
+  });
+}
+
+    function handleStartRulesClick() {
+  hideStartModal();
+  openRulesSheet();
+}
+
+    // ==============================
+    // Event wiring
+    // ==============================
+    if (gameIdPill) {
+      gameIdPill.addEventListener("click", async () => {
+        if (!currentGameId) return;
+        try {
+          await navigator.clipboard.writeText(currentGameId);
+          const original = gameIdValue.textContent;
+          gameIdValue.textContent = "Copied!";
+          setTimeout(() => {
+            gameIdValue.textContent = original;
+          }, 1000);
+        } catch (err) {
+          console.error(err);
+        }
+      });
+    }
+
+    if (startRejoinButton) {
+  startRejoinButton.addEventListener("click", handleStartRejoinClick);
+}
+
+
+if (createFlowCloseBtn) createFlowCloseBtn.addEventListener("click", closeCreateFlow);
+if (createFlowCancelBtn) createFlowCancelBtn.addEventListener("click", closeCreateFlow);
+
+if (createFlowStartBtn) {
+  createFlowStartBtn.addEventListener("click", () => {
+    const name = (createNameInput ? createNameInput.value.trim() : "");
+    if (!name) {
+      setStatus("Enter your name to create a game.", true);
+      if (createNameInput) createNameInput.focus();
+      return;
+    }
+    if (playerNameInput) playerNameInput.value = name;
+    closeCreateFlow();
+    handleCreateGameClick();
+  });
+}
+
+if (joinFlowCloseBtn) joinFlowCloseBtn.addEventListener("click", closeJoinFlow);
+if (joinFlowCancelBtn) joinFlowCancelBtn.addEventListener("click", closeJoinFlow);
+
+if (joinFlowGoBtn) {
+  joinFlowGoBtn.addEventListener("click", () => {
+    const name = (joinNameInput ? joinNameInput.value.trim() : "");
+    const code = (joinCodeInput ? joinCodeInput.value.trim() : "");
+    if (!name) {
+      setStatus("Enter your name to join.", true);
+      if (joinNameInput) joinNameInput.focus();
+      return;
+    }
+    if (!code) {
+      setStatus("Enter a game code to join.", true);
+      if (joinCodeInput) joinCodeInput.focus();
+      return;
+    }
+    if (playerNameInput) playerNameInput.value = name;
+    if (joinGameIdInput) joinGameIdInput.value = code;
+
+    closeJoinFlow();
+    joinGame().catch(err => {
+      console.error(err);
+      setStatus("Error joining game.", true);
     });
+  });
+}
 
-    // Initial render
-    populateShelterSelect();
-    setActiveShelter(activeShelterId);
+if (inviteCloseBtn) inviteCloseBtn.addEventListener("click", closeInviteSheet);
+if (inviteDoneBtn) inviteDoneBtn.addEventListener("click", closeInviteSheet);
+
+if (inviteCodePill) {
+  inviteCodePill.addEventListener("click", async () => {
+    if (!currentGameId) return;
+    const ok = await copyTextSmart(currentGameId);
+    if (inviteCodeValue) {
+      const original = inviteCodeValue.textContent;
+      inviteCodeValue.textContent = ok ? "Copied!" : "Copy failed";
+      setTimeout(() => (inviteCodeValue.textContent = original), 900);
+    }
+  });
+}
+
+if (inviteCopyBtn) {
+  inviteCopyBtn.addEventListener("click", async () => {
+    if (!currentGameId) return;
+    const ok = await copyTextSmart(currentGameId);
+    setStatus(ok ? "Code copied. Send it to your crew." : "Could not copy, tap the code and try again.", !ok);
+  });
+}
+
+if (inviteShareBtn) {
+  inviteShareBtn.addEventListener("click", async () => {
+    if (!currentGameId) return;
+
+    const code = currentGameId;
+    const link = getShareLink(code);
+    const msg = "Join my Pardle game.\n\nCode: " + code + "\nLink: " + link;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Pardle", text: msg, url: link });
+        return;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // fallback: open mail composer
+    const subject = encodeURIComponent("Join my Pardle game");
+    const body = encodeURIComponent(msg);
+    window.location.href = "mailto:?subject=" + subject + "&body=" + body;
+  });
+}
+
+    if (settingsButton) {
+      settingsButton.addEventListener("click", openSettingsSheet);
+    }
+
+    if (rulesFromSettingsBtn) {
+  rulesFromSettingsBtn.addEventListener("click", openRulesSheet);
+}
+
+if (rulesCloseBtn) {
+  rulesCloseBtn.addEventListener("click", closeRulesSheet);
+}
+
+    if (settingsCloseBtn) {
+      settingsCloseBtn.addEventListener("click", closeSettingsSheet);
+    }
+
+    if (themeSwitch) {
+      themeSwitch.addEventListener("change", () => {
+        const mode = themeSwitch.checked ? "dark" : "light";
+        body.dataset.mode = mode;
+        localStorage.setItem(STORAGE_MODE_KEY, mode);
+      });
+    }
+
+    if (accentSwitch) {
+      accentSwitch.addEventListener("change", () => {
+        const accent = accentSwitch.checked ? "invert" : "normal";
+        body.dataset.accent = accent;
+        localStorage.setItem(STORAGE_ACCENT_KEY, accent);
+      });
+    }
+
+    if (analyticsButton) {
+      analyticsButton.addEventListener("click", openAnalyticsSheet);
+    }
+
+    if (analyticsCloseBtn) {
+      analyticsCloseBtn.addEventListener("click", closeAnalyticsSheet);
+    }
+
+    if (chatButton) {
+      chatButton.addEventListener("click", () => {
+        if (!currentGameId) {
+          setStatus("Create or join a game before chatting.", true);
+          return;
+        }
+        showChatSheet();
+      });
+    }
+
+    if (chatCloseBtn) {
+      chatCloseBtn.addEventListener("click", hideChatSheet);
+    }
+
+    if (chatCancelBtn) {
+      chatCancelBtn.addEventListener("click", hideChatSheet);
+    }
+
+    if (chatSendBtn) {
+      chatSendBtn.addEventListener("click", () => {
+        sendChatMessage().catch(err => {
+          console.error(err);
+        });
+      });
+    }
+
+    if (createGameBtn) {
+      createGameBtn.addEventListener("click", handleCreateGameClick);
+    }
+
+    if (joinGameBtn) {
+      joinGameBtn.addEventListener("click", () => {
+        joinGame().catch(err => {
+          console.error(err);
+          setStatus("Error joining game.", true);
+        });
+      });
+    }
+
+    if (startPlayButton) {
+      startPlayButton.addEventListener("click", handleStartPlayClick);
+    }
+
+
+    if (startJoinButton) {
+      startJoinButton.addEventListener("click", handleStartJoinClick);
+    }
+
+    if (startRulesButton) {
+      startRulesButton.addEventListener("click", handleStartRulesClick);
+    }
+
+    // ==============================
+    // Init
+    // ==============================
+    bindScoreInputs();
+    updateParRow();
+    enableScorecard(false);
+    setUnreadBadge(false);
+
+// Enable tap-on-backdrop to close sheets (mobile friendly)
+enableBackdropTapToClose(chatSheet, hideChatSheet);
+enableBackdropTapToClose(settingsSheet, closeSettingsSheet);
+enableBackdropTapToClose(rulesSheet, closeRulesSheet);
+enableBackdropTapToClose(analyticsSheet, closeAnalyticsSheet);
+enableBackdropTapToClose(createFlowSheet, closeCreateFlow);
+enableBackdropTapToClose(joinFlowSheet, closeJoinFlow);
+enableBackdropTapToClose(inviteSheet, closeInviteSheet);
+
   </script>
 </body>
 </html>
