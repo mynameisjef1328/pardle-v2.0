@@ -743,15 +743,11 @@ body[data-mode="dark"] .chat-thread{
       margin-bottom: 6px;
     }
 
-    .chat-target-pill {
-      border-radius: 999px;
-      border: 1px solid var(--border-soft);
-      padding: 4px 10px;
-      font-size: 12px;
-      cursor: pointer;
-      background: var(--bg-card);
-      color: var(--text);
-    }
+    /* Optional: make the target pills easier to tap/read */
+.chat-target-pill{
+  font-size: 13px;
+  padding: 6px 12px;
+}
 
     .chat-target-pill.selected {
       background: var(--accent-soft);
