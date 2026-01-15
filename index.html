@@ -2415,7 +2415,7 @@ try {
         enableScorecard(true);
       });
 
-      clearUnread();
+      updateUnreadBadge(0); // Reset badge but don't save timestamp yet
       messagesInitialized = false;
       attachMessageListener(currentGameId);
     }
@@ -2502,7 +2502,7 @@ try {
         enableScorecard(true);
       });
 
-      clearUnread();
+      updateUnreadBadge(0); // Reset badge but don't save timestamp yet
       messagesInitialized = false;
       attachMessageListener(currentGameId);
     }
@@ -2580,7 +2580,7 @@ try {
     enableScorecard(true);
   });
 
-  clearUnread();
+  updateUnreadBadge(0); // Reset badge but don't save timestamp yet
   messagesInitialized = false;
   attachMessageListener(currentGameId);
 }
@@ -3341,7 +3341,7 @@ if (rulesCloseBtn) {
     bindScoreInputs();
     updateParRow();
     enableScorecard(false);
-    clearUnread();
+    updateUnreadBadge(0); // Reset badge but don't save timestamp yet
 
 // Enable tap-on-backdrop to close sheets (mobile friendly)
 enableBackdropTapToClose(chatSheet, hideChatSheet);
