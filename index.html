@@ -81,6 +81,100 @@
       gap: 12px;
     }
 
+    /* ================================
+       TOAST NOTIFICATION SYSTEM
+       ================================ */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+      max-width: 90%;
+      width: 360px;
+    }
+
+    .toast {
+      background: linear-gradient(135deg, #1f1f1f 0%, #2a2a2a 100%);
+      border: 1px solid var(--sync-bg);
+      border-radius: 14px;
+      padding: 12px 16px;
+      box-shadow: 0 8px 32px rgba(0, 200, 83, 0.3), 0 4px 12px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      pointer-events: auto;
+      cursor: pointer;
+      animation: toastSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: top center;
+    }
+
+    .toast.hiding {
+      animation: toastSlideOut 0.25s ease-in forwards;
+    }
+
+    @keyframes toastSlideIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes toastSlideOut {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+      }
+    }
+
+    .toast-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .toast-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .toast-sender {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--sync-bg);
+      margin-bottom: 2px;
+    }
+
+    .toast-message {
+      font-size: 13px;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .toast-dismiss {
+      font-size: 16px;
+      color: rgba(255,255,255,0.5);
+      flex-shrink: 0;
+      margin-left: 4px;
+    }
+
     /* Start screen overlay */
     #startModal {
       position: fixed;
@@ -134,7 +228,7 @@
   box-shadow: 0 3px 10px rgba(0,0,0,0.55);
 }
 
-/* Light orange (similar “secondary” vibe to your light green New Game) */
+/* Light orange (similar "secondary" vibe to your light green New Game) */
 .start-secondary-btn.join{
   background: #ffd9a6;
   color: #111111;
@@ -389,6 +483,9 @@
       margin-bottom: 0;
     }
 
+    /* ================================
+       ENHANCED CHAT BUTTON WITH ALERTS
+       ================================ */
     .chat-btn {
       border: none;
       background: var(--accent);
@@ -397,7 +494,7 @@
       cursor: pointer;
       position: relative;
       gap: 4px;
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
     }
 
     .chat-btn:active {
@@ -405,15 +502,65 @@
       opacity: 0.85;
     }
 
+    /* Unread state - pulsing glow effect */
+    .chat-btn.has-unread {
+      animation: chatPulseGlow 1.5s ease-in-out infinite;
+      background: var(--sync-bg);
+    }
+
+    @keyframes chatPulseGlow {
+      0%, 100% {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.18), 0 0 0 0 rgba(0, 200, 83, 0.6);
+      }
+      50% {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 20px 4px rgba(0, 200, 83, 0.5);
+      }
+    }
+
+    /* Enhanced badge with count */
     .chat-badge {
       position: absolute;
-      top: -2px;
-      right: -2px;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #2ecc71;
+      top: -8px;
+      right: -8px;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      background: #ff3b30;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
       display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
+      border: 2px solid var(--bg-card);
+      animation: badgeBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .chat-badge.visible {
+      display: flex;
+      animation: badgePulse 2s ease-in-out infinite, badgeBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes badgeBounce {
+      0% {
+        transform: scale(0);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes badgePulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
     }
 
     .scorecard-wrapper {
@@ -509,49 +656,6 @@
       font-weight: 500;
       font-size: 16px;
     }
-
-    /* ================================
-   PLAYER ROW COLORS (left stripe + colored names)
-   Paste BELOW .player-name + .player-name:disabled
-   ================================ */
-
-/* slot colors */
-.player-row[data-slot="0"] { --pcolor: #ff9800; } /* orange */
-.player-row[data-slot="1"] { --pcolor: #00c853; } /* green */
-.player-row[data-slot="2"] { --pcolor: #29b6f6; } /* cyan */
-.player-row[data-slot="3"] { --pcolor: #ab47bc; } /* purple */
-
-/* make the left label cell able to host the stripe (works for th or td) */
-.player-row .player-label{
-  position: sticky;
-  left: 0;
-  z-index: 3;
-  padding-left: 14px; /* room for stripe */
-  overflow: hidden;
-}
-
-/* vertical color stripe */
-.player-row .player-label::before{
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  background: var(--pcolor);
-  opacity: 0.95;
-}
-
-/* color the player name text */
-.player-row .player-name{
-  color: var(--pcolor);
-  font-weight: 800;
-}
-
-/* keep disabled readable */
-.player-row .player-name:disabled{
-  opacity: 0.85;
-}
 
     .player-name:disabled {
       opacity: 0.7;
@@ -689,7 +793,7 @@
   border-radius: 16px 16px 0 0;
   padding: 12px 16px;
   border-top: 1px solid var(--border-soft);
-  max-height: 92vh;
+  max-height: 85vh;
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
@@ -734,91 +838,73 @@ body[data-mode="dark"] .sheet-header-row button {
   opacity: 0.85;
 }
 
-/* Bigger, more readable chat */
-.chat-thread{
-  max-height: 46vh;                 /* taller thread area */
-  padding: 10px 10px;
-  font-size: 14px;                  /* base size for thread */
-  overflow-y: auto;
-  border: 1px solid var(--border-soft);
-  border-radius: 12px;
-  background: rgba(0,0,0,0.03);
-}
+/* chat specific */
+    .chat-thread {
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.03);
+      font-size: 13px;
+    }
 
-body[data-mode="dark"] .chat-thread{
-  background: rgba(255,255,255,0.04);
-}
+    body[data-mode="dark"] .chat-thread {
+      background: rgba(255,255,255,0.04);
+    }
 
-.chat-message{
-  margin-bottom: 8px;
-  display: flex;
-  flex-direction: column;
-}
+    .chat-message {
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.03);
+    }
 
-.chat-message.me{
-  text-align: right;
-}
+    body[data-mode="dark"] .chat-message {
+      background: rgba(255,255,255,0.05);
+    }
 
-.chat-message span.meta{
-  font-size: 12px;                  /* timestamp/name line */
-  opacity: 0.72;
-}
+    .chat-message.me {
+      background: rgba(0, 200, 83, 0.12);
+      margin-left: 20%;
+    }
 
-.chat-message span.text{
-  font-size: 15px;                  /* actual message text */
-  line-height: 1.35;
-}
+    .chat-message.me span.meta {
+      text-align: right;
+    }
 
-.chat-input{
-  width: 100%;
-  min-height: 84px;                 /* bigger input box */
-  font-size: 16px;                  /* iOS-friendly, readable */
-  padding: 10px 12px;
-  line-height: 1.3;
-  border-radius: 12px;
-  border: 1px solid var(--border-soft);
-  background: var(--input-bg);
-  color: var(--input-text);
-  resize: vertical;
-}
+    .chat-message span.meta {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-bottom: 3px;
+    }
 
-/* This is the missing piece from your screenshot */
-.chat-actions{
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
-}
+    .chat-message span.text {
+      font-size: 13px;
+      line-height: 1.4;
+    }
 
-/* Bigger buttons in chat sheet */
-.chat-actions .small-btn{
-  flex: 1;
-  font-size: 15px;
-  padding: 12px 12px;
-}
+    .chat-input {
+      width: 100%;
+      min-height: 70px;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      padding: 10px 12px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      background: var(--input-bg);
+      color: var(--input-text);
+      resize: vertical;
+    }
 
-/* Targets row */
-.chat-targets{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 8px;
-}
+    .chat-actions {
+      display: flex;
+      gap: 8px;
+    }
 
-/* Target pills: easier to tap/read */
-.chat-target-pill{
-  border-radius: 999px;
-  border: 1px solid var(--border-soft);
-  padding: 6px 12px;
-  font-size: 13px;
-  cursor: pointer;
-  background: var(--bg-card);
-  color: var(--text);
-}
-
-.chat-target-pill.selected{
-  background: var(--accent-soft);
-  border-color: var(--accent);
-}
+    /* Removed chat-targets styles since we're removing player targeting */
 
     /* ================================
    SETTINGS SHEET (Wordle-style)
@@ -1209,6 +1295,9 @@ body[data-mode="dark"] .chat-thread{
 </head>
 <body data-mode="dark" data-accent="normal">
 
+  <!-- Toast notification container -->
+  <div id="toastContainer" class="toast-container"></div>
+
   <!-- Start screen overlay -->
 <div id="startModal" class="modal-overlay">
   <div class="start-modal" role="dialog" aria-modal="true" aria-label="Pardle start menu">
@@ -1296,7 +1385,7 @@ body[data-mode="dark"] .chat-thread{
           <div class="section-title">Scorecard</div>
           <button id="chatButton" class="chat-btn pardle-pill" type="button">
             💬 Chat
-            <span id="chatBadge" class="chat-badge"></span>
+            <span id="chatBadge" class="chat-badge">0</span>
           </button>
         </div>
 
@@ -1305,7 +1394,7 @@ body[data-mode="dark"] .chat-thread{
             <table class="scorecard-table">
               <thead>
                 <tr>
-                  <th class="course-label">Course</th>
+                  <th class="course-label">Hole</th>
                   <th class="hole-header">1</th>
                   <th class="hole-header">2</th>
                   <th class="hole-header">3</th>
@@ -1464,9 +1553,9 @@ body[data-mode="dark"] .chat-thread{
 
           <h3>The Basics</h3>
           <ul>
-            <li>Each “hole” is one Wordle puzzle.</li>
-            <li>Your score for the hole equals the number of guesses it took you to solve that day’s Wordle.</li>
-            <li>Did not crack it? Mark it as a 7 or an “X” (just make sure your group agrees).</li>
+            <li>Each "hole" is one Wordle puzzle.</li>
+            <li>Your score for the hole equals the number of guesses it took you to solve that day's Wordle.</li>
+            <li>Did not crack it? Mark it as a 7 or an "X" (just make sure your group agrees).</li>
             <li>Par is the number of guesses you are aiming for.</li>
           </ul>
 
@@ -1477,9 +1566,9 @@ body[data-mode="dark"] .chat-thread{
             <li>
               Score breakdown:
               <ul>
-                <li>“E” equals even with par</li>
-                <li>“+2” equals two over par</li>
-                <li>“-1” equals one under par</li>
+                <li>"E" equals even with par</li>
+                <li>"+2" equals two over par</li>
+                <li>"-1" equals one under par</li>
               </ul>
             </li>
           </ul>
@@ -1504,15 +1593,14 @@ body[data-mode="dark"] .chat-thread{
 </section>
 </main>
 
-    <!-- Chat sheet -->
+    <!-- Chat sheet (SIMPLIFIED - no player targeting) -->
     <div id="chatSheet" class="chat-sheet">
       <div class="sheet-backdrop" aria-hidden="true"></div>
       <div class="chat-sheet-inner">
         <div class="sheet-header-row">
-          <span>Game chat</span>
+          <span>Game Chat</span>
           <button id="chatCloseBtn" type="button">✕</button>
         </div>
-        <div id="chatTargets" class="chat-targets"></div>
         <div id="chatThread" class="chat-thread"></div>
         <textarea id="chatText" class="chat-input" placeholder="Type your masterpiece…"></textarea>
         <div class="chat-actions">
@@ -1605,7 +1693,7 @@ body[data-mode="dark"] .chat-thread{
     <div style="height:10px;"></div>
 
     <div class="online-status" style="margin-bottom:10px;">
-      <span style="opacity:0.8; font-size:12px;">Next you’ll get a code to share with your group.</span>
+      <span style="opacity:0.8; font-size:12px;">Next you'll get a code to share with your group.</span>
     </div>
 
     <div class="chat-actions">
@@ -1755,7 +1843,7 @@ try {
     let currentGameData = null;
     let unsubscribeGame = null;
     let unsubscribeMessages = null;
-    let hasUnreadMessages = false;
+    let unreadCount = 0;
     let messagesInitialized = false;
 
     // ==============================
@@ -1763,13 +1851,13 @@ try {
     // ==============================
     const body = document.body;
 
+    const toastContainer = document.getElementById("toastContainer");
+
     const startModal = document.getElementById("startModal");
     const startPlayButton = document.getElementById("newGameBtn");
     const startRejoinButton = document.getElementById("rejoinGameBtn");
     const startJoinButton = document.getElementById("startJoinBtn");
     const startRulesButton = document.getElementById("rulesBtn");
-
-// Reference: https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById
 
     const createFlowSheet = document.getElementById("createFlowSheet");
     const createFlowCloseBtn = document.getElementById("createFlowCloseBtn");
@@ -1811,7 +1899,6 @@ try {
     const chatSheet = document.getElementById("chatSheet");
     const chatCloseBtn = document.getElementById("chatCloseBtn");
     const chatCancelBtn = document.getElementById("chatCancelBtn");
-    const chatTargets = document.getElementById("chatTargets");
     const chatThread = document.getElementById("chatThread");
     const chatText = document.getElementById("chatText");
     const chatSendBtn = document.getElementById("chatSendBtn");
@@ -1847,6 +1934,58 @@ try {
       if (themeSwitch) themeSwitch.checked = savedMode === "dark";
       if (accentSwitch) accentSwitch.checked = savedAccent === "invert";
     })();
+
+    // ==============================
+    // Toast Notification System
+    // ==============================
+    function showToast(senderName, messageText, onClick) {
+      if (!toastContainer) return;
+
+      const toast = document.createElement("div");
+      toast.className = "toast";
+
+      toast.innerHTML = `
+        <span class="toast-icon">💬</span>
+        <div class="toast-content">
+          <div class="toast-sender">${escapeHtml(senderName)}</div>
+          <div class="toast-message">${escapeHtml(messageText)}</div>
+        </div>
+        <span class="toast-dismiss">✕</span>
+      `;
+
+      toast.addEventListener("click", () => {
+        dismissToast(toast);
+        if (onClick) onClick();
+      });
+
+      toastContainer.appendChild(toast);
+
+      // Haptic feedback on iOS
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+
+      // Auto-dismiss after 4 seconds
+      setTimeout(() => {
+        dismissToast(toast);
+      }, 4000);
+    }
+
+    function dismissToast(toast) {
+      if (!toast || toast.classList.contains("hiding")) return;
+      toast.classList.add("hiding");
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 250);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
 
     // ==============================
     // Helpers
@@ -2073,13 +2212,32 @@ try {
 
       setActiveHole(holeForHighlight);
       recalcAllTotals();
-      renderChatTargets();
     }
 
-    function setUnreadBadge(flag) {
-      hasUnreadMessages = flag;
-      if (!chatBadge) return;
-      chatBadge.style.display = flag ? "inline-block" : "none";
+    // ==============================
+    // Enhanced Unread Badge System
+    // ==============================
+    function updateUnreadBadge(count) {
+      unreadCount = count;
+      
+      if (!chatBadge || !chatButton) return;
+      
+      if (count > 0) {
+        chatBadge.textContent = count > 99 ? "99+" : String(count);
+        chatBadge.classList.add("visible");
+        chatButton.classList.add("has-unread");
+      } else {
+        chatBadge.classList.remove("visible");
+        chatButton.classList.remove("has-unread");
+      }
+    }
+
+    function incrementUnread() {
+      updateUnreadBadge(unreadCount + 1);
+    }
+
+    function clearUnread() {
+      updateUnreadBadge(0);
     }
 
     // ==============================
@@ -2136,9 +2294,9 @@ try {
             if (typeof parVal !== "number") return;
 
             if (score > parVal) {
-          const diff = score - parVal;
-          showToast("Bruh. " + score + " on a par " + parVal + " is " + diff + " over. That is rough. Do better.");
-        }
+              const diff = score - parVal;
+              showToast("Pardle", "Bruh. " + score + " on a par " + parVal + " is " + diff + " over. That is rough. Do better.");
+            }
           });
         });
       });
@@ -2245,7 +2403,7 @@ try {
         enableScorecard(true);
       });
 
-      setUnreadBadge(false);
+      clearUnread();
       messagesInitialized = false;
       attachMessageListener(currentGameId);
     }
@@ -2332,7 +2490,7 @@ try {
         enableScorecard(true);
       });
 
-      setUnreadBadge(false);
+      clearUnread();
       messagesInitialized = false;
       attachMessageListener(currentGameId);
     }
@@ -2360,7 +2518,7 @@ try {
     currentPlayerSlot = null;
     setStatus("Last saved game not found. Create or join a new one.");
     enableScorecard(false);
-    setUnreadBadge(false);
+    clearUnread();
     return;
   }
 
@@ -2410,13 +2568,13 @@ try {
     enableScorecard(true);
   });
 
-  setUnreadBadge(false);
+  clearUnread();
   messagesInitialized = false;
   attachMessageListener(currentGameId);
 }
 
     // ==============================
-    // Messaging and chat
+    // Messaging and chat (SIMPLIFIED)
     // ==============================
     function attachMessageListener(gameId) {
       if (!db || !gameId) return;
@@ -2439,16 +2597,11 @@ try {
             const msg = doc.data();
             if (!msg) return;
 
-            const targets = Array.isArray(msg.toSlots) ? msg.toSlots : [];
-            const isBroadcast = targets.length === 0;
-            const isTargeted = currentPlayerSlot != null && targets.includes(currentPlayerSlot);
+            // All messages are now broadcast to everyone
             const isMine = msg.fromId === currentPlayerId;
-
-            if (isMine || isBroadcast || isTargeted) {
-              all.push(
-                Object.assign({}, msg, { isMine })
-              );
-            }
+            all.push(
+              Object.assign({}, msg, { isMine })
+            );
           });
 
           renderChatThreadMessages(all);
@@ -2458,18 +2611,23 @@ try {
             return;
           }
 
+          // Handle new incoming messages
           snapshot.docChanges().forEach(change => {
             if (change.type !== "added") return;
 
             const msg = change.doc.data();
             if (!msg || msg.fromId === currentPlayerId) return;
 
-            const targets = Array.isArray(msg.toSlots) ? msg.toSlots : [];
-            const isBroadcast = targets.length === 0;
-            const isTargeted = currentPlayerSlot != null && targets.includes(currentPlayerSlot);
-
-            if ((isBroadcast || isTargeted) && chatSheet && !chatSheet.classList.contains("visible")) {
-              setUnreadBadge(true);
+            // Show toast notification if chat sheet is not open
+            if (chatSheet && !chatSheet.classList.contains("visible")) {
+              incrementUnread();
+              
+              // Show toast notification
+              const senderName = msg.fromName || "Player";
+              const messageText = msg.text || "";
+              showToast(senderName, messageText, () => {
+                showChatSheet();
+              });
             }
           });
         });
@@ -2482,7 +2640,9 @@ try {
       if (!messages || messages.length === 0) {
         const empty = document.createElement("div");
         empty.style.opacity = "0.7";
-        empty.style.fontSize = "11px";
+        empty.style.fontSize = "12px";
+        empty.style.padding = "20px";
+        empty.style.textAlign = "center";
         empty.textContent = "No messages yet. Start the smack talk.";
         chatThread.appendChild(empty);
         return;
@@ -2501,11 +2661,7 @@ try {
         const meta = document.createElement("span");
         meta.className = "meta";
         const name = msg.fromName || "Player";
-        let scope = "all";
-        if (Array.isArray(msg.toSlots) && msg.toSlots.length) {
-          scope = "to " + msg.toSlots.map(s => "P" + (s + 1)).join(", ");
-        }
-        meta.textContent = msg.isMine ? (name + " (" + scope + ")") : name;
+        meta.textContent = name;
 
         const text = document.createElement("span");
         text.className = "text";
@@ -2517,30 +2673,6 @@ try {
       });
 
       scrollChatToBottom();
-    }
-
-    function renderChatTargets() {
-      if (!chatTargets) return;
-      chatTargets.innerHTML = "";
-
-      if (!currentGameData || !Array.isArray(currentGameData.players)) return;
-
-      currentGameData.players.forEach((p, idx) => {
-        if (!p || !p.id) return;
-
-        const pill = document.createElement("button");
-        pill.type = "button";
-        pill.className = "chat-target-pill";
-        pill.dataset.slot = String(idx);
-        pill.textContent = p.name || ("Player " + (idx + 1));
-        if (idx === currentPlayerSlot) {
-          pill.textContent += " (you)";
-        }
-        pill.addEventListener("click", () => {
-          pill.classList.toggle("selected");
-        });
-        chatTargets.appendChild(pill);
-      });
     }
 
     function enableBackdropTapToClose(sheetEl, closeFn) {
@@ -2568,8 +2700,7 @@ function syncSheetOpenClass() {
 
 function showChatSheet() {
       if (!chatSheet) return;
-      renderChatTargets();
-      setUnreadBadge(false);
+      clearUnread();
       chatSheet.classList.add("visible");
   syncSheetOpenClass();
       chatText.value = "";
@@ -2590,12 +2721,7 @@ function showChatSheet() {
       const text = chatText.value.trim();
       if (!text) return;
 
-      const selectedSlots = Array.from(
-        document.querySelectorAll(".chat-target-pill.selected")
-      ).map(pill => parseInt(pill.dataset.slot, 10));
-
-      const toSlots = selectedSlots.length ? selectedSlots : [];
-
+      // All messages now broadcast to everyone (empty toSlots array)
       await db.collection("games")
         .doc(currentGameId)
         .collection("messages")
@@ -2603,7 +2729,7 @@ function showChatSheet() {
           fromId: currentPlayerId,
           fromName: playerNameInput.value || "Player",
           fromSlot: currentPlayerSlot,
-          toSlots,
+          toSlots: [], // Empty = broadcast to all
           text,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
@@ -2636,7 +2762,7 @@ function showChatSheet() {
     }
 
     function clearSavedGame() {
-  // Remove “rejoin” pointers
+  // Remove "rejoin" pointers
   localStorage.removeItem(STORAGE_LAST_GAME_ID_KEY);
   localStorage.removeItem(STORAGE_LAST_SLOT_KEY);
 
@@ -2651,13 +2777,13 @@ function showChatSheet() {
 
   // Reset UI state
   enableScorecard(false);
-  setUnreadBadge(false);
+  clearUnread();
   setStatus("Not in a game. Create or join to start.");
 }
 
 function showNewGameConfirm() {
   const confirmed = window.confirm(
-    "This device will leave the current game and start fresh.\n\nGot the old code saved? You’ll need it to come back."
+    "This device will leave the current game and start fresh.\n\nGot the old code saved? You'll need it to come back."
   );
 
   if (!confirmed) return;
@@ -2687,7 +2813,7 @@ function updateStartModalButtons() {
   // Top button should always be Create Game
   if (startPlayButton) startPlayButton.textContent = "Create Game";
 
-  // Rejoin button only enabled if there’s actually something to rejoin
+  // Rejoin button only enabled if there's actually something to rejoin
   if (startRejoinButton) {
     startRejoinButton.disabled = !saved;
     startRejoinButton.style.opacity = saved ? "1" : "0.45";
@@ -3165,7 +3291,7 @@ if (rulesCloseBtn) {
     bindScoreInputs();
     updateParRow();
     enableScorecard(false);
-    setUnreadBadge(false);
+    clearUnread();
 
 // Enable tap-on-backdrop to close sheets (mobile friendly)
 enableBackdropTapToClose(chatSheet, hideChatSheet);
