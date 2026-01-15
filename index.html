@@ -1820,6 +1820,7 @@ try {
     const STORAGE_LAST_SLOT_KEY = "pardle_online_last_player_slot";
     const STORAGE_MODE_KEY = "pardle_mode";
     const STORAGE_ACCENT_KEY = "pardle_accent";
+    const STORAGE_LAST_SEEN_MSG_KEY = "pardle_last_seen_message_ts";
 
     const COURSES = {
       "st-andrews": [4,4,4,4,5,4,4,3,4,4,3,4,4,5,4,4,4,4],
@@ -2238,6 +2239,17 @@ try {
 
     function clearUnread() {
       updateUnreadBadge(0);
+      // Save current time as last seen so we don't re-alert on next open
+      saveLastSeenTimestamp(Date.now());
+    }
+
+    function getLastSeenTimestamp() {
+      const stored = localStorage.getItem(STORAGE_LAST_SEEN_MSG_KEY);
+      return stored ? parseInt(stored, 10) : 0;
+    }
+
+    function saveLastSeenTimestamp(ts) {
+      localStorage.setItem(STORAGE_LAST_SEEN_MSG_KEY, String(ts));
     }
 
     // ==============================
@@ -2585,6 +2597,7 @@ try {
       }
 
       messagesInitialized = false;
+      const lastSeenTs = getLastSeenTimestamp();
 
       unsubscribeMessages = db.collection("games")
         .doc(gameId)
@@ -2608,10 +2621,47 @@ try {
 
           if (!messagesInitialized) {
             messagesInitialized = true;
+            
+            // Check for unread messages from before we opened the app
+            let missedCount = 0;
+            let mostRecentMissed = null;
+            
+            all.forEach(msg => {
+              if (msg.fromId === currentPlayerId) return; // Skip own messages
+              
+              const msgTs = msg.createdAt && msg.createdAt.toMillis ? msg.createdAt.toMillis() : 0;
+              if (msgTs > lastSeenTs) {
+                missedCount++;
+                // Track most recent missed message for toast
+                if (!mostRecentMissed || msgTs > (mostRecentMissed.createdAt?.toMillis?.() || 0)) {
+                  mostRecentMissed = msg;
+                }
+              }
+            });
+            
+            if (missedCount > 0 && chatSheet && !chatSheet.classList.contains("visible")) {
+              updateUnreadBadge(missedCount);
+              
+              // Show a summary toast
+              if (missedCount === 1 && mostRecentMissed) {
+                showToast(
+                  mostRecentMissed.fromName || "Player",
+                  mostRecentMissed.text || "",
+                  () => { showChatSheet(); }
+                );
+              } else {
+                showToast(
+                  "Pardle Chat",
+                  missedCount + " new messages while you were away",
+                  () => { showChatSheet(); }
+                );
+              }
+            }
+            
             return;
           }
 
-          // Handle new incoming messages
+          // Handle new incoming messages (real-time)
           snapshot.docChanges().forEach(change => {
             if (change.type !== "added") return;
 
