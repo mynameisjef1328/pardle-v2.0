@@ -2238,6 +2238,7 @@ try {
     }
 
     function clearUnread() {
+      console.log("[Chat Debug] clearUnread called");
       updateUnreadBadge(0);
       // Save current time as last seen so we don't re-alert on next open
       saveLastSeenTimestamp(Date.now());
@@ -2245,10 +2246,12 @@ try {
 
     function getLastSeenTimestamp() {
       const stored = localStorage.getItem(STORAGE_LAST_SEEN_MSG_KEY);
+      console.log("[Chat Debug] getLastSeenTimestamp:", stored);
       return stored ? parseInt(stored, 10) : 0;
     }
 
     function saveLastSeenTimestamp(ts) {
+      console.log("[Chat Debug] saveLastSeenTimestamp:", ts);
       localStorage.setItem(STORAGE_LAST_SEEN_MSG_KEY, String(ts));
     }
 
@@ -2508,6 +2511,7 @@ try {
     }
 
   async function attemptAutoRejoin() {
+  console.log("[Chat Debug] attemptAutoRejoin called");
   const savedGameId = localStorage.getItem(STORAGE_LAST_GAME_ID_KEY);
   const savedSlotStr = localStorage.getItem(STORAGE_LAST_SLOT_KEY);
 
@@ -2598,6 +2602,7 @@ try {
 
       messagesInitialized = false;
       const lastSeenTs = getLastSeenTimestamp();
+      console.log("[Chat Debug] attachMessageListener called, lastSeenTs:", lastSeenTs, "gameId:", gameId);
 
       unsubscribeMessages = db.collection("games")
         .doc(gameId)
@@ -2605,6 +2610,8 @@ try {
         .orderBy("createdAt", "desc")
         .limit(50)
         .onSnapshot(snapshot => {
+          console.log("[Chat Debug] Snapshot received, doc count:", snapshot.size, "messagesInitialized:", messagesInitialized);
+          
           const all = [];
           snapshot.forEach(doc => {
             const msg = doc.data();
@@ -2613,7 +2620,7 @@ try {
             // All messages are now broadcast to everyone
             const isMine = msg.fromId === currentPlayerId;
             all.push(
-              Object.assign({}, msg, { isMine })
+              Object.assign({}, msg, { isMine, docId: doc.id })
             );
           });
 
@@ -2626,30 +2633,51 @@ try {
             let missedCount = 0;
             let mostRecentMissed = null;
             
+            console.log("[Chat Debug] Checking", all.length, "messages for unread, currentPlayerId:", currentPlayerId);
+            
             all.forEach(msg => {
-              if (msg.fromId === currentPlayerId) return; // Skip own messages
+              if (msg.fromId === currentPlayerId) {
+                console.log("[Chat Debug] Skipping own message:", msg.text?.substring(0, 20));
+                return; // Skip own messages
+              }
               
-              const msgTs = msg.createdAt && msg.createdAt.toMillis ? msg.createdAt.toMillis() : 0;
+              // Handle both Firestore Timestamp and plain object formats
+              let msgTs = 0;
+              if (msg.createdAt) {
+                if (typeof msg.createdAt.toMillis === 'function') {
+                  msgTs = msg.createdAt.toMillis();
+                } else if (msg.createdAt.seconds) {
+                  msgTs = msg.createdAt.seconds * 1000;
+                }
+              }
+              
+              console.log("[Chat Debug] Message from", msg.fromName, "ts:", msgTs, "lastSeenTs:", lastSeenTs, "isNewer:", msgTs > lastSeenTs);
+              
               if (msgTs > lastSeenTs) {
                 missedCount++;
                 // Track most recent missed message for toast
-                if (!mostRecentMissed || msgTs > (mostRecentMissed.createdAt?.toMillis?.() || 0)) {
+                const prevTs = mostRecentMissed?.createdAt?.toMillis?.() || mostRecentMissed?.createdAt?.seconds * 1000 || 0;
+                if (!mostRecentMissed || msgTs > prevTs) {
                   mostRecentMissed = msg;
                 }
               }
             });
+            
+            console.log("[Chat Debug] missedCount:", missedCount, "chatSheet visible:", chatSheet?.classList.contains("visible"));
             
             if (missedCount > 0 && chatSheet && !chatSheet.classList.contains("visible")) {
               updateUnreadBadge(missedCount);
               
               // Show a summary toast
               if (missedCount === 1 && mostRecentMissed) {
+                console.log("[Chat Debug] Showing single message toast");
                 showToast(
                   mostRecentMissed.fromName || "Player",
                   mostRecentMissed.text || "",
                   () => { showChatSheet(); }
                 );
               } else {
+                console.log("[Chat Debug] Showing summary toast for", missedCount, "messages");
                 showToast(
                   "Pardle Chat",
                   missedCount + " new messages while you were away",
@@ -2749,6 +2777,7 @@ function syncSheetOpenClass() {
 }
 
 function showChatSheet() {
+      console.log("[Chat Debug] showChatSheet called");
       if (!chatSheet) return;
       clearUnread();
       chatSheet.classList.add("visible");
