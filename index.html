@@ -715,6 +715,58 @@
     .past-holes-content { display: none; padding-top: 8px; }
     .past-holes.open .past-holes-content { display: block; }
 
+    /* Hole Leaders */
+    .hole-leaders-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .hole-leaders-toggle svg { width: 18px; height: 18px; transition: transform 0.2s ease; }
+    .hole-leaders.open .hole-leaders-toggle svg { transform: rotate(180deg); }
+
+    .hole-leaders-content { display: none; padding-top: 8px; }
+    .hole-leaders.open .hole-leaders-content { display: block; }
+
+    .hole-leaders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .hole-leader-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .hole-leader-item:last-child {
+      border-bottom: none;
+    }
+
+    .hole-leader-hole {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .hole-leader-result {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text);
+    }
+
     .past-holes-table {
       width: 100%;
       border-collapse: collapse;
@@ -1268,6 +1320,19 @@
           <div style="overflow-x:auto;">
             <table id="pastHolesTable" class="past-holes-table"></table>
           </div>
+        </div>
+      </div>
+
+      <!-- Hole Leaders -->
+      <div id="holeLeadersSection" class="card hole-leaders" style="display:none;">
+        <button id="holeLeadersToggle" class="hole-leaders-toggle">
+          <span>Hole Leaders</span>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="hole-leaders-content">
+          <div id="holeLeadersList" class="hole-leaders-list"></div>
         </div>
       </div>
     </div>
@@ -1887,6 +1952,7 @@
       // Past holes shows completed days only (for historical view)
       const completedHoles = Math.max(currentHole - 1, 0);
       renderPastHoles(players, pars, completedHoles);
+      renderHoleLeaders(players, pars, completedHoles);
       startCountdown();
     }
 
@@ -1919,6 +1985,84 @@
       });
       html += "</tbody>";
       table.innerHTML = html;
+    }
+
+    function renderHoleLeaders(players, pars, completedHoles) {
+      const list = $("holeLeadersList");
+      if (completedHoles === 0) { $("holeLeadersSection").style.display = "none"; return; }
+      $("holeLeadersSection").style.display = "block";
+
+      // Calculate the best score relative to par across all completed holes
+      let bestScoreDiff = Infinity;
+
+      let html = "";
+      for (let h = 0; h < completedHoles; h++) {
+        const par = pars[h];
+        const holeNumber = h + 1;
+
+        // Find all players who submitted a score for this hole
+        const playersWithScores = [];
+        players.forEach((p, idx) => {
+          if (!p || !p.id) return;
+          const score = (p.scores || [])[h];
+          if (score != null) {
+            playersWithScores.push({
+              name: p.name || "Player " + (idx + 1),
+              score: score,
+              diff: score - par
+            });
+          }
+        });
+
+        // Skip if no one has submitted
+        if (playersWithScores.length === 0) continue;
+
+        // Find the lowest score
+        const lowestScore = Math.min(...playersWithScores.map(p => p.score));
+        const winners = playersWithScores.filter(p => p.score === lowestScore);
+        const scoreDiff = lowestScore - par;
+
+        // Track the best score relative to par for trophy emoji
+        if (scoreDiff < bestScoreDiff) {
+          bestScoreDiff = scoreDiff;
+        }
+
+        // Determine display text
+        let displayText = "";
+        if (winners.length === 1) {
+          displayText = `${winners[0].name} (${lowestScore})`;
+        } else if (winners.length === 2) {
+          displayText = `${winners[0].name} & ${winners[1].name} (${lowestScore})`;
+        } else {
+          displayText = `Tied (${lowestScore})`;
+        }
+
+        // Add emoji indicators
+        let emoji = "";
+        if (scoreDiff <= -2) emoji = "🦅"; // Eagle or better
+        else if (scoreDiff === -1) emoji = "🐦"; // Birdie
+
+        html += `
+          <div class="hole-leader-item" data-hole="${holeNumber}" data-diff="${scoreDiff}">
+            <span class="hole-leader-hole">Hole ${holeNumber}</span>
+            <span class="hole-leader-result">${displayText} ${emoji}</span>
+          </div>
+        `;
+      }
+
+      list.innerHTML = html;
+
+      // Add trophy to the best hole(s) of the round
+      if (bestScoreDiff < Infinity) {
+        const items = list.querySelectorAll(".hole-leader-item");
+        items.forEach(item => {
+          const diff = parseInt(item.getAttribute("data-diff"));
+          if (diff === bestScoreDiff) {
+            const resultSpan = item.querySelector(".hole-leader-result");
+            resultSpan.innerHTML += " 🏆";
+          }
+        });
+      }
     }
 
     // ==============================
@@ -2349,6 +2493,9 @@
 
       // Past holes toggle
       $("pastHolesToggle").onclick = () => { $("pastHolesSection").classList.toggle("open"); };
+
+      // Hole leaders toggle
+      $("holeLeadersToggle").onclick = () => { $("holeLeadersSection").classList.toggle("open"); };
 
       // Chat
       $("chatFab").onclick = () => { clearUnread(); openSheet("chatSheet"); };
