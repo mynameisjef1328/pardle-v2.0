@@ -1064,20 +1064,52 @@
     }
 
     /* Settings */
-    .settings-section {
-      margin-bottom: 14px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border-soft);
+    .settings-intro {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      margin-top: 0;
     }
 
-    .settings-section:last-of-type { border-bottom: none; }
+    .settings-section {
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--bg-card-elevated);
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+    }
+
+    .settings-section:last-of-type { margin-bottom: 12px; }
+
+    .settings-section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .settings-section-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .settings-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
     .settings-row {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px 0;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-soft);
     }
+
+    .settings-row:last-child { border-bottom: none; }
 
     .settings-row-btn {
       width: 100%;
@@ -1088,11 +1120,66 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px 0;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-soft);
+      transition: opacity 0.2s;
     }
 
-    .settings-label { font-size: 13px; font-weight: 600; color: var(--text); }
-    .settings-chevron { margin-left: auto; opacity: 0.6; font-size: 18px; }
+    .settings-row-btn:last-child { border-bottom: none; }
+
+    .settings-row-btn:hover { opacity: 0.7; }
+
+    .settings-row-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .settings-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .settings-description {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .settings-chevron {
+      margin-left: auto;
+      opacity: 0.5;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .settings-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px 8px;
+      margin-top: 12px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .settings-footer-text {
+      text-align: center;
+    }
+
+    .settings-footer-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    .settings-footer-description {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
 
     .theme-toggle {
       position: relative;
@@ -1505,17 +1592,28 @@
         <button id="settingsCloseBtn" class="sheet-close">✕</button>
       </div>
 
+      <p class="settings-intro">Customize your Pardle experience</p>
+
       <div class="settings-section">
-        <div class="settings-label">Appearance</div>
+        <div class="settings-section-header">
+          <span class="settings-section-icon">🎨</span>
+          <div class="settings-section-title">Appearance</div>
+        </div>
         <div class="settings-row">
-          <span class="settings-label">Dark Theme</span>
+          <div class="settings-row-content">
+            <span class="settings-label">Dark Theme</span>
+            <span class="settings-description">Switch between light and dark mode</span>
+          </div>
           <label class="theme-toggle">
             <input type="checkbox" id="themeToggle" checked>
             <span class="slider"></span>
           </label>
         </div>
         <div class="settings-row">
-          <span class="settings-label">Invert accents</span>
+          <div class="settings-row-content">
+            <span class="settings-label">Invert Accents</span>
+            <span class="settings-description">Swap orange and green color scheme</span>
+          </div>
           <label class="theme-toggle">
             <input type="checkbox" id="accentToggle">
             <span class="slider"></span>
@@ -1524,19 +1622,38 @@
       </div>
 
       <div class="settings-section">
-        <div class="settings-label">Help</div>
+        <div class="settings-section-header">
+          <span class="settings-section-icon">❓</span>
+          <div class="settings-section-title">Help & Info</div>
+        </div>
         <button id="settingsRulesBtn" class="settings-row-btn">
-          <span class="settings-label">Game Rules</span>
+          <div class="settings-row-content">
+            <span class="settings-label">Game Rules</span>
+            <span class="settings-description">Learn how to play Pardle</span>
+          </div>
           <span class="settings-chevron">›</span>
         </button>
       </div>
 
       <div class="settings-section">
-        <div class="settings-label">Game</div>
+        <div class="settings-section-header">
+          <span class="settings-section-icon">🎮</span>
+          <div class="settings-section-title">Game</div>
+        </div>
         <button id="leaveGameBtn" class="settings-row-btn">
-          <span class="settings-label">Leave Game</span>
+          <div class="settings-row-content">
+            <span class="settings-label">Leave Game</span>
+            <span class="settings-description">Exit current round</span>
+          </div>
           <span class="settings-chevron">›</span>
         </button>
+      </div>
+
+      <div class="settings-footer">
+        <div class="settings-footer-text">
+          <div class="settings-footer-label">Pardle</div>
+          <div class="settings-footer-description">Where Wordle meets golf</div>
+        </div>
       </div>
     </div>
   </div>
