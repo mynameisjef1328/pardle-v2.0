@@ -1155,6 +1155,139 @@
     .analytics-name { font-weight: 600; }
     .analytics-score { font-weight: 700; }
 
+    /* Enhanced Analytics */
+    .analytics-overview {
+      background: var(--accent-soft);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+      border: 1px solid var(--accent);
+    }
+
+    .analytics-overview-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .analytics-overview-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 14px;
+    }
+
+    .analytics-overview-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .analytics-overview-label {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .analytics-overview-value {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .analytics-player-card {
+      background: rgba(0,0,0,0.03);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    body[data-mode="dark"] .analytics-player-card { background: rgba(255,255,255,0.04); }
+
+    .analytics-player-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .analytics-player-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .analytics-player-total {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .analytics-player-total.under { color: var(--green); }
+    .analytics-player-total.over { color: var(--red); }
+    .analytics-player-total.even { color: var(--text-muted); }
+
+    .analytics-stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      padding: 4px 0;
+    }
+
+    .analytics-stat-label {
+      color: var(--text-muted);
+    }
+
+    .analytics-stat-value {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .analytics-breakdown {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .analytics-breakdown-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .analytics-breakdown-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .analytics-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .analytics-badge.eagle { background: var(--yellow); color: #000; }
+    .analytics-badge.birdie { background: var(--green); color: #fff; }
+    .analytics-badge.par { background: var(--gray); color: #fff; }
+    .analytics-badge.bogey { background: #ff9800; color: #000; }
+    .analytics-badge.double { background: var(--red); color: #fff; }
+
+    .analytics-no-data {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 20px;
+      font-size: 13px;
+    }
+
     /* Blur background when sheet open */
     body.sheet-open .app-header,
     body.sheet-open .app-content,
@@ -2374,30 +2507,175 @@
     }
 
     // ==============================
-    // Analytics - FIXED to use calculatePlayerStats
+    // Analytics - Enhanced with detailed stats
     // ==============================
     function buildAnalytics() {
       const content = $("analyticsContent");
-      if (!currentGameData) { content.innerHTML = '<p style="color:var(--text-muted)">No game data yet.</p>'; return; }
+      if (!currentGameData) {
+        content.innerHTML = '<div class="analytics-no-data">No game data yet.</div>';
+        return;
+      }
 
       const players = currentGameData.players || [];
       const course = COURSES[currentGameData.courseId] || COURSES["st-andrews"];
       const pars = course.pars;
       const currentHole = getCurrentHole(currentGameData);
 
+      // Calculate player standings for round overview
+      const standings = players
+        .map((p, idx) => {
+          if (!p || !p.id) return null;
+          const stats = calculatePlayerStats(p, pars, currentHole);
+          return {
+            name: p.name || "Player " + (idx + 1),
+            total: stats.total,
+            parTotal: stats.parTotal,
+            holesPlayed: stats.holesPlayed,
+            idx
+          };
+        })
+        .filter(Boolean)
+        .filter(s => s.holesPlayed > 0)
+        .sort((a, b) => (a.total - a.parTotal) - (b.total - b.parTotal));
+
+      // Build round overview
+      const maxHolesPlayed = Math.max(...players.map(p => {
+        const stats = calculatePlayerStats(p, pars, currentHole);
+        return stats.holesPlayed;
+      }), 0);
+
       let html = "";
+
+      if (maxHolesPlayed > 0) {
+        let leaderText = "-";
+        if (standings.length > 0) {
+          const leader = standings[0];
+          const leaderRel = getRelativeScore(leader.total, leader.parTotal);
+
+          if (standings.length > 1) {
+            const second = standings[1];
+            const margin = (second.total - second.parTotal) - (leader.total - leader.parTotal);
+            if (margin === 0) {
+              leaderText = "Tied";
+            } else if (margin === 1) {
+              leaderText = `${leader.name} leads by 1`;
+            } else {
+              leaderText = `${leader.name} leads by ${margin}`;
+            }
+          } else {
+            leaderText = `${leader.name} (${leaderRel.text})`;
+          }
+        }
+
+        html += `
+          <div class="analytics-overview">
+            <div class="analytics-overview-title">Round Overview</div>
+            <div class="analytics-overview-stats">
+              <div class="analytics-overview-stat">
+                <span class="analytics-overview-label">Holes Completed</span>
+                <span class="analytics-overview-value">${maxHolesPlayed} of ${HOLES}</span>
+              </div>
+              <div class="analytics-overview-stat">
+                <span class="analytics-overview-label">Round Leader</span>
+                <span class="analytics-overview-value">${leaderText}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Build per-player cards
       players.forEach((p, idx) => {
         if (!p || !p.id) return;
+        const scores = p.scores || [];
         const stats = calculatePlayerStats(p, pars, currentHole);
+
+        if (stats.holesPlayed === 0) {
+          // No scores yet for this player
+          return;
+        }
+
         const rel = getRelativeScore(stats.total, stats.parTotal);
+
+        // Calculate best and worst holes
+        let bestHole = null;
+        let worstHole = null;
+        let bestDiff = Infinity;
+        let worstDiff = -Infinity;
+
+        // Calculate score breakdown
+        let eagles = 0, birdies = 0, parsCount = 0, bogeys = 0, doubles = 0;
+
+        for (let h = 0; h < currentHole && h < HOLES; h++) {
+          const score = scores[h];
+          if (score != null) {
+            const par = pars[h];
+            const diff = score - par;
+
+            // Track best/worst
+            if (diff < bestDiff) {
+              bestDiff = diff;
+              bestHole = h + 1;
+            }
+            if (diff > worstDiff) {
+              worstDiff = diff;
+              worstHole = h + 1;
+            }
+
+            // Count score types
+            if (diff <= -2) eagles++;
+            else if (diff === -1) birdies++;
+            else if (diff === 0) parsCount++;
+            else if (diff === 1) bogeys++;
+            else doubles++;
+          }
+        }
+
+        // Calculate average
+        const average = stats.holesPlayed > 0 ? (stats.total / stats.holesPlayed).toFixed(1) : "-";
+
+        // Format best/worst holes
+        const bestHoleText = bestHole ? `Hole ${bestHole}: ${getScoreLabel(scores[bestHole - 1], pars[bestHole - 1])}` : "-";
+        const worstHoleText = worstHole ? `Hole ${worstHole}: ${getScoreLabel(scores[worstHole - 1], pars[worstHole - 1])}` : "-";
+
         html += `
-          <div class="analytics-row">
-            <span class="analytics-name">${p.name || "Player " + (idx + 1)}</span>
-            <span class="analytics-score">${stats.holesPlayed > 0 ? stats.total : "-"} (${stats.holesPlayed > 0 ? rel.text : "-"})</span>
+          <div class="analytics-player-card">
+            <div class="analytics-player-header">
+              <span class="analytics-player-name">${p.name || "Player " + (idx + 1)}</span>
+              <span class="analytics-player-total ${rel.class}">${stats.total} (${rel.text})</span>
+            </div>
+
+            <div class="analytics-stat-row">
+              <span class="analytics-stat-label">Best Hole</span>
+              <span class="analytics-stat-value">${bestHoleText}</span>
+            </div>
+
+            <div class="analytics-stat-row">
+              <span class="analytics-stat-label">Worst Hole</span>
+              <span class="analytics-stat-value">${worstHoleText}</span>
+            </div>
+
+            <div class="analytics-stat-row">
+              <span class="analytics-stat-label">Average Strokes</span>
+              <span class="analytics-stat-value">${average}</span>
+            </div>
+
+            <div class="analytics-breakdown">
+              <div class="analytics-breakdown-label">Score Breakdown</div>
+              <div class="analytics-breakdown-badges">
+                ${eagles > 0 ? `<span class="analytics-badge eagle">🦅 ${eagles}</span>` : ''}
+                ${birdies > 0 ? `<span class="analytics-badge birdie">🐦 ${birdies}</span>` : ''}
+                ${parsCount > 0 ? `<span class="analytics-badge par">Par ${parsCount}</span>` : ''}
+                ${bogeys > 0 ? `<span class="analytics-badge bogey">Bogey ${bogeys}</span>` : ''}
+                ${doubles > 0 ? `<span class="analytics-badge double">Dbl+ ${doubles}</span>` : ''}
+                ${eagles === 0 && birdies === 0 && parsCount === 0 && bogeys === 0 && doubles === 0 ? '<span style="color:var(--text-muted); font-size:12px;">No scores yet</span>' : ''}
+              </div>
+            </div>
           </div>
         `;
       });
-      content.innerHTML = html || '<p style="color:var(--text-muted)">No players yet.</p>';
+
+      content.innerHTML = html || '<div class="analytics-no-data">No players yet.</div>';
     }
 
     // ==============================
