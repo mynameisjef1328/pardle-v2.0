@@ -1329,6 +1329,14 @@
           <span class="settings-chevron">›</span>
         </button>
       </div>
+
+      <div class="settings-section">
+        <div class="settings-label">Game</div>
+        <button id="leaveGameBtn" class="settings-row-btn">
+          <span class="settings-label">Leave Game</span>
+          <span class="settings-chevron">›</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1990,6 +1998,35 @@
       showGameUI();
     }
 
+    function leaveGame() {
+      if (!confirm("Are you sure you want to leave the current game? This will clear your saved game data.")) {
+        return;
+      }
+
+      // Unsubscribe from listeners
+      if (unsubGame) unsubGame();
+      if (unsubMessages) unsubMessages();
+
+      // Clear state
+      currentGameId = null;
+      currentPlayerSlot = null;
+      currentGameData = null;
+      unsubGame = null;
+      unsubMessages = null;
+
+      // Clear localStorage
+      localStorage.removeItem(STORAGE_GAME_ID);
+      localStorage.removeItem(STORAGE_SLOT);
+
+      // Close settings and show start modal
+      closeSheet("settingsSheet");
+      $("startModal").classList.remove("hidden");
+
+      // Update UI
+      updateStartButtons();
+      showNoGameUI();
+    }
+
     function subscribeToGame(docRef) {
       if (unsubGame) unsubGame();
       unsubGame = docRef.onSnapshot(snap => {
@@ -2302,6 +2339,7 @@
         localStorage.setItem(STORAGE_ACCENT, accent);
       };
       $("settingsRulesBtn").onclick = () => { closeSheet("settingsSheet"); openSheet("rulesSheet"); };
+      $("leaveGameBtn").onclick = () => leaveGame();
 
       // Rules
       $("rulesCloseBtn").onclick = () => closeSheet("rulesSheet");
