@@ -677,9 +677,30 @@
       font-weight: 700;
     }
 
-    .standings-position.p1 { background: #fbbf24; color: #000; }
-    .standings-position.p2 { background: #9ca3af; color: #000; }
-    .standings-position.p3 { background: #cd7f32; color: #fff; }
+    .standings-position.p1 {
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+      color: #000;
+      box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+      font-size: 16px;
+    }
+    .standings-position.p1::before { content: "🥇"; }
+
+    .standings-position.p2 {
+      background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+      color: #000;
+      box-shadow: 0 2px 8px rgba(192, 192, 192, 0.4);
+      font-size: 16px;
+    }
+    .standings-position.p2::before { content: "🥈"; }
+
+    .standings-position.p3 {
+      background: linear-gradient(135deg, #cd7f32 0%, #f4a460 100%);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(205, 127, 50, 0.4);
+      font-size: 16px;
+    }
+    .standings-position.p3::before { content: "🥉"; }
+
     .standings-position.p4 { background: var(--border-soft); color: var(--text-muted); }
 
     .standings-name { font-size: 14px; }
@@ -691,6 +712,255 @@
     .standings-relative.under { color: var(--green); }
     .standings-relative.over { color: var(--red); }
     .standings-relative.even { color: var(--text-muted); }
+
+    /* ================================
+       PLAYER AVATARS
+       ================================ */
+    .player-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .player-avatar:hover { transform: scale(1.1); }
+
+    /* Avatar colors - vibrant palette */
+    .player-avatar.color-0 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .player-avatar.color-1 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .player-avatar.color-2 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .player-avatar.color-3 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .player-avatar.color-4 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+    .player-avatar.color-5 { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+    .player-avatar.color-6 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+    .player-avatar.color-7 { background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%); }
+
+    /* ================================
+       SCORE BADGES
+       ================================ */
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .score-badge.ace {
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+      color: #000;
+      box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    .score-badge.albatross { background: var(--green); color: #fff; }
+    .score-badge.eagle { background: var(--green); color: #fff; }
+    .score-badge.birdie { background: var(--green-soft); color: var(--green); }
+    .score-badge.par { background: var(--border-soft); color: var(--text-muted); }
+    .score-badge.bogey { background: var(--red-soft); color: var(--red); }
+    .score-badge.double { background: var(--red); color: #fff; }
+
+    /* ================================
+       PERFORMANCE INDICATORS
+       ================================ */
+    .performance-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 13px;
+      margin-left: 6px;
+    }
+
+    .performance-indicator.hot { color: var(--accent); animation: flicker 2s ease-in-out infinite; }
+    .performance-indicator.cold { color: var(--text-muted); opacity: 0.6; }
+
+    /* ================================
+       PROGRESS RING
+       ================================ */
+    .progress-ring-container {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      margin: 0 auto;
+    }
+
+    .progress-ring {
+      transform: rotate(-90deg);
+    }
+
+    .progress-ring-circle {
+      stroke: var(--border-soft);
+      fill: transparent;
+      stroke-width: 4;
+    }
+
+    .progress-ring-progress {
+      stroke: var(--accent);
+      fill: transparent;
+      stroke-width: 4;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+
+    .progress-ring-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* ================================
+       COURSE CARDS
+       ================================ */
+    .course-card {
+      position: relative;
+      padding: 16px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .course-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0.15;
+      z-index: 0;
+    }
+
+    .course-card.selected {
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .course-card-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .course-card-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .course-card-par {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .course-card-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.2s ease;
+    }
+
+    .course-card.selected .course-card-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Course-specific gradients */
+    .course-card.st-andrews::before { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); }
+    .course-card.augusta::before { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .course-card.bully-pulpit::before { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .course-card.torrey-pines::before { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+    .course-card.bethpage-black::before { background: linear-gradient(135deg, #6b7280 0%, #374151 100%); }
+    .course-card.sweetwater::before { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+    .course-card.tpc-sawgrass::before { background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); }
+    .course-card.whistling-straits::before { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+    .course-card.pebble-beach::before { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); }
+    .course-card.congressional::before { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+
+    /* ================================
+       ANIMATIONS
+       ================================ */
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5); }
+      50% { box-shadow: 0 4px 16px rgba(255, 215, 0, 0.8); }
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .animate-slide-in {
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    /* ================================
+       ENHANCED START MODAL
+       ================================ */
+    .start-tagline {
+      animation: fadeIn 0.6s ease-out 0.3s both;
+    }
+
+    .menu-btn {
+      transition: all 0.2s ease;
+    }
+
+    .menu-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .menu-btn:active {
+      transform: translateY(0);
+    }
 
     /* ================================
        PAST HOLES (COLLAPSIBLE)
@@ -1459,12 +1729,22 @@
           <div class="game-info-label">Course</div>
           <div id="courseName" class="game-info-value">St. Androos Links</div>
         </div>
-        <div>
-          <button id="gameIdPill" class="game-id-pill">
-            <span>⧉</span>
-            <span id="gameIdValue">loading...</span>
-          </button>
-          <div id="playerCount" class="player-count" style="margin-top:4px; text-align:right;">0 players</div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div class="progress-ring-container" style="width: 42px; height: 42px;">
+            <svg class="progress-ring" width="42" height="42">
+              <circle class="progress-ring-circle" cx="21" cy="21" r="18"></circle>
+              <circle id="progressRingProgress" class="progress-ring-progress" cx="21" cy="21" r="18"
+                stroke-dasharray="113.1" stroke-dashoffset="113.1"></circle>
+            </svg>
+            <div id="progressRingText" class="progress-ring-text" style="font-size: 11px;">0/18</div>
+          </div>
+          <div style="text-align: right;">
+            <button id="gameIdPill" class="game-id-pill">
+              <span>⧉</span>
+              <span id="gameIdValue">loading...</span>
+            </button>
+            <div id="playerCount" class="player-count" style="margin-top:4px;">0 players</div>
+          </div>
         </div>
       </div>
 
@@ -1738,19 +2018,99 @@
       </div>
       <div class="section-title">Your Name</div>
       <input id="createNameInput" class="sheet-input" placeholder="Enter your name" autocomplete="name">
-      <div class="section-title">Course</div>
-      <select id="createCourseSelect" class="sheet-select">
-        <option value="st-andrews">St. Androos Links</option>
-        <option value="augusta">Azalea National</option>
-        <option value="bully-pulpit">Badlands Pulpit</option>
-        <option value="torrey-pines">Torrey Pints</option>
-        <option value="bethpage-black">Bethpage Back Tees</option>
-        <option value="sweetwater">Sweetwater Country Klub</option>
-        <option value="tpc-sawgrass">TPC Strawgrass</option>
-        <option value="whistling-straits">Whistling Straights</option>
-        <option value="pebble-beach">Pebble Reach</option>
-        <option value="congressional">Congress-ish National</option>
-      </select>
+      <div class="section-title">Choose Your Course</div>
+      <div id="courseCardsContainer" class="course-cards-container">
+        <div class="course-card st-andrews selected" data-course="st-andrews">
+          <div class="course-card-content">
+            <div>
+              <div class="course-card-name">St. Androos Links</div>
+              <div class="course-card-par">Par 72</div>
+            </div>
+            <div class="course-card-check">✓</div>
+          </div>
+        </div>
+        <div class="course-card augusta" data-course="augusta">
+          <div class="course-card-content">
+            <div>
+              <div class="course-card-name">Azalea National</div>
+              <div class="course-card-par">Par 72</div>
+            </div>
+            <div class="course-card-check">✓</div>
+          </div>
+        </div>
+        <div class="course-card bully-pulpit" data-course="bully-pulpit">
+          <div class="course-card-content">
+            <div>
+              <div class="course-card-name">Badlands Pulpit</div>
+              <div class="course-card-par">Par 72</div>
+            </div>
+            <div class="course-card-check">✓</div>
+          </div>
+        </div>
+        <div class="course-card torrey-pines" data-course="torrey-pines">
+          <div class="course-card-content">
+            <div>
+              <div class="course-card-name">Torrey Pints</div>
+              <div class="course-card-par">Par 72</div>
+            </div>
+            <div class="course-card-check">✓</div>
+          </div>
+        </div>
+        <div class="course-card bethpage-black" data-course="bethpage-black">
+          <div class="course-card-content">
+            <div>
+              <div class="course-card-name">Bethpage Back Tees</div>
+              <div class="course-card-par">Par 71</div>
+            </div>
+            <div class="course-card-check">✓</div>
+          </div>
+        </div>
+        <div class="course-card sweetwater" data-course="sweetwater">
+          <div class="course-card-content">
+            <div>
+              <div class="course-card-name">Sweetwater Country Klub</div>
+              <div class="course-card-par">Par 72</div>
+            </div>
+            <div class="course-card-check">✓</div>
+          </div>
+        </div>
+        <div class="course-card tpc-sawgrass" data-course="tpc-sawgrass">
+          <div class="course-card-content">
+            <div>
+              <div class="course-card-name">TPC Strawgrass</div>
+              <div class="course-card-par">Par 72</div>
+            </div>
+            <div class="course-card-check">✓</div>
+          </div>
+        </div>
+        <div class="course-card whistling-straits" data-course="whistling-straits">
+          <div class="course-card-content">
+            <div>
+              <div class="course-card-name">Whistling Straights</div>
+              <div class="course-card-par">Par 72</div>
+            </div>
+            <div class="course-card-check">✓</div>
+          </div>
+        </div>
+        <div class="course-card pebble-beach" data-course="pebble-beach">
+          <div class="course-card-content">
+            <div>
+              <div class="course-card-name">Pebble Reach</div>
+              <div class="course-card-par">Par 72</div>
+            </div>
+            <div class="course-card-check">✓</div>
+          </div>
+        </div>
+        <div class="course-card congressional" data-course="congressional">
+          <div class="course-card-content">
+            <div>
+              <div class="course-card-name">Congress-ish National</div>
+              <div class="course-card-par">Par 72</div>
+            </div>
+            <div class="course-card-check">✓</div>
+          </div>
+        </div>
+      </div>
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">You'll get a code to share with your group.</p>
       <div class="sheet-actions">
         <button id="createCancelBtn" class="sheet-btn secondary">Cancel</button>
@@ -1950,6 +2310,16 @@
       const div = document.createElement("div");
       div.textContent = text;
       return div.innerHTML;
+    }
+
+    // Get player initials for avatar
+    function getInitials(name) {
+      if (!name) return "?";
+      const parts = name.trim().split(/\s+/);
+      if (parts.length === 1) {
+        return parts[0].substring(0, 2).toUpperCase();
+      }
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     }
 
     // Helper to calculate player stats from all submitted scores
@@ -2176,19 +2546,39 @@
 
       // Find max holes played for subtitle
       const maxHolesPlayed = Math.max(...standings.map(s => s.holesPlayed), 0);
-      $("standingsSubtitle").textContent = maxHolesPlayed > 0 
-        ? `Through ${maxHolesPlayed} hole${maxHolesPlayed !== 1 ? "s" : ""}` 
+      $("standingsSubtitle").textContent = maxHolesPlayed > 0
+        ? `Through ${maxHolesPlayed} hole${maxHolesPlayed !== 1 ? "s" : ""}`
         : "No scores yet";
+
+      // Update progress ring
+      const totalHoles = 18;
+      const progress = maxHolesPlayed / totalHoles;
+      const circumference = 2 * Math.PI * 18; // r=18
+      const offset = circumference * (1 - progress);
+      const progressRing = $("progressRingProgress");
+      if (progressRing) {
+        progressRing.style.strokeDashoffset = offset;
+      }
+      const progressText = $("progressRingText");
+      if (progressText) {
+        progressText.textContent = `${maxHolesPlayed}/${totalHoles}`;
+      }
 
       const standingsList = $("standingsList");
       standingsList.innerHTML = "";
       standings.forEach((p, pos) => {
         const rel = getRelativeScore(p.total, p.parTotal);
+
+        // Get player initials and avatar color
+        const initials = getInitials(p.name);
+        const avatarColor = `color-${p.index % 8}`;
+
         const row = document.createElement("div");
-        row.className = "standings-row";
+        row.className = "standings-row animate-slide-in";
         row.innerHTML = `
           <div class="standings-left">
             <span class="standings-position p${pos + 1}">${pos + 1}</span>
+            <div class="player-avatar ${avatarColor}">${initials}</div>
             <span class="standings-name">${p.name}</span>
           </div>
           <div class="standings-right">
@@ -2478,28 +2868,93 @@
         const par = course.pars[currentHole - 1];
         const scoreDiff = selectedScore - par;
 
-        // Haptic feedback: double buzz for birdie or better
+        // Haptic feedback based on score
         if (navigator.vibrate) {
-          if (scoreDiff < 0) {
-            // Birdie or better: double buzz pattern
-            navigator.vibrate([50, 50, 50]);
+          if (scoreDiff === -3) {
+            // Albatross: celebration pattern
+            navigator.vibrate([100, 50, 100, 50, 100]);
+          } else if (scoreDiff === -2) {
+            // Eagle: strong double buzz
+            navigator.vibrate([80, 40, 80]);
+          } else if (scoreDiff === -1) {
+            // Birdie: double buzz
+            navigator.vibrate([50, 30, 50]);
           } else {
             // Normal submit: short buzz
             navigator.vibrate(50);
           }
         }
 
-        // Confetti for eagle or better (2+ under par)
-        if (scoreDiff <= -2 && typeof confetti === 'function') {
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { x: 0.5, y: 0.5 },
-            colors: ['#00c853', '#4caf50', '#8bc34a', '#ffcc00', '#ff9800'],
-            ticks: 200,
-            gravity: 1.2,
-            scalar: 1.2
-          });
+        // Enhanced celebration confetti
+        if (typeof confetti === 'function') {
+          // Hole-in-one (Ace) on any hole
+          if (selectedScore === 1) {
+            // Epic golden confetti explosion
+            const duration = 3000;
+            const end = Date.now() + duration;
+            const colors = ['#ffd700', '#ffed4e', '#ffc107', '#ffb300'];
+
+            (function frame() {
+              confetti({
+                particleCount: 7,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: colors
+              });
+              confetti({
+                particleCount: 7,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: colors
+              });
+
+              if (Date.now() < end) {
+                requestAnimationFrame(frame);
+              }
+            }());
+
+            showToast("🏆 ACE!", "Hole in one! Legendary!", 4000);
+          }
+          // Albatross (-3)
+          else if (scoreDiff === -3) {
+            confetti({
+              particleCount: 150,
+              spread: 100,
+              origin: { x: 0.5, y: 0.4 },
+              colors: ['#00c853', '#4caf50', '#8bc34a', '#ffd700'],
+              ticks: 300,
+              gravity: 1,
+              scalar: 1.5
+            });
+            showToast("🦅 ALBATROSS!", "Incredible!", 3000);
+          }
+          // Eagle (-2)
+          else if (scoreDiff === -2) {
+            confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { x: 0.5, y: 0.5 },
+              colors: ['#00c853', '#4caf50', '#8bc34a', '#ffcc00', '#ff9800'],
+              ticks: 200,
+              gravity: 1.2,
+              scalar: 1.2
+            });
+            showToast("🦅 EAGLE!", "Amazing!", 2500);
+          }
+          // Birdie (-1)
+          else if (scoreDiff === -1) {
+            confetti({
+              particleCount: 50,
+              spread: 50,
+              origin: { x: 0.5, y: 0.6 },
+              colors: ['#00c853', '#4caf50', '#8bc34a'],
+              ticks: 150,
+              gravity: 1.3,
+              scalar: 1
+            });
+          }
         }
 
         // Clear selection after successful submit
@@ -2825,12 +3280,21 @@
       $("noGameCreateBtn").onclick = () => openSheet("createSheet");
       $("noGameJoinBtn").onclick = () => openSheet("joinSheet");
 
-      // Create sheet
+      // Create sheet - Course card selection
+      const courseCards = document.querySelectorAll('.course-card');
+      courseCards.forEach(card => {
+        card.onclick = () => {
+          courseCards.forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+        };
+      });
+
       $("createCloseBtn").onclick = () => closeSheet("createSheet");
       $("createCancelBtn").onclick = () => closeSheet("createSheet");
       $("createConfirmBtn").onclick = () => {
         const name = $("createNameInput").value.trim();
-        const course = $("createCourseSelect").value;
+        const selectedCard = document.querySelector('.course-card.selected');
+        const course = selectedCard ? selectedCard.dataset.course : 'st-andrews';
         if (!name) { showToast("Error", "Please enter your name"); return; }
         closeSheet("createSheet");
         createGame(name, course);
