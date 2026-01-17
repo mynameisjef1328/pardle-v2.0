@@ -10,6 +10,9 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
+  <!-- Confetti library for celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
   <style>
     :root {
       --bg: #f5f5f5;
@@ -2075,11 +2078,39 @@
         players[currentPlayerSlot].scores = scores;
 
         await docRef.update({ players });
-        
+
+        // Delightful feedback: haptic and confetti
+        const course = COURSES[data.courseId] || COURSES["st-andrews"];
+        const par = course.pars[currentHole - 1];
+        const scoreDiff = selectedScore - par;
+
+        // Haptic feedback: double buzz for birdie or better
+        if (navigator.vibrate) {
+          if (scoreDiff < 0) {
+            // Birdie or better: double buzz pattern
+            navigator.vibrate([50, 50, 50]);
+          } else {
+            // Normal submit: short buzz
+            navigator.vibrate(50);
+          }
+        }
+
+        // Confetti for eagle or better (2+ under par)
+        if (scoreDiff <= -2 && typeof confetti === 'function') {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { x: 0.5, y: 0.5 },
+            colors: ['#00c853', '#4caf50', '#8bc34a', '#ffcc00', '#ff9800'],
+            ticks: 200,
+            gravity: 1.2,
+            scalar: 1.2
+          });
+        }
+
         // Clear selection after successful submit
         selectedScore = null;
-        
-        if (navigator.vibrate) navigator.vibrate(50);
+
         console.log("Score submitted successfully");
       } catch (error) {
         console.error("Error submitting score:", error);
