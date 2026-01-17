@@ -191,6 +191,71 @@
       padding: 44px 42px 40px;
     }
 
+    /* ================================
+       LOGO ICON (Wordle squares + Golf flag)
+       ================================ */
+    .logo-icon {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+
+    .logo-square {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .logo-square.sq1 { background: linear-gradient(180deg, #fff8e7, #f5ead6); }
+    .logo-square.sq2 { background: linear-gradient(180deg, #ffd966, #f4c542); }
+    .logo-square.sq3 { background: linear-gradient(180deg, #ff9800, #e68900); }
+    .logo-square.sq4 { background: linear-gradient(180deg, #8bc34a, #7cb342); }
+    .logo-square.sq5 { background: linear-gradient(180deg, #4caf50, #43a047); }
+
+    .logo-flag {
+      position: relative;
+      width: 40px;
+      height: 50px;
+      margin-left: 8px;
+    }
+
+    .logo-flag-green {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 12px;
+      background: linear-gradient(180deg, #66bb6a, #4caf50);
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .logo-flag-pole {
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 44px;
+      background: linear-gradient(180deg, #fff, #e0e0e0);
+      border-radius: 1px;
+    }
+
+    .logo-flag-banner {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 20px;
+      height: 14px;
+      background: linear-gradient(135deg, #ff9800 0%, #ff5722 50%, #4caf50 100%);
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
     .start-title {
       text-align: center;
       font-weight: 800;
@@ -1056,6 +1121,20 @@
   <div id="startModal" class="modal-overlay">
     <div class="start-modal" role="dialog" aria-modal="true">
       <div class="start-inner">
+        <!-- Logo Icon -->
+        <div class="logo-icon">
+          <div class="logo-square sq1"></div>
+          <div class="logo-square sq2"></div>
+          <div class="logo-square sq3"></div>
+          <div class="logo-square sq4"></div>
+          <div class="logo-square sq5"></div>
+          <div class="logo-flag">
+            <div class="logo-flag-green"></div>
+            <div class="logo-flag-pole"></div>
+            <div class="logo-flag-banner"></div>
+          </div>
+        </div>
+        
         <div class="start-title">Pardle</div>
         <p class="start-tagline">Pardle is what happens when Wordle and golf have a beautiful, competitive baby.</p>
         <div class="menu-stack">
@@ -1514,7 +1593,7 @@
     }
 
     function getScoreClass(score, par) {
-      if (!score || !par) return "";
+      if (score == null || !par) return "";
       const diff = score - par;
       if (diff <= -2) return "eagle";
       if (diff === -1) return "birdie";
@@ -1524,7 +1603,7 @@
     }
 
     function getScoreLabel(score, par) {
-      if (!score || !par) return "";
+      if (score == null || !par) return "";
       const diff = score - par;
       if (diff <= -2) return "Eagle";
       if (diff === -1) return "Birdie";
@@ -1534,7 +1613,7 @@
     }
 
     function getRelativeScore(totalScore, totalPar) {
-      if (!totalScore || !totalPar) return { text: "E", class: "even" };
+      if (totalScore === 0 || totalPar === 0) return { text: "-", class: "even" };
       const diff = totalScore - totalPar;
       if (diff === 0) return { text: "E", class: "even" };
       if (diff > 0) return { text: "+" + diff, class: "over" };
@@ -1545,6 +1624,25 @@
       const div = document.createElement("div");
       div.textContent = text;
       return div.innerHTML;
+    }
+
+    // Helper to calculate player stats from all submitted scores
+    function calculatePlayerStats(player, pars, maxHole) {
+      const scores = player.scores || [];
+      let total = 0;
+      let parTotal = 0;
+      let holesPlayed = 0;
+      
+      // Count all submitted scores up to the current hole
+      for (let h = 0; h < maxHole && h < HOLES; h++) {
+        if (scores[h] != null) {
+          total += scores[h];
+          parTotal += pars[h];
+          holesPlayed++;
+        }
+      }
+      
+      return { total, parTotal, holesPlayed };
     }
 
     // ==============================
@@ -1678,12 +1776,25 @@
         if (hasSubmitted) {
           $("scoreEntry").style.display = "none";
           $("submittedState").style.display = "flex";
+          // Clear selection state when already submitted
+          selectedScore = null;
         } else {
           $("scoreEntry").style.display = "block";
           $("submittedState").style.display = "none";
-          selectedScore = null;
-          document.querySelectorAll(".score-btn").forEach(btn => btn.classList.remove("selected"));
-          $("submitScoreBtn").disabled = true;
+          
+          // FIX: Only reset selection if no score is currently selected
+          // This prevents the race condition where Firebase updates clear the selection
+          if (selectedScore === null) {
+            document.querySelectorAll(".score-btn").forEach(btn => btn.classList.remove("selected"));
+            $("submitScoreBtn").disabled = true;
+          }
+          // If a score IS selected, make sure the UI reflects that
+          else {
+            document.querySelectorAll(".score-btn").forEach(btn => {
+              btn.classList.toggle("selected", parseInt(btn.dataset.score) === selectedScore);
+            });
+            $("submitScoreBtn").disabled = false;
+          }
         }
       }
 
@@ -1714,27 +1825,34 @@
         statusList.appendChild(row);
       });
 
-      // Standings
-      const completedHoles = Math.min(currentHole - 1, HOLES);
-      $("standingsSubtitle").textContent = `After ${completedHoles} hole${completedHoles !== 1 ? "s" : ""}`;
-
+      // FIX: Standings now count ALL submitted scores up to current hole (not just completed holes)
       const standings = players
         .map((p, idx) => {
           if (!p || !p.id) return null;
-          const scores = p.scores || [];
-          let total = 0, parTotal = 0;
-          for (let h = 0; h < completedHoles; h++) {
-            if (scores[h] != null) { total += scores[h]; parTotal += pars[h]; }
-          }
-          return { name: p.name || "Player " + (idx + 1), total, parTotal, idx };
+          const stats = calculatePlayerStats(p, pars, currentHole);
+          return { 
+            name: p.name || "Player " + (idx + 1), 
+            total: stats.total, 
+            parTotal: stats.parTotal, 
+            holesPlayed: stats.holesPlayed,
+            idx 
+          };
         })
         .filter(Boolean)
         .sort((a, b) => {
-          if (a.total === 0 && b.total === 0) return 0;
-          if (a.total === 0) return 1;
-          if (b.total === 0) return -1;
+          // Players with no scores go to bottom
+          if (a.holesPlayed === 0 && b.holesPlayed === 0) return 0;
+          if (a.holesPlayed === 0) return 1;
+          if (b.holesPlayed === 0) return -1;
+          // Sort by relative to par (lower is better)
           return (a.total - a.parTotal) - (b.total - b.parTotal);
         });
+
+      // Find max holes played for subtitle
+      const maxHolesPlayed = Math.max(...standings.map(s => s.holesPlayed), 0);
+      $("standingsSubtitle").textContent = maxHolesPlayed > 0 
+        ? `Through ${maxHolesPlayed} hole${maxHolesPlayed !== 1 ? "s" : ""}` 
+        : "No scores yet";
 
       const standingsList = $("standingsList");
       standingsList.innerHTML = "";
@@ -1748,13 +1866,15 @@
             <span class="standings-name">${p.name}</span>
           </div>
           <div class="standings-right">
-            <span class="standings-total">${p.total || "-"}</span>
-            <span class="standings-relative ${rel.class}">${p.total ? rel.text : "-"}</span>
+            <span class="standings-total">${p.holesPlayed > 0 ? p.total : "-"}</span>
+            <span class="standings-relative ${p.holesPlayed > 0 ? rel.class : ""}">${p.holesPlayed > 0 ? rel.text : "-"}</span>
           </div>
         `;
         standingsList.appendChild(row);
       });
 
+      // Past holes shows completed days only (for historical view)
+      const completedHoles = Math.max(currentHole - 1, 0);
       renderPastHoles(players, pars, completedHoles);
       startCountdown();
     }
@@ -1880,20 +2000,54 @@
     }
 
     async function submitScore() {
-      if (!currentGameId || currentPlayerSlot == null || selectedScore == null) return;
-      const currentHole = getCurrentHole(currentGameData);
-      const docRef = db.collection("games").doc(currentGameId);
-      const snap = await docRef.get();
-      const data = snap.data();
-      const players = data.players || [];
-      if (!players[currentPlayerSlot]) return;
+      // FIX: Added better logging and validation
+      console.log("submitScore called", { currentGameId, currentPlayerSlot, selectedScore });
+      
+      if (!currentGameId) {
+        console.error("No currentGameId");
+        return;
+      }
+      if (currentPlayerSlot == null) {
+        console.error("No currentPlayerSlot");
+        return;
+      }
+      if (selectedScore == null) {
+        console.error("No selectedScore");
+        return;
+      }
+      
+      try {
+        const currentHole = getCurrentHole(currentGameData);
+        const docRef = db.collection("games").doc(currentGameId);
+        const snap = await docRef.get();
+        const data = snap.data();
+        const players = data.players || [];
+        
+        if (!players[currentPlayerSlot]) {
+          console.error("Player not found at slot", currentPlayerSlot);
+          return;
+        }
 
-      const scores = players[currentPlayerSlot].scores || [];
-      scores[currentHole - 1] = selectedScore;
-      players[currentPlayerSlot].scores = scores;
+        // Make sure scores array exists and is long enough
+        const scores = players[currentPlayerSlot].scores || [];
+        while (scores.length < HOLES) {
+          scores.push(null);
+        }
+        
+        scores[currentHole - 1] = selectedScore;
+        players[currentPlayerSlot].scores = scores;
 
-      await docRef.update({ players });
-      if (navigator.vibrate) navigator.vibrate(50);
+        await docRef.update({ players });
+        
+        // Clear selection after successful submit
+        selectedScore = null;
+        
+        if (navigator.vibrate) navigator.vibrate(50);
+        console.log("Score submitted successfully");
+      } catch (error) {
+        console.error("Error submitting score:", error);
+        showToast("Error", "Failed to submit score. Try again.");
+      }
     }
 
     // ==============================
@@ -2008,7 +2162,7 @@
     }
 
     // ==============================
-    // Analytics
+    // Analytics - FIXED to use calculatePlayerStats
     // ==============================
     function buildAnalytics() {
       const content = $("analyticsContent");
@@ -2018,21 +2172,16 @@
       const course = COURSES[currentGameData.courseId] || COURSES["st-andrews"];
       const pars = course.pars;
       const currentHole = getCurrentHole(currentGameData);
-      const completedHoles = Math.min(currentHole - 1, HOLES);
 
       let html = "";
       players.forEach((p, idx) => {
         if (!p || !p.id) return;
-        const scores = p.scores || [];
-        let total = 0, parTotal = 0;
-        for (let h = 0; h < completedHoles; h++) {
-          if (scores[h] != null) { total += scores[h]; parTotal += pars[h]; }
-        }
-        const rel = getRelativeScore(total, parTotal);
+        const stats = calculatePlayerStats(p, pars, currentHole);
+        const rel = getRelativeScore(stats.total, stats.parTotal);
         html += `
           <div class="analytics-row">
             <span class="analytics-name">${p.name || "Player " + (idx + 1)}</span>
-            <span class="analytics-score">${total || "-"} (${total ? rel.text : "-"})</span>
+            <span class="analytics-score">${stats.holesPlayed > 0 ? stats.total : "-"} (${stats.holesPlayed > 0 ? rel.text : "-"})</span>
           </div>
         `;
       });
