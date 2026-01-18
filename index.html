@@ -1494,6 +1494,45 @@
     .rules-text ul { margin: 6px 0 6px 20px; padding-left: 0; }
     .rules-text li { margin: 3px 0; }
 
+    /* Rules Footer */
+    .rules-footer {
+      margin-top: 32px;
+      padding-top: 20px;
+    }
+
+    .rules-footer-divider {
+      height: 1px;
+      background: var(--border-soft);
+      margin-bottom: 16px;
+    }
+
+    .rules-footer-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .rules-footer-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .rules-footer-link:hover {
+      opacity: 0.7;
+      text-decoration: underline;
+    }
+
+    .rules-footer-separator {
+      font-size: 13px;
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
     /* Analytics */
     .analytics-intro { font-size: 13px; line-height: 1.4; margin-bottom: 10px; }
     .analytics-list { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
@@ -1991,6 +2030,15 @@
         </p>
 
         <p style="margin-top:16px;">Pardle is perfect for tracking daily scores with your crew, flexing your vocab game, and delivering top tier trash talk.</p>
+
+        <div class="rules-footer">
+          <div class="rules-footer-divider"></div>
+          <div class="rules-footer-links">
+            <a href="https://mynameisjef1328.github.io/pardle-support/" target="_blank" rel="noopener noreferrer" class="rules-footer-link">Support</a>
+            <span class="rules-footer-separator">•</span>
+            <a href="https://mynameisjef1328.github.io/pardle-support/privacy.html" target="_blank" rel="noopener noreferrer" class="rules-footer-link">Privacy Policy</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
