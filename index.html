@@ -3774,7 +3774,18 @@
       });
 
       // Start modal
-      $("startCreateBtn").onclick = () => { $("startModal").classList.add("hidden"); openSheet("createSheet"); };
+      $("startCreateBtn").onclick = () => {
+        if (hasSavedGame()) {
+          if (!confirm("This device will leave the current game and start fresh.\n\nGot the old code saved? You'll need it to come back.")) {
+            return;
+          }
+          // Clear existing game data
+          localStorage.removeItem(STORAGE_GAME_ID);
+          localStorage.removeItem(STORAGE_SLOT);
+        }
+        $("startModal").classList.add("hidden");
+        openSheet("createSheet");
+      };
       $("startJoinBtn").onclick = () => { $("startModal").classList.add("hidden"); openSheet("joinSheet"); };
       $("startRejoinBtn").onclick = () => rejoinGame();
       $("startRulesBtn").onclick = () => { $("startModal").classList.add("hidden"); openSheet("rulesSheet"); };
