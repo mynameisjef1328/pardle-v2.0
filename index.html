@@ -2566,7 +2566,8 @@
     }
 
     function getRelativeScore(totalScore, totalPar) {
-      if (totalScore === 0 || totalPar === 0) return { text: "-", class: "even" };
+      // Only return "-" if no par data (no holes played)
+      if (totalPar === 0) return { text: "-", class: "even" };
       const diff = totalScore - totalPar;
       if (diff === 0) return { text: "E", class: "even" };
       if (diff > 0) return { text: "+" + diff, class: "over" };
@@ -2990,7 +2991,6 @@
             <span class="standings-name">${p.name}${confIndicator}</span>
           </div>
           <div class="standings-right">
-            <span class="standings-total">${p.holesPlayed > 0 ? p.total : "-"}</span>
             <span class="standings-relative ${p.holesPlayed > 0 ? rel.class : ""}">${p.holesPlayed > 0 ? rel.text : "-"}</span>
           </div>
         `;
