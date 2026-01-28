@@ -2212,39 +2212,48 @@
           </li>
         </ul>
 
-        <h3>Confidence Bet ⚡</h3>
-        <p style="margin-bottom:12px;">The Confidence Bet is an optional high-risk, high-reward feature that doubles down on your performance.</p>
+        <h3>Predictions & Confidence Bet ⚡</h3>
+        <p style="margin-bottom:12px;">Before playing Wordle, you'll predict your score. Get it right for a bonus!</p>
 
-        <p><strong>How to Use:</strong></p>
+        <p><strong>How to Play:</strong></p>
         <ul>
-          <li><strong>Step 1 - Predict:</strong> Before playing Wordle, enter your predicted score.</li>
-          <li><strong>Step 2 - Bet:</strong> Tap the ⚡ Confidence Bet button to activate it, then tap "Lock Prediction".</li>
-          <li><strong>Step 3 - Play:</strong> Go play your Wordle game.</li>
-          <li><strong>Step 4 - Report:</strong> Come back and enter your actual score.</li>
+          <li><strong>Step 1 - Predict:</strong> Enter your predicted score before playing Wordle.</li>
+          <li><strong>Step 2 - Bet (optional):</strong> Tap ⚡ Confidence Bet for higher risk/reward.</li>
+          <li><strong>Step 3 - Lock:</strong> Tap "Lock Prediction" to save your prediction.</li>
+          <li><strong>Step 4 - Play:</strong> Go play your Wordle game.</li>
+          <li><strong>Step 5 - Report:</strong> Come back and enter your actual score.</li>
         </ul>
 
-        <p><strong>How Scoring Works:</strong></p>
-        <p style="margin-bottom:8px;">Your bonus or penalty equals how many strokes you are under or over par:</p>
+        <p><strong>Prediction Bonus 🎯</strong></p>
+        <p style="margin-bottom:8px;">If your prediction matches your actual score (without betting):</p>
         <ul>
-          <li><strong style="color:var(--green);">Under par:</strong> You get a bonus equal to strokes under par</li>
-          <li><strong style="color:var(--red);">Over par:</strong> You get a penalty equal to strokes over par</li>
+          <li>🎯 <strong style="color:var(--green);">Correct prediction = -1 stroke bonus</strong></li>
+          <li>❌ Wrong prediction = No penalty (safe!)</li>
+        </ul>
+
+        <p><strong>Confidence Bet ⚡ (High Risk/Reward)</strong></p>
+        <p style="margin-bottom:8px;">If you activate the Confidence Bet, your bonus/penalty equals your performance vs par:</p>
+        <ul>
+          <li><strong style="color:var(--green);">Under par:</strong> Bonus = strokes under par</li>
+          <li><strong style="color:var(--red);">Over par:</strong> Penalty = strokes over par</li>
           <li><strong>At par:</strong> No adjustment</li>
         </ul>
 
         <p><strong>Examples (on a Par 4):</strong></p>
-        <ul>
-          <li>🦅 <strong>Eagle (2):</strong> -2 under par → <span style="color:var(--green);">-2 bonus</span> → Total effect: <strong>-4</strong></li>
-          <li>🐦 <strong>Birdie (3):</strong> -1 under par → <span style="color:var(--green);">-1 bonus</span> → Total effect: <strong>-2</strong></li>
-          <li>⛳ <strong>Par (4):</strong> Even → No change → Total effect: <strong>E</strong></li>
-          <li>😅 <strong>Bogey (5):</strong> +1 over par → <span style="color:var(--red);">+1 penalty</span> → Total effect: <strong>+2</strong></li>
-          <li>😬 <strong>Double (6):</strong> +2 over par → <span style="color:var(--red);">+2 penalty</span> → Total effect: <strong>+4</strong></li>
-        </ul>
+        <table style="width:100%; font-size:12px; margin-bottom:12px;">
+          <tr style="text-align:left;"><th>Score</th><th>Prediction Only 🎯</th><th>With Bet ⚡</th></tr>
+          <tr><td>🦅 Eagle (2)</td><td style="color:var(--green);">-1 if correct</td><td style="color:var(--green);">-2 bonus = -4 total</td></tr>
+          <tr><td>🐦 Birdie (3)</td><td style="color:var(--green);">-1 if correct</td><td style="color:var(--green);">-1 bonus = -2 total</td></tr>
+          <tr><td>⛳ Par (4)</td><td style="color:var(--green);">-1 if correct</td><td>No change = E</td></tr>
+          <tr><td>😅 Bogey (5)</td><td style="color:var(--green);">-1 if correct</td><td style="color:var(--red);">+1 penalty = +2 total</td></tr>
+          <tr><td>😬 Double (6)</td><td style="color:var(--green);">-1 if correct</td><td style="color:var(--red);">+2 penalty = +4 total</td></tr>
+        </table>
 
-        <p><strong>Tips:</strong></p>
+        <p><strong>Strategy Tips:</strong></p>
         <ul>
-          <li>Only use Confidence Bet when you're feeling lucky!</li>
+          <li>🎯 Prediction only is safe - bonus if right, no penalty if wrong.</li>
+          <li>⚡ Confidence Bet is risky - big reward if you do well, big penalty if you don't!</li>
           <li>Your opponents can see your locked prediction - adds to the mind games!</li>
-          <li>The ⚡ indicator in standings shows how many confidence bets a player has made.</li>
         </ul>
 
         <h3>Daily Play</h3>
@@ -2611,15 +2620,18 @@
     }
 
     // Helper to calculate player stats from all submitted scores
-    // Includes confidence bonus/penalty calculation based on performance vs par
+    // Includes confidence bonus/penalty and prediction accuracy bonus
     function calculatePlayerStats(player, pars, maxHole) {
       const scores = player.scores || [];
+      const predictions = player.predictions || [];
       const confident = player.confident || [];
       let total = 0;
       let parTotal = 0;
       let holesPlayed = 0;
       let confidenceAdjustment = 0;
+      let predictionAdjustment = 0;
       let confidentCount = 0;
+      let correctPredictions = 0;
 
       // Count all submitted scores up to the current hole
       for (let h = 0; h < maxHole && h < HOLES; h++) {
@@ -2628,23 +2640,35 @@
           parTotal += pars[h];
           holesPlayed++;
 
-          // Apply confidence bet adjustment based on performance vs par
-          // Bonus/penalty equals strokes under/over par (doubles the effect)
+          const predictionCorrect = predictions[h] != null && predictions[h] === scores[h];
+
           if (confident[h]) {
+            // Confidence bet: bonus/penalty equals strokes under/over par
             confidentCount++;
             const vsPar = scores[h] - pars[h];
-            // Under par: bonus (negative = subtract strokes)
-            // Over par: penalty (positive = add strokes)
-            // At par: no adjustment
             confidenceAdjustment += vsPar;
+            if (predictionCorrect) correctPredictions++;
+          } else if (predictionCorrect) {
+            // No bet but correct prediction: -1 stroke bonus
+            correctPredictions++;
+            predictionAdjustment -= 1;
           }
         }
       }
 
-      // Apply confidence adjustment to total
-      const adjustedTotal = total + confidenceAdjustment;
+      // Apply adjustments to total
+      const adjustedTotal = total + confidenceAdjustment + predictionAdjustment;
 
-      return { total: adjustedTotal, rawTotal: total, parTotal, holesPlayed, confidenceAdjustment, confidentCount };
+      return {
+        total: adjustedTotal,
+        rawTotal: total,
+        parTotal,
+        holesPlayed,
+        confidenceAdjustment,
+        predictionAdjustment,
+        confidentCount,
+        correctPredictions
+      };
     }
 
     // ==============================
@@ -2913,19 +2937,29 @@
 
         let scoreHtml;
         if (holeScore != null) {
-          // Has actual score - show with confidence indicator based on vs par
-          let confidenceIndicator = '';
+          // Has actual score - show with appropriate indicator
+          let indicator = '';
+          const predictionCorrect = holePrediction != null && holePrediction === holeScore;
+
           if (isConfident) {
+            // Confidence bet: show vs par bonus/penalty
             const vsPar = holeScore - par;
             if (vsPar < 0) {
-              confidenceIndicator = `<span class="confidence-indicator" style="color:var(--green);" title="${Math.abs(vsPar)} stroke bonus">⚡-${Math.abs(vsPar)}</span>`;
+              indicator = `<span class="confidence-indicator" style="color:var(--green);" title="${Math.abs(vsPar)} stroke bonus">⚡-${Math.abs(vsPar)}</span>`;
             } else if (vsPar > 0) {
-              confidenceIndicator = `<span class="confidence-indicator" style="color:var(--red);" title="${vsPar} stroke penalty">⚡+${vsPar}</span>`;
+              indicator = `<span class="confidence-indicator" style="color:var(--red);" title="${vsPar} stroke penalty">⚡+${vsPar}</span>`;
             } else {
-              confidenceIndicator = `<span class="confidence-indicator" title="No adjustment">⚡</span>`;
+              indicator = `<span class="confidence-indicator" title="No adjustment">⚡</span>`;
             }
+            // Add target if prediction was also correct
+            if (predictionCorrect) {
+              indicator += `<span class="confidence-indicator" title="Prediction correct!">🎯</span>`;
+            }
+          } else if (predictionCorrect) {
+            // No bet but correct prediction: show target with -1 bonus
+            indicator = `<span class="confidence-indicator" style="color:var(--green);" title="Correct prediction! -1 stroke">🎯-1</span>`;
           }
-          scoreHtml = `<span class="player-score-badge ${getScoreClass(holeScore, par)}">${holeScore} (${getScoreLabel(holeScore, par)})${confidenceIndicator}</span>`;
+          scoreHtml = `<span class="player-score-badge ${getScoreClass(holeScore, par)}">${holeScore} (${getScoreLabel(holeScore, par)})${indicator}</span>`;
         } else if (holePrediction != null) {
           // Has prediction but no actual score yet - show prediction locked
           const confidenceIndicator = isConfident ? '<span class="confidence-indicator">⚡</span>' : '';
@@ -3039,26 +3073,32 @@
       players.forEach((p, idx) => {
         if (!p || !p.id) return;
         const scores = p.scores || [];
+        const predictions = p.predictions || [];
         const confident = p.confident || [];
         html += `<tr><td>${p.name || "Player " + (idx + 1)}</td>`;
         for (let h = 0; h < completedHoles; h++) {
           const score = scores[h];
+          const prediction = predictions[h];
           const isConfident = confident[h];
           if (score != null) {
             const cls = getScoreClass(score, pars[h]);
-            // Show confidence indicator with vs par bonus/penalty
-            let confIndicator = '';
+            const predictionCorrect = prediction != null && prediction === score;
+            // Show appropriate indicator
+            let indicator = '';
             if (isConfident) {
               const vsPar = score - pars[h];
               if (vsPar < 0) {
-                confIndicator = `<span class="confidence-indicator" style="color:var(--green);">⚡-${Math.abs(vsPar)}</span>`;
+                indicator = `<span class="confidence-indicator" style="color:var(--green);">⚡-${Math.abs(vsPar)}</span>`;
               } else if (vsPar > 0) {
-                confIndicator = `<span class="confidence-indicator" style="color:var(--red);">⚡+${vsPar}</span>`;
+                indicator = `<span class="confidence-indicator" style="color:var(--red);">⚡+${vsPar}</span>`;
               } else {
-                confIndicator = `<span class="confidence-indicator">⚡</span>`;
+                indicator = `<span class="confidence-indicator">⚡</span>`;
               }
+              if (predictionCorrect) indicator += '🎯';
+            } else if (predictionCorrect) {
+              indicator = `<span class="confidence-indicator" style="color:var(--green);">🎯-1</span>`;
             }
-            html += `<td><span class="past-hole-score ${cls}">${score}${confIndicator}</span></td>`;
+            html += `<td><span class="past-hole-score ${cls}">${score}${indicator}</span></td>`;
           } else {
             html += `<td>-</td>`;
           }
@@ -3463,9 +3503,12 @@
           }
         }
 
-        // Check confidence bet feedback based on vs par performance
+        // Check confidence bet and prediction feedback
+        const predictions = players[currentPlayerSlot].predictions || [];
         const confident = players[currentPlayerSlot].confident || [];
+        const prediction = predictions[currentHole - 1];
         const isConfident = confident[currentHole - 1];
+        const predictionCorrect = prediction != null && prediction === selectedScore;
 
         if (isConfident) {
           const vsPar = selectedScore - par;
@@ -3488,6 +3531,18 @@
           } else {
             // At par - no adjustment
             showToast("⚡ Even!", "At par - no adjustment.", 2000);
+          }
+        } else if (predictionCorrect) {
+          // No bet but correct prediction - bonus!
+          showToast("🎯 Nailed it!", "Prediction correct! -1 stroke bonus!", 3000);
+          if (typeof confetti === 'function') {
+            confetti({
+              particleCount: 40,
+              spread: 50,
+              origin: { x: 0.5, y: 0.5 },
+              colors: ['#00c853', '#4caf50', '#8bc34a'],
+              ticks: 120
+            });
           }
         }
 
