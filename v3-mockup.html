@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pardle v3.0 — Premium Features Mockup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <style>
+    /* ================================
+       CSS RESET & BASE
+       ================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #101010;
+      --bg-card: #1f1f1f;
+      --bg-card-elevated: #2a2a2a;
+      --text: #f5f5f5;
+      --text-muted: #999999;
+      --accent: #00c853;
+      --accent-soft: rgba(0, 200, 83, 0.15);
+      --accent-glow: rgba(0, 200, 83, 0.4);
+      --accent-secondary: #ff9800;
+      --accent-secondary-soft: rgba(255, 152, 0, 0.15);
+      --accent-secondary-glow: rgba(255, 152, 0, 0.4);
+      --border-soft: #333333;
+      --green: #00c853;
+      --red: #ff3b30;
+      --yellow: #ffcc00;
+      --gold: #ffd700;
+      --gray: #6b7280;
+      --blue: #2196f3;
+      --blue-soft: rgba(33, 150, 243, 0.15);
+      --purple: #9c27b0;
+      --purple-soft: rgba(156, 39, 176, 0.15);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ================================
+       TAB NAVIGATION
+       ================================ */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-soft);
+      padding: 8px 0 calc(8px + var(--safe-bottom));
+      z-index: 100;
+    }
+
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 0;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .tab-btn.active { color: var(--accent); }
+    .tab-btn .tab-icon { font-size: 22px; }
+
+    .tab-page {
+      display: none;
+      padding: 60px 16px calc(80px + var(--safe-bottom)) 16px;
+      min-height: 100dvh;
+    }
+
+    .tab-page.active { display: block; }
+
+    /* ================================
+       HEADER
+       ================================ */
+    .app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border-soft);
+      padding: calc(var(--safe-top) + 10px) 16px 10px;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .app-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+
+    .coin-display {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-card);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border-soft);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .coin-display:hover { border-color: var(--gold); }
+    .coin-icon { font-size: 16px; }
+    .coin-amount {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .coin-plus {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-left: 4px;
+    }
+
+    /* ================================
+       CARDS
+       ================================ */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-soft);
+    }
+
+    .card-elevated {
+      background: var(--bg-card-elevated);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: -12px;
+      margin-bottom: 16px;
+    }
+
+    /* ================================
+       BUTTONS
+       ================================ */
+    .btn-primary {
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: var(--accent);
+      color: #000;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 14px 20px;
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-secondary:active { transform: scale(0.98); }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #ffd700, #ffb300);
+      color: #000;
+      border: none;
+    }
+
+    .btn-sm {
+      padding: 10px 16px;
+      font-size: 14px;
+    }
+
+    /* ================================
+       COIN STORE
+       ================================ */
+    .coin-pack {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: var(--bg-card-elevated);
+      border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+      border: 1px solid var(--border-soft);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .coin-pack:hover { border-color: var(--gold); }
+    .coin-pack.popular { border-color: var(--accent); }
+
+    .coin-pack-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .coin-pack-emoji { font-size: 28px; }
+
+    .coin-pack-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .coin-pack-amount {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .coin-pack-bonus {
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .coin-pack-price {
+      padding: 8px 16px;
+      background: var(--accent);
+      color: #000;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+    }
+
+    .popular-badge {
+      font-size: 9px;
+      background: var(--accent);
+      color: #000;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    /* ================================
+       MATCHMAKING
+       ================================ */
+    .match-mode {
+      padding: 20px;
+      background: var(--bg-card-elevated);
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      border: 1px solid var(--border-soft);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .match-mode:hover { border-color: var(--accent); }
+    .match-mode.selected { border-color: var(--accent); background: var(--accent-soft); }
+
+    .match-mode-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .match-mode-icon { font-size: 28px; }
+    .match-mode-title { font-size: 16px; font-weight: 700; }
+
+    .match-mode-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .match-mode-cost {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .searching-overlay {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .searching-overlay.active { display: flex; }
+
+    .search-spinner {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3px solid var(--border-soft);
+      border-top-color: var(--accent);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .search-text {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .search-subtext {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .search-players {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .match-found {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .match-found.active { display: flex; }
+
+    .match-found-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .match-players {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .match-player {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .match-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .match-player-name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .match-player-rank {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .match-vs {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    /* Online players indicator */
+    .online-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .online-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ================================
+       TOURNAMENTS
+       ================================ */
+    .tournament-card {
+      padding: 20px;
+      background: var(--bg-card-elevated);
+      border-radius: var(--radius);
+      margin-bottom: 14px;
+      border: 1px solid var(--border-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tournament-card.featured {
+      border-color: var(--gold);
+      background: linear-gradient(135deg, rgba(255,215,0,0.08), var(--bg-card-elevated));
+    }
+
+    .tournament-card.active-tournament {
+      border-color: var(--accent);
+    }
+
+    .tournament-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 9px;
+      padding: 3px 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-featured {
+      background: var(--gold);
+      color: #000;
+    }
+
+    .badge-live {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .badge-upcoming {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .badge-free {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .tournament-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .tournament-icon { font-size: 32px; }
+
+    .tournament-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .tournament-name {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .tournament-type {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .tournament-details {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .tournament-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .tournament-detail-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .tournament-detail-value {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .tournament-prizes {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .prize-item {
+      flex: 1;
+      padding: 10px;
+      background: var(--bg-card);
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid var(--border-soft);
+    }
+
+    .prize-position {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .prize-amount {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .prize-extra {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .tournament-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .tournament-players {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .tournament-entry-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .tournament-entry-btn:active { transform: scale(0.97); }
+
+    .entry-free {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .entry-coins {
+      background: linear-gradient(135deg, #ffd700, #ffb300);
+      color: #000;
+    }
+
+    /* Tournament bracket */
+    .bracket-round {
+      margin-bottom: 20px;
+    }
+
+    .bracket-round-title {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .bracket-match {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-card-elevated);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 8px;
+      border: 1px solid var(--border-soft);
+    }
+
+    .bracket-player {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+    }
+
+    .bracket-player:first-child { border-bottom: 1px solid var(--border-soft); }
+    .bracket-player.winner { background: var(--accent-soft); }
+
+    .bracket-player-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bracket-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .bracket-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .bracket-score {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .bracket-score.winning { color: var(--green); }
+    .bracket-score.losing { color: var(--text-muted); }
+
+    /* ================================
+       LEADERBOARD
+       ================================ */
+    .leaderboard-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .leaderboard-row:last-child { border-bottom: none; }
+    .leaderboard-row.is-you { background: var(--accent-soft); margin: 0 -20px; padding: 12px 20px; border-radius: 8px; }
+
+    .leaderboard-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .leaderboard-rank {
+      width: 28px;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .leaderboard-rank.gold { color: var(--gold); }
+    .leaderboard-rank.silver { color: #c0c0c0; }
+    .leaderboard-rank.bronze { color: #cd7f32; }
+
+    .leaderboard-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .leaderboard-name { font-size: 14px; font-weight: 600; }
+    .leaderboard-stats { font-size: 11px; color: var(--text-muted); }
+
+    .leaderboard-right {
+      text-align: right;
+    }
+
+    .leaderboard-score { font-size: 16px; font-weight: 700; }
+    .leaderboard-score.under { color: var(--green); }
+    .leaderboard-score.over { color: var(--red); }
+
+    /* ================================
+       MOCK IAP SHEET
+       ================================ */
+    .sheet-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .sheet-overlay.active { display: flex; }
+
+    .sheet-content {
+      width: 100%;
+      max-width: 420px;
+      background: var(--bg-card);
+      border-radius: 16px 16px 0 0;
+      padding: 24px 20px calc(24px + var(--safe-bottom));
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: sheetSlideUp 0.3s ease;
+    }
+
+    @keyframes sheetSlideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--border-soft);
+      border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+
+    .sheet-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .sheet-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Mock Apple IAP dialog */
+    .iap-dialog {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .iap-dialog.active { display: flex; }
+
+    .iap-dialog-inner {
+      background: #2c2c2e;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 300px;
+      overflow: hidden;
+      animation: iapPop 0.2s ease;
+    }
+
+    @keyframes iapPop {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .iap-dialog-body {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .iap-dialog-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .iap-dialog-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .iap-dialog-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+
+    .iap-dialog-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--blue);
+      margin-top: 8px;
+    }
+
+    .iap-dialog-actions {
+      border-top: 1px solid #444;
+      display: flex;
+    }
+
+    .iap-dialog-actions button {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      background: none;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    .iap-cancel { color: #ff453a; border-right: 1px solid #444; }
+    .iap-confirm { color: #2196f3; font-weight: 600; }
+
+    /* Processing spinner */
+    .iap-processing {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 30px 20px;
+    }
+
+    .iap-processing.active { display: flex; }
+
+    .iap-processing-spinner {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid #444;
+      border-top-color: var(--blue);
+      animation: spin 0.8s linear infinite;
+    }
+
+    .iap-success {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .iap-success.active { display: flex; }
+
+    .iap-success-icon { font-size: 48px; }
+    .iap-success-text { font-size: 17px; font-weight: 700; color: var(--green); }
+
+    /* ================================
+       RANK BADGES
+       ================================ */
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .rank-bronze { background: rgba(205,127,50,0.2); color: #cd7f32; }
+    .rank-silver { background: rgba(192,192,192,0.2); color: #c0c0c0; }
+    .rank-gold { background: rgba(255,215,0,0.2); color: #ffd700; }
+    .rank-diamond { background: rgba(33,150,243,0.2); color: #2196f3; }
+
+    /* ================================
+       MY PROFILE
+       ================================ */
+    .profile-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .profile-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: #000;
+    }
+
+    .profile-name {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+
+    .profile-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .profile-stat-value {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .profile-stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* ================================
+       ANIMATIONS
+       ================================ */
+    .fade-in {
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .coin-pop {
+      animation: coinPop 0.4s ease;
+    }
+
+    @keyframes coinPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    /* Utility */
+    .mt-12 { margin-top: 12px; }
+    .mt-16 { margin-top: 16px; }
+    .mb-8 { margin-bottom: 8px; }
+    .text-center { text-align: center; }
+    .text-muted { color: var(--text-muted); }
+    .text-gold { color: var(--gold); }
+    .text-green { color: var(--green); }
+    .text-red { color: var(--red); }
+    .fw-700 { font-weight: 700; }
+    .fs-12 { font-size: 12px; }
+  </style>
+</head>
+<body>
+
+  <!-- ==============================
+       HEADER
+       ============================== -->
+  <div class="app-header">
+    <div class="app-title">Pardle</div>
+    <div class="coin-display" id="coinDisplayBtn">
+      <span class="coin-icon">🪙</span>
+      <span class="coin-amount" id="coinBalance">250</span>
+      <span class="coin-plus">+</span>
+    </div>
+  </div>
+
+  <!-- ==============================
+       TAB 1: MATCHMAKING
+       ============================== -->
+  <div id="tabMatchmaking" class="tab-page active">
+    <div class="section-title">Find a Match</div>
+
+    <div class="online-indicator">
+      <span class="online-dot"></span>
+      <span id="onlineCount">2,847 players online</span>
+    </div>
+
+    <!-- Mode selection -->
+    <div id="matchModes">
+      <div class="match-mode selected" data-mode="quick" onclick="selectMatchMode(this)">
+        <div class="match-mode-header">
+          <span class="match-mode-icon">⚡</span>
+          <span class="match-mode-title">Quick Match</span>
+        </div>
+        <div class="match-mode-desc">1v1 against a random opponent. One hole, winner takes all.</div>
+        <div class="match-mode-cost">🪙 Free</div>
+      </div>
+
+      <div class="match-mode" data-mode="ranked" onclick="selectMatchMode(this)">
+        <div class="match-mode-header">
+          <span class="match-mode-icon">🏅</span>
+          <span class="match-mode-title">Ranked Match</span>
+        </div>
+        <div class="match-mode-desc">1v1 competitive. Win to climb the leaderboard and earn rank points.</div>
+        <div class="match-mode-cost">🪙 25 coins entry</div>
+      </div>
+
+      <div class="match-mode" data-mode="group" onclick="selectMatchMode(this)">
+        <div class="match-mode-header">
+          <span class="match-mode-icon">👥</span>
+          <span class="match-mode-title">Group Match</span>
+        </div>
+        <div class="match-mode-desc">Play with 4 random players over a full 18-hole round.</div>
+        <div class="match-mode-cost">🪙 50 coins entry</div>
+      </div>
+    </div>
+
+    <button class="btn-primary mt-16" id="findMatchBtn" onclick="startMatchmaking()">Find Match</button>
+
+    <!-- Searching state -->
+    <div class="searching-overlay" id="searchingOverlay">
+      <div class="search-spinner"></div>
+      <div class="search-text">Searching for opponents...</div>
+      <div class="search-subtext" id="searchTimer">0:00</div>
+      <div class="search-players" id="searchingPlayers">Scanning 2,847 players</div>
+      <button class="btn-secondary btn-sm" onclick="cancelSearch()" style="max-width:200px;">Cancel</button>
+    </div>
+
+    <!-- Match found state -->
+    <div class="match-found" id="matchFoundOverlay">
+      <div class="match-found-title">Match Found!</div>
+      <div class="match-players">
+        <div class="match-player">
+          <div class="match-avatar" style="background:var(--accent);">FE</div>
+          <div class="match-player-name">Fernando</div>
+          <div class="match-player-rank">
+            <span class="rank-badge rank-gold">🏅 Gold II</span>
+          </div>
+        </div>
+        <div class="match-vs">VS</div>
+        <div class="match-player" id="opponentInfo">
+          <div class="match-avatar" style="background:var(--purple);">SK</div>
+          <div class="match-player-name">SkyWalker_42</div>
+          <div class="match-player-rank">
+            <span class="rank-badge rank-gold">🏅 Gold III</span>
+          </div>
+        </div>
+      </div>
+      <div class="fs-12 text-muted">Match starting in <span id="matchCountdown" class="text-green fw-700">5</span></div>
+      <button class="btn-primary" onclick="resetMatchmaking()" style="max-width: 250px;">Play! (Mock)</button>
+    </div>
+
+    <!-- Global Leaderboard -->
+    <div class="card mt-16" id="globalLeaderboard">
+      <div class="section-title">Global Leaderboard</div>
+      <div class="section-subtitle">Season 1 — January 2026</div>
+
+      <div class="leaderboard-row">
+        <div class="leaderboard-left">
+          <span class="leaderboard-rank gold">🥇</span>
+          <div class="leaderboard-avatar" style="background:#e91e63;">WP</div>
+          <div>
+            <div class="leaderboard-name">WordlePro99</div>
+            <div class="leaderboard-stats">247 wins • 82% win rate</div>
+          </div>
+        </div>
+        <div class="leaderboard-right">
+          <div class="leaderboard-score under">-142</div>
+        </div>
+      </div>
+
+      <div class="leaderboard-row">
+        <div class="leaderboard-left">
+          <span class="leaderboard-rank silver">🥈</span>
+          <div class="leaderboard-avatar" style="background:#ff9800;">BK</div>
+          <div>
+            <div class="leaderboard-name">BirdieKing</div>
+            <div class="leaderboard-stats">231 wins • 79% win rate</div>
+          </div>
+        </div>
+        <div class="leaderboard-right">
+          <div class="leaderboard-score under">-128</div>
+        </div>
+      </div>
+
+      <div class="leaderboard-row">
+        <div class="leaderboard-left">
+          <span class="leaderboard-rank bronze">🥉</span>
+          <div class="leaderboard-avatar" style="background:#9c27b0;">TG</div>
+          <div>
+            <div class="leaderboard-name">TheGoat_GOAT</div>
+            <div class="leaderboard-stats">198 wins • 76% win rate</div>
+          </div>
+        </div>
+        <div class="leaderboard-right">
+          <div class="leaderboard-score under">-115</div>
+        </div>
+      </div>
+
+      <div class="leaderboard-row is-you">
+        <div class="leaderboard-left">
+          <span class="leaderboard-rank">48</span>
+          <div class="leaderboard-avatar" style="background:var(--accent);">FE</div>
+          <div>
+            <div class="leaderboard-name">Fernando <span class="fs-12 text-muted">(you)</span></div>
+            <div class="leaderboard-stats">34 wins • 68% win rate</div>
+          </div>
+        </div>
+        <div class="leaderboard-right">
+          <div class="leaderboard-score under">-22</div>
+        </div>
+      </div>
+
+      <div class="leaderboard-row">
+        <div class="leaderboard-left">
+          <span class="leaderboard-rank">49</span>
+          <div class="leaderboard-avatar" style="background:#795548;">MJ</div>
+          <div>
+            <div class="leaderboard-name">MrJingles</div>
+            <div class="leaderboard-stats">32 wins • 65% win rate</div>
+          </div>
+        </div>
+        <div class="leaderboard-right">
+          <div class="leaderboard-score under">-20</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================
+       TAB 2: TOURNAMENTS
+       ============================== -->
+  <div id="tabTournaments" class="tab-page">
+    <div class="section-title">Tournaments</div>
+    <div class="section-subtitle">Compete for glory and prizes</div>
+
+    <!-- Featured Tournament -->
+    <div class="tournament-card featured">
+      <span class="tournament-badge badge-featured">Featured</span>
+      <div class="tournament-header">
+        <span class="tournament-icon">🏆</span>
+        <div class="tournament-info">
+          <div class="tournament-name">Weekend Championship</div>
+          <div class="tournament-type">18-hole stroke play • 64 players</div>
+        </div>
+      </div>
+
+      <div class="tournament-details">
+        <div class="tournament-detail">
+          <span class="tournament-detail-label">Starts</span>
+          <span class="tournament-detail-value">Sat 8 AM</span>
+        </div>
+        <div class="tournament-detail">
+          <span class="tournament-detail-label">Duration</span>
+          <span class="tournament-detail-value">2 Days</span>
+        </div>
+        <div class="tournament-detail">
+          <span class="tournament-detail-label">Course</span>
+          <span class="tournament-detail-value">St. Androos</span>
+        </div>
+        <div class="tournament-detail">
+          <span class="tournament-detail-label">Entry</span>
+          <span class="tournament-detail-value text-gold">🪙 200</span>
+        </div>
+      </div>
+
+      <div class="tournament-prizes">
+        <div class="prize-item">
+          <div class="prize-position">🥇</div>
+          <div class="prize-amount">🪙 3,000</div>
+          <div class="prize-extra">+ Trophy Badge</div>
+        </div>
+        <div class="prize-item">
+          <div class="prize-position">🥈</div>
+          <div class="prize-amount">🪙 1,500</div>
+          <div class="prize-extra">+ Silver Frame</div>
+        </div>
+        <div class="prize-item">
+          <div class="prize-position">🥉</div>
+          <div class="prize-amount">🪙 750</div>
+        </div>
+      </div>
+
+      <div class="tournament-footer">
+        <span class="tournament-players">41/64 registered</span>
+        <button class="tournament-entry-btn entry-coins" onclick="enterTournament(200, 'Weekend Championship')">
+          🪙 200 — Enter
+        </button>
+      </div>
+    </div>
+
+    <!-- Free Daily -->
+    <div class="tournament-card active-tournament">
+      <span class="tournament-badge badge-live">Live Now</span>
+      <div class="tournament-header">
+        <span class="tournament-icon">⚡</span>
+        <div class="tournament-info">
+          <div class="tournament-name">Daily Blitz</div>
+          <div class="tournament-type">3-hole speed round • Unlimited entry</div>
+        </div>
+      </div>
+
+      <div class="tournament-details">
+        <div class="tournament-detail">
+          <span class="tournament-detail-label">Ends</span>
+          <span class="tournament-detail-value">Tonight 11:59 PM</span>
+        </div>
+        <div class="tournament-detail">
+          <span class="tournament-detail-label">Your Best</span>
+          <span class="tournament-detail-value text-green">-3</span>
+        </div>
+        <div class="tournament-detail">
+          <span class="tournament-detail-label">Rank</span>
+          <span class="tournament-detail-value">#12 of 189</span>
+        </div>
+      </div>
+
+      <div class="tournament-footer">
+        <span class="tournament-players">189 players today</span>
+        <button class="tournament-entry-btn entry-free" onclick="enterTournament(0, 'Daily Blitz')">
+          Free — Play Again
+        </button>
+      </div>
+    </div>
+
+    <!-- Bracket Tournament -->
+    <div class="tournament-card">
+      <span class="tournament-badge badge-upcoming">Upcoming</span>
+      <div class="tournament-header">
+        <span class="tournament-icon">⚔️</span>
+        <div class="tournament-info">
+          <div class="tournament-name">Head-to-Head Bracket</div>
+          <div class="tournament-type">Single elimination • 16 players</div>
+        </div>
+      </div>
+
+      <div class="tournament-details">
+        <div class="tournament-detail">
+          <span class="tournament-detail-label">Starts</span>
+          <span class="tournament-detail-value">Mon 6 PM</span>
+        </div>
+        <div class="tournament-detail">
+          <span class="tournament-detail-label">Rounds</span>
+          <span class="tournament-detail-value">4</span>
+        </div>
+        <div class="tournament-detail">
+          <span class="tournament-detail-label">Entry</span>
+          <span class="tournament-detail-value text-gold">🪙 100</span>
+        </div>
+      </div>
+
+      <div class="tournament-prizes">
+        <div class="prize-item">
+          <div class="prize-position">🥇</div>
+          <div class="prize-amount">🪙 1,000</div>
+          <div class="prize-extra">+ Rare Avatar</div>
+        </div>
+        <div class="prize-item">
+          <div class="prize-position">🥈</div>
+          <div class="prize-amount">🪙 400</div>
+        </div>
+        <div class="prize-item">
+          <div class="prize-position">🥉</div>
+          <div class="prize-amount">🪙 200</div>
+        </div>
+      </div>
+
+      <div class="tournament-footer">
+        <span class="tournament-players">9/16 registered</span>
+        <button class="tournament-entry-btn entry-coins" onclick="enterTournament(100, 'Head-to-Head Bracket')">
+          🪙 100 — Enter
+        </button>
+      </div>
+    </div>
+
+    <!-- Sample Bracket View -->
+    <div class="card mt-16" id="bracketPreview">
+      <div class="section-title">Live Bracket: Head-to-Head</div>
+      <div class="section-subtitle">Previous tournament results</div>
+
+      <div class="bracket-round">
+        <div class="bracket-round-title">Semi-Finals</div>
+        <div class="bracket-match">
+          <div class="bracket-player winner">
+            <div class="bracket-player-info">
+              <div class="bracket-avatar" style="background:var(--accent);">FE</div>
+              <span class="bracket-name">Fernando</span>
+            </div>
+            <span class="bracket-score winning">-3</span>
+          </div>
+          <div class="bracket-player">
+            <div class="bracket-player-info">
+              <div class="bracket-avatar" style="background:#795548;">LX</div>
+              <span class="bracket-name">LexiconLord</span>
+            </div>
+            <span class="bracket-score losing">+1</span>
+          </div>
+        </div>
+        <div class="bracket-match">
+          <div class="bracket-player">
+            <div class="bracket-player-info">
+              <div class="bracket-avatar" style="background:#e91e63;">WP</div>
+              <span class="bracket-name">WordlePro99</span>
+            </div>
+            <span class="bracket-score losing">E</span>
+          </div>
+          <div class="bracket-player winner">
+            <div class="bracket-player-info">
+              <div class="bracket-avatar" style="background:#ff9800;">BK</div>
+              <span class="bracket-name">BirdieKing</span>
+            </div>
+            <span class="bracket-score winning">-2</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bracket-round">
+        <div class="bracket-round-title">Final</div>
+        <div class="bracket-match">
+          <div class="bracket-player winner">
+            <div class="bracket-player-info">
+              <div class="bracket-avatar" style="background:var(--accent);">FE</div>
+              <span class="bracket-name">Fernando 🏆</span>
+            </div>
+            <span class="bracket-score winning">-4</span>
+          </div>
+          <div class="bracket-player">
+            <div class="bracket-player-info">
+              <div class="bracket-avatar" style="background:#ff9800;">BK</div>
+              <span class="bracket-name">BirdieKing</span>
+            </div>
+            <span class="bracket-score losing">-1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================
+       TAB 3: COIN STORE
+       ============================== -->
+  <div id="tabStore" class="tab-page">
+    <div class="section-title">Coin Store</div>
+    <div class="section-subtitle">Coins are used for tournament entries and matchmaking</div>
+
+    <div class="card">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div style="font-size:48px; margin-bottom:8px;">🪙</div>
+        <div style="font-size:28px; font-weight:800; color:var(--gold);" id="storeBalance">250</div>
+        <div class="fs-12 text-muted">Your Balance</div>
+      </div>
+
+      <div class="coin-pack" onclick="initPurchase(100, '$0.99', '100 Coins')">
+        <div class="coin-pack-left">
+          <span class="coin-pack-emoji">🪙</span>
+          <div class="coin-pack-info">
+            <span class="coin-pack-amount">100 Coins</span>
+          </div>
+        </div>
+        <button class="coin-pack-price">$0.99</button>
+      </div>
+
+      <div class="coin-pack popular" onclick="initPurchase(550, '$4.99', '550 Coins')">
+        <div class="coin-pack-left">
+          <span class="coin-pack-emoji">💰</span>
+          <div class="coin-pack-info">
+            <span class="coin-pack-amount">550 Coins</span>
+            <span class="coin-pack-bonus">10% bonus! <span class="popular-badge">Best Value</span></span>
+          </div>
+        </div>
+        <button class="coin-pack-price">$4.99</button>
+      </div>
+
+      <div class="coin-pack" onclick="initPurchase(1200, '$9.99', '1,200 Coins')">
+        <div class="coin-pack-left">
+          <span class="coin-pack-emoji">👑</span>
+          <div class="coin-pack-info">
+            <span class="coin-pack-amount">1,200 Coins</span>
+            <span class="coin-pack-bonus">20% bonus!</span>
+          </div>
+        </div>
+        <button class="coin-pack-price">$9.99</button>
+      </div>
+
+      <div class="coin-pack" onclick="initPurchase(3000, '$19.99', '3,000 Coins')">
+        <div class="coin-pack-left">
+          <span class="coin-pack-emoji">💎</span>
+          <div class="coin-pack-info">
+            <span class="coin-pack-amount">3,000 Coins</span>
+            <span class="coin-pack-bonus">50% bonus!</span>
+          </div>
+        </div>
+        <button class="coin-pack-price">$19.99</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Earn Free Coins</div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-card-elevated); border-radius:8px;">
+          <div>
+            <div class="fw-700" style="font-size:14px;">📅 Daily Login</div>
+            <div class="fs-12 text-muted">Come back each day</div>
+          </div>
+          <span class="text-gold fw-700">+10 🪙</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-card-elevated); border-radius:8px;">
+          <div>
+            <div class="fw-700" style="font-size:14px;">🏌️ Win a Match</div>
+            <div class="fs-12 text-muted">Win any matchmaking game</div>
+          </div>
+          <span class="text-gold fw-700">+15 🪙</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-card-elevated); border-radius:8px;">
+          <div>
+            <div class="fw-700" style="font-size:14px;">🐦 Get a Birdie</div>
+            <div class="fs-12 text-muted">Score under par on any hole</div>
+          </div>
+          <span class="text-gold fw-700">+5 🪙</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-card-elevated); border-radius:8px;">
+          <div>
+            <div class="fw-700" style="font-size:14px;">📣 Invite a Friend</div>
+            <div class="fs-12 text-muted">Friend joins and plays a game</div>
+          </div>
+          <span class="text-gold fw-700">+50 🪙</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================
+       TAB 4: PROFILE
+       ============================== -->
+  <div id="tabProfile" class="tab-page">
+    <div class="card card-elevated">
+      <div class="profile-header">
+        <div class="profile-avatar">FE</div>
+        <div class="profile-name">Fernando</div>
+        <div class="rank-badge rank-gold">🏅 Gold II — 1,240 RP</div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <span class="profile-stat-value">34</span>
+          <span class="profile-stat-label">Wins</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat-value">16</span>
+          <span class="profile-stat-label">Losses</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat-value">68%</span>
+          <span class="profile-stat-label">Win Rate</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat-value text-green">-22</span>
+          <span class="profile-stat-label">Best Score</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Rank Progression</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px; border-radius:8px; background:rgba(205,127,50,0.1);">
+          <div class="rank-badge rank-bronze">🥉 Bronze</div>
+          <span class="fs-12 text-muted">0 — 499 RP</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px; border-radius:8px; background:rgba(192,192,192,0.1);">
+          <div class="rank-badge rank-silver">🥈 Silver</div>
+          <span class="fs-12 text-muted">500 — 999 RP</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px; border-radius:8px; background:rgba(255,215,0,0.15); border:1px solid var(--gold);">
+          <div class="rank-badge rank-gold">🏅 Gold ← You</div>
+          <span class="fs-12 text-muted">1,000 — 1,999 RP</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px; border-radius:8px; background:rgba(33,150,243,0.1);">
+          <div class="rank-badge rank-diamond">💎 Diamond</div>
+          <span class="fs-12 text-muted">2,000+ RP</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Tournament History</div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-card-elevated); border-radius:8px;">
+          <div>
+            <div class="fw-700" style="font-size:14px;">🏆 Weekend Championship</div>
+            <div class="fs-12 text-muted">Jan 25, 2026</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="fw-700 text-gold">🥇 1st Place</div>
+            <div class="fs-12 text-gold">+3,000 🪙</div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-card-elevated); border-radius:8px;">
+          <div>
+            <div class="fw-700" style="font-size:14px;">⚔️ Head-to-Head Bracket</div>
+            <div class="fs-12 text-muted">Jan 20, 2026</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="fw-700" style="color:#c0c0c0;">🥈 2nd Place</div>
+            <div class="fs-12 text-gold">+400 🪙</div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-card-elevated); border-radius:8px;">
+          <div>
+            <div class="fw-700" style="font-size:14px;">⚡ Daily Blitz</div>
+            <div class="fs-12 text-muted">Jan 28, 2026</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="fw-700" style="color:#cd7f32;">🥉 3rd Place</div>
+            <div class="fs-12 text-gold">+50 🪙</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================
+       MOCK IAP DIALOG
+       ============================== -->
+  <div class="iap-dialog" id="iapDialog">
+    <div class="iap-dialog-inner">
+      <!-- Confirm step -->
+      <div id="iapConfirm">
+        <div class="iap-dialog-body">
+          <div class="iap-dialog-icon" id="iapIcon">🪙</div>
+          <div class="iap-dialog-title" id="iapTitle">Confirm Purchase</div>
+          <div class="iap-dialog-desc" id="iapDesc">Do you want to buy</div>
+          <div class="iap-dialog-desc fw-700" id="iapItemName">100 Coins</div>
+          <div class="iap-dialog-price" id="iapPrice">$0.99</div>
+        </div>
+        <div class="iap-dialog-actions">
+          <button class="iap-cancel" onclick="cancelPurchase()">Cancel</button>
+          <button class="iap-confirm" onclick="confirmPurchase()">Buy</button>
+        </div>
+      </div>
+
+      <!-- Processing step -->
+      <div class="iap-processing" id="iapProcessing">
+        <div class="iap-processing-spinner"></div>
+        <div style="font-size:15px; color:var(--text-muted);">Processing purchase...</div>
+      </div>
+
+      <!-- Success step -->
+      <div class="iap-success" id="iapSuccess">
+        <div class="iap-success-icon">✅</div>
+        <div class="iap-success-text">Purchase Complete!</div>
+        <div class="fs-12 text-muted" id="iapSuccessDesc">100 coins have been added to your balance.</div>
+        <button class="btn-primary btn-sm" onclick="closePurchase()" style="max-width:200px; margin-top:8px;">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================
+       TAB BAR
+       ============================== -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('Matchmaking', this)">
+      <span class="tab-icon">🌍</span>
+      <span>Match</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('Tournaments', this)">
+      <span class="tab-icon">🏆</span>
+      <span>Tournaments</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('Store', this)">
+      <span class="tab-icon">🪙</span>
+      <span>Store</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('Profile', this)">
+      <span class="tab-icon">👤</span>
+      <span>Profile</span>
+    </button>
+  </div>
+
+  <!-- ==============================
+       JAVASCRIPT
+       ============================== -->
+  <script>
+    // ==============================
+    // State
+    // ==============================
+    let coins = 250;
+    let searchInterval = null;
+    let searchSeconds = 0;
+    let pendingPurchaseCoins = 0;
+
+    // ==============================
+    // Tab Navigation
+    // ==============================
+    function switchTab(name, btnEl) {
+      document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab' + name).classList.add('active');
+      btnEl.classList.add('active');
+    }
+
+    // ==============================
+    // Coin Balance
+    // ==============================
+    function updateCoinDisplay() {
+      document.getElementById('coinBalance').textContent = coins.toLocaleString();
+      document.getElementById('storeBalance').textContent = coins.toLocaleString();
+
+      // Pop animation
+      const el = document.getElementById('coinBalance');
+      el.classList.remove('coin-pop');
+      void el.offsetWidth;
+      el.classList.add('coin-pop');
+    }
+
+    function spendCoins(amount) {
+      if (coins < amount) {
+        alert('Not enough coins! Visit the Coin Store to get more.');
+        return false;
+      }
+      coins -= amount;
+      updateCoinDisplay();
+      return true;
+    }
+
+    // ==============================
+    // Matchmaking
+    // ==============================
+    function selectMatchMode(el) {
+      document.querySelectorAll('.match-mode').forEach(m => m.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function startMatchmaking() {
+      const selected = document.querySelector('.match-mode.selected');
+      const mode = selected?.dataset.mode;
+
+      // Check cost
+      const costs = { quick: 0, ranked: 25, group: 50 };
+      const cost = costs[mode] || 0;
+      if (cost > 0 && !spendCoins(cost)) return;
+
+      // Hide modes, show searching
+      document.getElementById('matchModes').style.display = 'none';
+      document.getElementById('findMatchBtn').style.display = 'none';
+      document.getElementById('globalLeaderboard').style.display = 'none';
+      document.getElementById('searchingOverlay').classList.add('active');
+
+      searchSeconds = 0;
+      searchInterval = setInterval(() => {
+        searchSeconds++;
+        const mins = Math.floor(searchSeconds / 60);
+        const secs = searchSeconds % 60;
+        document.getElementById('searchTimer').textContent =
+          mins + ':' + String(secs).padStart(2, '0');
+
+        // Random player count
+        const base = 2847 - Math.floor(Math.random() * 100);
+        document.getElementById('searchingPlayers').textContent =
+          'Scanning ' + base.toLocaleString() + ' players';
+
+        // Find match after 3-6 seconds
+        if (searchSeconds >= 3 + Math.floor(Math.random() * 4)) {
+          clearInterval(searchInterval);
+          showMatchFound();
+        }
+      }, 1000);
+    }
+
+    function cancelSearch() {
+      clearInterval(searchInterval);
+      resetMatchmaking();
+    }
+
+    function showMatchFound() {
+      document.getElementById('searchingOverlay').classList.remove('active');
+      document.getElementById('matchFoundOverlay').classList.add('active');
+
+      // Randomize opponent
+      const opponents = [
+        { name: 'SkyWalker_42', initials: 'SK', rank: 'Gold III', color: '#9c27b0' },
+        { name: 'ParMaster', initials: 'PM', rank: 'Silver I', color: '#607d8b' },
+        { name: 'EagleEye_X', initials: 'EX', rank: 'Gold I', color: '#e91e63' },
+        { name: 'BogeyFree', initials: 'BF', rank: 'Diamond', color: '#2196f3' },
+        { name: 'WordNinja99', initials: 'WN', rank: 'Silver III', color: '#ff5722' },
+        { name: 'AceInTheHole', initials: 'AH', rank: 'Gold II', color: '#4caf50' },
+      ];
+      const opp = opponents[Math.floor(Math.random() * opponents.length)];
+      const info = document.getElementById('opponentInfo');
+      info.querySelector('.match-avatar').style.background = opp.color;
+      info.querySelector('.match-avatar').textContent = opp.initials;
+      info.querySelector('.match-player-name').textContent = opp.name;
+      info.querySelector('.rank-badge').textContent = '🏅 ' + opp.rank;
+
+      // Countdown
+      let count = 5;
+      document.getElementById('matchCountdown').textContent = count;
+      const countInt = setInterval(() => {
+        count--;
+        document.getElementById('matchCountdown').textContent = count;
+        if (count <= 0) {
+          clearInterval(countInt);
+        }
+      }, 1000);
+    }
+
+    function resetMatchmaking() {
+      document.getElementById('matchModes').style.display = 'block';
+      document.getElementById('findMatchBtn').style.display = 'block';
+      document.getElementById('globalLeaderboard').style.display = 'block';
+      document.getElementById('searchingOverlay').classList.remove('active');
+      document.getElementById('matchFoundOverlay').classList.remove('active');
+      clearInterval(searchInterval);
+    }
+
+    // ==============================
+    // Tournament Entry
+    // ==============================
+    function enterTournament(cost, name) {
+      if (cost > 0) {
+        if (!spendCoins(cost)) return;
+      }
+      alert('✅ Registered for ' + name + '!\n\n' + (cost > 0 ? cost + ' coins deducted.' : 'Free entry!') + '\n\nThis is a mockup — in the real app, the tournament would begin.');
+    }
+
+    // ==============================
+    // Mock IAP Purchase Flow
+    // ==============================
+    function initPurchase(coinAmount, price, itemName) {
+      pendingPurchaseCoins = coinAmount;
+      document.getElementById('iapItemName').textContent = itemName;
+      document.getElementById('iapPrice').textContent = price;
+
+      // Reset states
+      document.getElementById('iapConfirm').style.display = 'block';
+      document.getElementById('iapProcessing').classList.remove('active');
+      document.getElementById('iapSuccess').classList.remove('active');
+
+      document.getElementById('iapDialog').classList.add('active');
+    }
+
+    function cancelPurchase() {
+      document.getElementById('iapDialog').classList.remove('active');
+    }
+
+    function confirmPurchase() {
+      // Show processing
+      document.getElementById('iapConfirm').style.display = 'none';
+      document.getElementById('iapProcessing').classList.add('active');
+
+      // Simulate processing delay
+      setTimeout(() => {
+        document.getElementById('iapProcessing').classList.remove('active');
+
+        // Add coins
+        coins += pendingPurchaseCoins;
+        updateCoinDisplay();
+
+        // Show success
+        document.getElementById('iapSuccessDesc').textContent =
+          pendingPurchaseCoins.toLocaleString() + ' coins have been added to your balance.';
+        document.getElementById('iapSuccess').classList.add('active');
+      }, 1500);
+    }
+
+    function closePurchase() {
+      document.getElementById('iapDialog').classList.remove('active');
+    }
+
+    // Open store when clicking coin display
+    document.getElementById('coinDisplayBtn').onclick = () => {
+      switchTab('Store', document.querySelectorAll('.tab-btn')[2]);
+    };
+
+    // Randomize online count periodically
+    setInterval(() => {
+      const base = 2500 + Math.floor(Math.random() * 800);
+      document.getElementById('onlineCount').textContent = base.toLocaleString() + ' players online';
+    }, 5000);
+  </script>
+</body>
+</html>
