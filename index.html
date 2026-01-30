@@ -37,13 +37,13 @@
     }
 
     body[data-mode="dark"] {
-      --bg: #101010;
-      --bg-card: #1f1f1f;
-      --bg-card-elevated: #2a2a2a;
+      --bg: #000000;
+      --bg-card: #1c1c1e;
+      --bg-card-elevated: #2c2c2e;
       --text: #f5f5f5;
-      --text-muted: #888888;
-      --border-soft: #333333;
-      --input-bg: #202020;
+      --text-muted: #8e8e93;
+      --border-soft: #38383a;
+      --input-bg: #1c1c1e;
       --input-text: #ffffff;
       --accent-soft: rgba(255, 152, 0, 0.20);
       --green-soft: rgba(0, 200, 83, 0.20);
@@ -1881,10 +1881,17 @@
       left: 0;
       right: 0;
       display: flex;
-      background: var(--bg-card);
-      border-top: 1px solid var(--border-soft);
-      padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+      background: rgba(28, 28, 30, 0.88);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-top: 0.5px solid rgba(255,255,255,0.08);
+      padding: 4px 0 calc(4px + env(safe-area-inset-bottom));
       z-index: 50;
+    }
+
+    body[data-mode="light"] .bottom-tab-bar {
+      background: rgba(249, 249, 249, 0.88);
+      border-top-color: rgba(0,0,0,0.12);
     }
 
     .bottom-tab-btn {
@@ -1892,19 +1899,22 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
-      padding: 6px 0;
+      gap: 2px;
+      padding: 4px 0 2px;
       border: none;
       background: none;
-      color: var(--text-muted);
+      color: #8e8e93;
       font-size: 10px;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
-      transition: color 0.2s;
+      transition: color 0.15s;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .bottom-tab-btn.active { color: var(--accent); }
-    .bottom-tab-btn .tab-icon { font-size: 20px; }
+    .bottom-tab-btn .tab-icon { width: 24px; height: 24px; }
+    .bottom-tab-btn .tab-icon svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .bottom-tab-btn.active .tab-icon svg { stroke-width: 2; }
 
     /* Tab pages */
     .tab-page {
@@ -1983,13 +1993,14 @@
     }
 
     .match-mode-card {
-      padding: 18px;
+      padding: 16px;
       background: var(--bg-card);
-      border-radius: 14px;
-      margin-bottom: 10px;
+      border-radius: 10px;
+      margin-bottom: 8px;
       border: 1px solid var(--border-soft);
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .match-mode-card:hover { border-color: var(--accent); }
@@ -2018,29 +2029,32 @@
 
     .mm-btn-primary {
       width: 100%;
-      padding: 14px;
+      padding: 15px;
       border: none;
       border-radius: 12px;
       background: var(--accent);
       color: #000;
-      font-size: 16px;
-      font-weight: 700;
+      font-size: 17px;
+      font-weight: 600;
       cursor: pointer;
       margin-top: 14px;
-      transition: all 0.15s;
+      transition: all 0.1s;
+      -webkit-tap-highlight-color: transparent;
+      letter-spacing: -0.2px;
     }
-    .mm-btn-primary:active { transform: scale(0.98); opacity: 0.9; }
-    .mm-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .mm-btn-primary:active { transform: scale(0.97); opacity: 0.85; }
+    .mm-btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
 
     .mm-btn-secondary {
       padding: 10px 20px;
-      border: 1px solid var(--border-soft);
+      border: none;
       border-radius: 10px;
-      background: var(--bg-card);
+      background: rgba(120,120,128,0.24);
       color: var(--text);
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .searching-overlay {
@@ -2162,13 +2176,14 @@
        TOURNAMENT STYLES
        ================================ */
     .tournament-card {
-      padding: 18px;
+      padding: 16px;
       background: var(--bg-card);
-      border-radius: 14px;
-      margin-bottom: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
       border: 1px solid var(--border-soft);
       position: relative;
       overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .tournament-card.featured {
@@ -2302,13 +2317,14 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px;
+      padding: 12px 14px;
       background: var(--bg-card-elevated);
       border-radius: 10px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       border: 1px solid var(--border-soft);
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
     }
     .coin-pack:hover { border-color: var(--yellow); }
     .coin-pack.popular { border-color: var(--accent); }
@@ -2353,10 +2369,12 @@
     .iap-dialog.active { display: flex; }
 
     .iap-dialog-inner {
-      background: #2c2c2e;
+      background: rgba(44, 44, 46, 0.97);
+      -webkit-backdrop-filter: saturate(180%) blur(40px);
+      backdrop-filter: saturate(180%) blur(40px);
       border-radius: 14px;
       width: 100%;
-      max-width: 300px;
+      max-width: 270px;
       overflow: hidden;
       animation: iapPop 0.2s ease;
     }
@@ -2367,14 +2385,15 @@
 
     .iap-dialog-body { padding: 20px; text-align: center; }
     .iap-dialog-icon { font-size: 44px; margin-bottom: 10px; }
-    .iap-dialog-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: #fff; }
-    .iap-dialog-desc { font-size: 13px; color: #999; line-height: 1.4; }
-    .iap-dialog-price { font-size: 15px; font-weight: 700; color: #2196f3; margin-top: 8px; }
+    .iap-dialog-title { font-size: 17px; font-weight: 600; margin-bottom: 4px; color: #fff; letter-spacing: -0.2px; }
+    .iap-dialog-desc { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.45; }
+    .iap-dialog-price { font-size: 15px; font-weight: 600; color: #0a84ff; margin-top: 8px; }
 
-    .iap-dialog-actions { border-top: 1px solid #444; display: flex; }
-    .iap-dialog-actions button { flex: 1; padding: 14px; border: none; background: none; font-size: 16px; cursor: pointer; }
-    .iap-cancel { color: #ff453a; border-right: 1px solid #444; }
-    .iap-confirm { color: #2196f3; font-weight: 600; }
+    .iap-dialog-actions { border-top: 0.5px solid rgba(255,255,255,0.12); display: flex; }
+    .iap-dialog-actions button { flex: 1; padding: 12px; border: none; background: none; font-size: 17px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .iap-dialog-actions button:active { background: rgba(255,255,255,0.06); }
+    .iap-cancel { color: #0a84ff; border-right: 0.5px solid rgba(255,255,255,0.12); }
+    .iap-confirm { color: #0a84ff; font-weight: 600; }
 
     .iap-processing { display: none; flex-direction: column; align-items: center; gap: 12px; padding: 30px; }
     .iap-processing.active { display: flex; }
@@ -2455,6 +2474,133 @@
     .tab-card-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
     .tab-card-subtitle { font-size: 11px; color: var(--text-muted); margin-top: -10px; margin-bottom: 14px; }
 
+    /* ================================
+       iOS-STYLE ALERT DIALOG
+       ================================ */
+    .ios-alert-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      -webkit-backdrop-filter: brightness(0.6);
+      backdrop-filter: brightness(0.6);
+    }
+    .ios-alert-overlay.active { display: flex; }
+
+    .ios-alert {
+      width: 100%;
+      max-width: 270px;
+      background: rgba(44, 44, 46, 0.95);
+      -webkit-backdrop-filter: saturate(180%) blur(40px);
+      backdrop-filter: saturate(180%) blur(40px);
+      border-radius: 14px;
+      overflow: hidden;
+      animation: iapPop 0.2s ease;
+      text-align: center;
+    }
+
+    body[data-mode="light"] .ios-alert {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .ios-alert-body {
+      padding: 20px 16px 14px;
+    }
+
+    .ios-alert-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+      letter-spacing: -0.2px;
+    }
+
+    body[data-mode="light"] .ios-alert-title { color: #000; }
+
+    .ios-alert-message {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.45;
+    }
+
+    body[data-mode="light"] .ios-alert-message { color: rgba(0,0,0,0.5); }
+
+    .ios-alert-actions {
+      display: flex;
+      flex-direction: column;
+      border-top: 0.5px solid rgba(255,255,255,0.12);
+    }
+
+    body[data-mode="light"] .ios-alert-actions { border-top-color: rgba(0,0,0,0.12); }
+
+    .ios-alert-actions.horizontal { flex-direction: row; }
+    .ios-alert-actions.horizontal .ios-alert-action { border-right: 0.5px solid rgba(255,255,255,0.12); }
+    .ios-alert-actions.horizontal .ios-alert-action:last-child { border-right: none; }
+
+    body[data-mode="light"] .ios-alert-actions.horizontal .ios-alert-action { border-right-color: rgba(0,0,0,0.12); }
+
+    .ios-alert-action {
+      padding: 12px;
+      border: none;
+      background: none;
+      font-size: 17px;
+      cursor: pointer;
+      color: #0a84ff;
+      flex: 1;
+      border-top: 0.5px solid rgba(255,255,255,0.12);
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s;
+    }
+
+    body[data-mode="light"] .ios-alert-action { border-top-color: rgba(0,0,0,0.12); }
+
+    .ios-alert-action:first-child { border-top: none; }
+    .ios-alert-actions.horizontal .ios-alert-action { border-top: none; }
+
+    .ios-alert-action:active { background: rgba(255,255,255,0.08); }
+    body[data-mode="light"] .ios-alert-action:active { background: rgba(0,0,0,0.06); }
+
+    .ios-alert-action.destructive { color: #ff453a; }
+    .ios-alert-action.bold { font-weight: 600; }
+    .ios-alert-action.cancel { font-weight: 600; }
+
+    /* ================================
+       iOS INSET GROUPED LIST STYLE
+       ================================ */
+    .ios-section-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      padding: 24px 16px 8px;
+    }
+
+    .ios-section-header:first-child { padding-top: 8px; }
+
+    .ios-grouped-card {
+      background: var(--bg-card);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .ios-list-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 16px;
+      border-bottom: 0.5px solid var(--border-soft);
+      margin-left: 16px;
+      padding-left: 0;
+    }
+
+    .ios-list-row:last-child { border-bottom: none; }
+
     /* Utility */
     .text-gold { color: var(--yellow); }
     .text-green { color: var(--green); }
@@ -2463,6 +2609,25 @@
       0% { transform: scale(1); }
       50% { transform: scale(1.3); }
       100% { transform: scale(1); }
+    }
+
+    /* iOS haptic-style tap feedback */
+    .match-mode-card:active,
+    .coin-pack:active,
+    .tournament-card:active,
+    .earn-item:active,
+    .lb-row:active {
+      transform: scale(0.98);
+      opacity: 0.85;
+      transition: all 0.05s ease;
+    }
+
+    .mm-btn-primary:active,
+    .t-entry-btn:active,
+    .coin-pack-price:active {
+      transform: scale(0.96);
+      opacity: 0.8;
+      transition: all 0.05s ease;
     }
   </style>
 </head>
@@ -3131,11 +3296,11 @@
     </div>
 
     <!-- Global Leaderboard -->
-    <div class="tab-card" id="globalLeaderboard" style="margin-top:14px;">
-      <div class="tab-card-title">Global Leaderboard</div>
-      <div class="tab-card-subtitle">Season 1 — January 2026</div>
+    <div class="ios-section-header" id="globalLeaderboard" style="margin-top:6px;">GLOBAL LEADERBOARD</div>
+    <div class="ios-grouped-card">
+      <div style="padding:10px 16px 6px; font-size:11px; color:#8e8e93;">Season 1 — January 2026</div>
 
-      <div class="lb-row">
+      <div class="lb-row" style="margin-left:16px; padding-left:0;">
         <div class="lb-left">
           <span class="lb-rank gold">🥇</span>
           <div class="lb-avatar" style="background:#e91e63;">WP</div>
@@ -3143,7 +3308,7 @@
         </div>
         <div class="lb-score under">-142</div>
       </div>
-      <div class="lb-row">
+      <div class="lb-row" style="margin-left:16px; padding-left:0;">
         <div class="lb-left">
           <span class="lb-rank silver">🥈</span>
           <div class="lb-avatar" style="background:#ff9800;">BK</div>
@@ -3151,7 +3316,7 @@
         </div>
         <div class="lb-score under">-128</div>
       </div>
-      <div class="lb-row">
+      <div class="lb-row" style="margin-left:16px; padding-left:0;">
         <div class="lb-left">
           <span class="lb-rank bronze">🥉</span>
           <div class="lb-avatar" style="background:#9c27b0;">TG</div>
@@ -3159,15 +3324,15 @@
         </div>
         <div class="lb-score under">-115</div>
       </div>
-      <div class="lb-row is-you">
+      <div class="lb-row is-you" style="margin-left:0; padding-left:16px;">
         <div class="lb-left">
           <span class="lb-rank">48</span>
           <div class="lb-avatar" style="background:var(--accent);" id="lbYouAvatar">FE</div>
           <div><div class="lb-name" id="lbYouName">You</div><div class="lb-stats">34 wins · 68%</div></div>
         </div>
-        <div class="lb-score under">-22</div>
+        <div class="lb-score under" style="padding-right:16px;">-22</div>
       </div>
-      <div class="lb-row">
+      <div class="lb-row" style="margin-left:16px; padding-left:0;">
         <div class="lb-left">
           <span class="lb-rank">49</span>
           <div class="lb-avatar" style="background:#795548;">MJ</div>
@@ -3257,9 +3422,8 @@
     </div>
 
     <!-- Bracket Preview -->
-    <div class="tab-card" style="margin-top:4px;">
-      <div class="tab-card-title">Live Bracket: Head-to-Head</div>
-      <div class="tab-card-subtitle">Previous tournament results</div>
+    <div class="ios-section-header">BRACKET RESULTS</div>
+    <div class="ios-grouped-card" style="padding:14px 16px;">
 
       <div class="bracket-round">
         <div class="bracket-round-title">Semi-Finals</div>
@@ -3309,11 +3473,11 @@
       <div class="tab-page-title">Coin Store</div>
     </div>
 
-    <div class="tab-card">
+    <div class="ios-grouped-card" style="padding:18px 16px;">
       <div style="text-align:center; margin-bottom:18px;">
         <div style="font-size:44px; margin-bottom:6px;">🪙</div>
         <div style="font-size:26px; font-weight:800; color:var(--yellow);" id="storeBalance">0</div>
-        <div style="font-size:11px; color:var(--text-muted);">Your Balance</div>
+        <div style="font-size:11px; color:#8e8e93;">Your Balance</div>
       </div>
 
       <div class="coin-pack" onclick="initPurchase(100, '$0.99', '100 Coins')">
@@ -3349,14 +3513,12 @@
       </div>
     </div>
 
-    <div class="tab-card">
-      <div class="tab-card-title">Earn Free Coins</div>
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <div class="earn-item"><div><div class="earn-item-title">📅 Daily Login</div><div class="earn-item-desc">Come back each day</div></div><span class="earn-item-reward">+10 🪙</span></div>
-        <div class="earn-item"><div><div class="earn-item-title">🏌️ Win a Match</div><div class="earn-item-desc">Win any matchmaking game</div></div><span class="earn-item-reward">+15 🪙</span></div>
-        <div class="earn-item"><div><div class="earn-item-title">🐦 Get a Birdie</div><div class="earn-item-desc">Score under par on any hole</div></div><span class="earn-item-reward">+5 🪙</span></div>
-        <div class="earn-item"><div><div class="earn-item-title">📣 Invite a Friend</div><div class="earn-item-desc">Friend joins and plays a game</div></div><span class="earn-item-reward">+50 🪙</span></div>
-      </div>
+    <div class="ios-section-header">EARN FREE COINS</div>
+    <div class="ios-grouped-card">
+      <div class="ios-list-row"><div><div class="earn-item-title">📅 Daily Login</div><div class="earn-item-desc">Come back each day</div></div><span class="earn-item-reward">+10 🪙</span></div>
+      <div class="ios-list-row"><div><div class="earn-item-title">🏌️ Win a Match</div><div class="earn-item-desc">Win any matchmaking game</div></div><span class="earn-item-reward">+15 🪙</span></div>
+      <div class="ios-list-row"><div><div class="earn-item-title">🐦 Get a Birdie</div><div class="earn-item-desc">Score under par on any hole</div></div><span class="earn-item-reward">+5 🪙</span></div>
+      <div class="ios-list-row"><div><div class="earn-item-title">📣 Invite a Friend</div><div class="earn-item-desc">Friend joins and plays a game</div></div><span class="earn-item-reward">+50 🪙</span></div>
     </div>
   </div>
 
@@ -3368,7 +3530,7 @@
       <div class="tab-page-title">Profile</div>
     </div>
 
-    <div class="tab-card" style="box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+    <div class="ios-grouped-card" style="padding:20px 16px;">
       <div class="profile-header">
         <div class="profile-avatar" id="profileAvatar">?</div>
         <div class="profile-name" id="profileName">Player</div>
@@ -3382,39 +3544,35 @@
       </div>
     </div>
 
-    <div class="tab-card">
-      <div class="tab-card-title">Rank Progression</div>
-      <div style="display:flex; flex-direction:column; gap:6px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:8px; background:rgba(205,127,50,0.1);">
-          <div class="rank-badge rank-bronze">🥉 Bronze</div><span style="font-size:11px; color:var(--text-muted);">0 — 499 RP</span>
-        </div>
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:8px; background:rgba(192,192,192,0.1);">
-          <div class="rank-badge rank-silver">🥈 Silver</div><span style="font-size:11px; color:var(--text-muted);">500 — 999 RP</span>
-        </div>
-        <div id="profileRankHighlight" style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:8px; background:rgba(255,215,0,0.15); border:1px solid var(--yellow);">
-          <div class="rank-badge rank-gold">🏅 Gold ← You</div><span style="font-size:11px; color:var(--text-muted);">1,000 — 1,999 RP</span>
-        </div>
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:8px; background:rgba(33,150,243,0.1);">
-          <div class="rank-badge rank-diamond">💎 Diamond</div><span style="font-size:11px; color:var(--text-muted);">2,000+ RP</span>
-        </div>
+    <div class="ios-section-header">RANK PROGRESSION</div>
+    <div class="ios-grouped-card">
+      <div class="ios-list-row" style="background:rgba(205,127,50,0.06);">
+        <div class="rank-badge rank-bronze">🥉 Bronze</div><span style="font-size:11px; color:#8e8e93;">0 — 499 RP</span>
+      </div>
+      <div class="ios-list-row" style="background:rgba(192,192,192,0.06);">
+        <div class="rank-badge rank-silver">🥈 Silver</div><span style="font-size:11px; color:#8e8e93;">500 — 999 RP</span>
+      </div>
+      <div class="ios-list-row" id="profileRankHighlight" style="background:rgba(255,215,0,0.1); border-left:3px solid var(--yellow);">
+        <div class="rank-badge rank-gold">🏅 Gold ← You</div><span style="font-size:11px; color:#8e8e93;">1,000 — 1,999 RP</span>
+      </div>
+      <div class="ios-list-row" style="background:rgba(33,150,243,0.06);">
+        <div class="rank-badge rank-diamond">💎 Diamond</div><span style="font-size:11px; color:#8e8e93;">2,000+ RP</span>
       </div>
     </div>
 
-    <div class="tab-card">
-      <div class="tab-card-title">Tournament History</div>
-      <div style="display:flex; flex-direction:column; gap:8px;" id="tournamentHistory">
-        <div class="earn-item">
-          <div><div class="earn-item-title">🏆 Weekend Championship</div><div class="earn-item-desc">Jan 25, 2026</div></div>
-          <div style="text-align:right;"><div style="font-weight:700; color:var(--yellow);">🥇 1st Place</div><div style="font-size:11px; color:var(--yellow);">+3,000 🪙</div></div>
-        </div>
-        <div class="earn-item">
-          <div><div class="earn-item-title">⚔️ Head-to-Head Bracket</div><div class="earn-item-desc">Jan 20, 2026</div></div>
-          <div style="text-align:right;"><div style="font-weight:700; color:#c0c0c0;">🥈 2nd Place</div><div style="font-size:11px; color:var(--yellow);">+400 🪙</div></div>
-        </div>
-        <div class="earn-item">
-          <div><div class="earn-item-title">⚡ Daily Blitz</div><div class="earn-item-desc">Jan 28, 2026</div></div>
-          <div style="text-align:right;"><div style="font-weight:700; color:#cd7f32;">🥉 3rd Place</div><div style="font-size:11px; color:var(--yellow);">+50 🪙</div></div>
-        </div>
+    <div class="ios-section-header">TOURNAMENT HISTORY</div>
+    <div class="ios-grouped-card" id="tournamentHistory">
+      <div class="ios-list-row">
+        <div><div class="earn-item-title">🏆 Weekend Championship</div><div class="earn-item-desc">Jan 25, 2026</div></div>
+        <div style="text-align:right;"><div style="font-weight:700; color:var(--yellow);">🥇 1st Place</div><div style="font-size:11px; color:var(--yellow);">+3,000 🪙</div></div>
+      </div>
+      <div class="ios-list-row">
+        <div><div class="earn-item-title">⚔️ Head-to-Head Bracket</div><div class="earn-item-desc">Jan 20, 2026</div></div>
+        <div style="text-align:right;"><div style="font-weight:700; color:#c0c0c0;">🥈 2nd Place</div><div style="font-size:11px; color:var(--yellow);">+400 🪙</div></div>
+      </div>
+      <div class="ios-list-row">
+        <div><div class="earn-item-title">⚡ Daily Blitz</div><div class="earn-item-desc">Jan 28, 2026</div></div>
+        <div style="text-align:right;"><div style="font-weight:700; color:#cd7f32;">🥉 3rd Place</div><div style="font-size:11px; color:var(--yellow);">+50 🪙</div></div>
       </div>
     </div>
   </div>
@@ -3450,24 +3608,35 @@
     </div>
   </div>
 
+  <!-- iOS-style alert dialog -->
+  <div class="ios-alert-overlay" id="iosAlertOverlay">
+    <div class="ios-alert">
+      <div class="ios-alert-body">
+        <div class="ios-alert-title" id="iosAlertTitle">Alert</div>
+        <div class="ios-alert-message" id="iosAlertMessage"></div>
+      </div>
+      <div class="ios-alert-actions" id="iosAlertActions"></div>
+    </div>
+  </div>
+
   <!-- ==============================
        BOTTOM TAB BAR
        ============================== -->
   <div class="bottom-tab-bar" id="bottomTabBar">
     <button class="bottom-tab-btn active" data-tab="play" onclick="switchMainTab('play', this)">
-      <span class="tab-icon">⛳</span><span>Play</span>
+      <span class="tab-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="2.5" fill="currentColor" stroke="none"/><path d="M12 10.5V17M10 20h4M12 17l-2 3M12 17l2 3M6 8c0-3.5 2.7-6 6-6s6 2.5 6 6"/></svg></span><span>Play</span>
     </button>
     <button class="bottom-tab-btn" data-tab="match" onclick="switchMainTab('match', this)">
-      <span class="tab-icon">🌍</span><span>Match</span>
+      <span class="tab-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-2 2.5-3 5-3 9s1 6.5 3 9c2-2.5 3-5 3-9s-1-6.5-3-9"/></svg></span><span>Match</span>
     </button>
     <button class="bottom-tab-btn" data-tab="tournaments" onclick="switchMainTab('tournaments', this)">
-      <span class="tab-icon">🏆</span><span>Tourneys</span>
+      <span class="tab-icon"><svg viewBox="0 0 24 24"><path d="M6 9V4h12v5M6 9H3l1 4h2M6 9h12M18 9h3l-1 4h-2M8 13h8v2a4 4 0 01-4 4 4 4 0 01-4-4v-2zM10 19v2h4v-2"/></svg></span><span>Tourneys</span>
     </button>
     <button class="bottom-tab-btn" data-tab="store" onclick="switchMainTab('store', this)">
-      <span class="tab-icon">🪙</span><span>Store</span>
+      <span class="tab-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 8.5C9.5 8.5 10 7 12 7s2.5 1.5 2.5 2.5c0 1.5-1.5 2-2.5 2.5V14M12 16.5v.5"/></svg></span><span>Store</span>
     </button>
     <button class="bottom-tab-btn" data-tab="profile" onclick="switchMainTab('profile', this)">
-      <span class="tab-icon">👤</span><span>Profile</span>
+      <span class="tab-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg></span><span>Profile</span>
     </button>
   </div>
 
@@ -3603,7 +3772,10 @@
 
     function spendCoins(amount) {
       if (playerCoins < amount) {
-        alert('Not enough coins! Visit the Coin Store to get more.');
+        showIOSAlert('Not Enough Coins', 'Visit the Coin Store to get more coins.', [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Coin Store', style: 'bold', handler: () => { const btn = document.querySelector('.bottom-tab-btn[data-tab="store"]'); switchMainTab('store', btn); } }
+        ]);
         return false;
       }
       playerCoins -= amount;
@@ -3867,7 +4039,9 @@
         }).catch(e => console.error("Tournament entry error:", e));
       }
 
-      alert('✅ Registered for ' + name + '!\n\n' + (cost > 0 ? cost + ' coins deducted.' : 'Free entry!') + '\n\nThe tournament will begin at the scheduled time.');
+      showIOSAlert('Registered!', 'You\'re in for ' + name + '. ' + (cost > 0 ? cost + ' coins deducted. ' : '') + 'The tournament will begin at the scheduled time.', [
+        { text: 'OK', style: 'bold' }
+      ]);
     }
 
     // ==============================
@@ -3902,6 +4076,40 @@
 
     function closePurchase() {
       $('iapDialog').classList.remove('active');
+    }
+
+    // ==============================
+    // iOS-Style Alert System
+    // ==============================
+    function showIOSAlert(title, message, actions) {
+      $('iosAlertTitle').textContent = title;
+      $('iosAlertMessage').textContent = message;
+      const actionsContainer = $('iosAlertActions');
+      actionsContainer.innerHTML = '';
+      actionsContainer.className = 'ios-alert-actions' + (actions.length === 2 ? ' horizontal' : '');
+
+      actions.forEach(action => {
+        const btn = document.createElement('button');
+        btn.className = 'ios-alert-action';
+        if (action.style === 'destructive') btn.classList.add('destructive');
+        if (action.style === 'cancel') btn.classList.add('cancel');
+        if (action.style === 'bold') btn.classList.add('bold');
+        btn.textContent = action.text;
+        btn.onclick = () => {
+          $('iosAlertOverlay').classList.remove('active');
+          if (action.handler) action.handler();
+        };
+        actionsContainer.appendChild(btn);
+      });
+
+      $('iosAlertOverlay').classList.add('active');
+    }
+
+    function showIOSConfirm(title, message, confirmText, onConfirm, cancelText = 'Cancel') {
+      showIOSAlert(title, message, [
+        { text: cancelText, style: 'cancel' },
+        { text: confirmText, style: 'destructive', handler: onConfirm }
+      ]);
     }
 
     // ==============================
@@ -4650,32 +4858,30 @@
     }
 
     function leaveGame() {
-      if (!confirm("Are you sure you want to leave the current game? This will clear your saved game data.")) {
-        return;
-      }
+      showIOSConfirm('Leave Game', 'This will clear your saved game data. You\'ll need the game code to rejoin.', 'Leave', () => {
+        // Unsubscribe from listeners
+        if (unsubGame) unsubGame();
+        if (unsubMessages) unsubMessages();
 
-      // Unsubscribe from listeners
-      if (unsubGame) unsubGame();
-      if (unsubMessages) unsubMessages();
+        // Clear state
+        currentGameId = null;
+        currentPlayerSlot = null;
+        currentGameData = null;
+        unsubGame = null;
+        unsubMessages = null;
 
-      // Clear state
-      currentGameId = null;
-      currentPlayerSlot = null;
-      currentGameData = null;
-      unsubGame = null;
-      unsubMessages = null;
+        // Clear localStorage
+        localStorage.removeItem(STORAGE_GAME_ID);
+        localStorage.removeItem(STORAGE_SLOT);
 
-      // Clear localStorage
-      localStorage.removeItem(STORAGE_GAME_ID);
-      localStorage.removeItem(STORAGE_SLOT);
+        // Close settings and show start modal
+        closeSheet("settingsSheet");
+        $("startModal").classList.remove("hidden");
 
-      // Close settings and show start modal
-      closeSheet("settingsSheet");
-      $("startModal").classList.remove("hidden");
-
-      // Update UI
-      updateStartButtons();
-      showNoGameUI();
+        // Update UI
+        updateStartButtons();
+        showNoGameUI();
+      });
     }
 
     function subscribeToGame(docRef) {
@@ -5247,12 +5453,13 @@
       // Start modal
       $("startCreateBtn").onclick = () => {
         if (hasSavedGame()) {
-          if (!confirm("This device will leave the current game and start fresh.\n\nGot the old code saved? You'll need it to come back.")) {
-            return;
-          }
-          // Clear existing game data
-          localStorage.removeItem(STORAGE_GAME_ID);
-          localStorage.removeItem(STORAGE_SLOT);
+          showIOSConfirm('Start New Game', 'This device will leave the current game and start fresh. You\'ll need the old code to come back.', 'Start Fresh', () => {
+            localStorage.removeItem(STORAGE_GAME_ID);
+            localStorage.removeItem(STORAGE_SLOT);
+            $("startModal").classList.add("hidden");
+            openSheet("createSheet");
+          });
+          return;
         }
         $("startModal").classList.add("hidden");
         openSheet("createSheet");
