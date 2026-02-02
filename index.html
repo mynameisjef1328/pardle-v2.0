@@ -2629,6 +2629,209 @@
       opacity: 0.8;
       transition: all 0.05s ease;
     }
+
+    /* ================================
+       FIRST-TIME HINT SYSTEM
+       ================================ */
+    .ftue-hint {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(0, 200, 83, 0.08);
+      border: 1px solid rgba(0, 200, 83, 0.25);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--text);
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    body[data-mode="dark"] .ftue-hint {
+      background: rgba(0, 200, 83, 0.06);
+    }
+
+    .ftue-hint-icon {
+      flex-shrink: 0;
+      font-size: 14px;
+      margin-top: 1px;
+    }
+
+    .ftue-hint-text {
+      flex: 1;
+    }
+
+    .ftue-hint-dismiss {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0,0,0,0.08);
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      line-height: 1;
+    }
+
+    body[data-mode="dark"] .ftue-hint-dismiss {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .ftue-hint-dismiss:active { transform: scale(0.9); }
+
+    /* Wordle callout card */
+    .wordle-callout {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      text-align: center;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .wordle-callout-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .wordle-callout-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .wordle-callout-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .wordle-callout-link:active { transform: scale(0.97); }
+
+    /* Symbol legend */
+    .symbol-legend-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--border-soft);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: all 0.15s ease;
+    }
+
+    .symbol-legend-btn:active { transform: scale(0.9); }
+
+    .symbol-legend {
+      display: none;
+      padding: 10px 12px;
+      background: var(--bg-card-elevated);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-size: 11px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .symbol-legend.visible { display: block; }
+
+    .symbol-legend-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .symbol-legend-icon {
+      flex-shrink: 0;
+      width: 24px;
+      text-align: center;
+    }
+
+    /* Tab tooltip for first visit */
+    .tab-tooltip {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #000;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      animation: fadeIn 0.3s ease-out;
+      z-index: 5;
+    }
+
+    .tab-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--accent);
+    }
+
+    .bottom-tab-btn { position: relative; }
+
+    /* Start modal micro-descriptions */
+    .menu-btn-desc {
+      font-size: 11px;
+      font-weight: 400;
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+
+    .menu-btn.with-desc {
+      height: auto;
+      padding: 14px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .menu-btn.with-desc .menu-btn-label {
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .menu-btn.rules.with-desc .menu-btn-label {
+      font-size: 24px;
+    }
   </style>
 </head>
 <body data-mode="dark" data-accent="normal">
@@ -2657,11 +2860,11 @@
         <div class="start-title">Pardle</div>
         <p class="start-tagline">Pardle is what happens when Wordle and golf have a beautiful, competitive baby.</p>
         <div class="menu-stack">
-          <button id="startCreateBtn" class="menu-btn primary">Create Game</button>
-          <button id="startRejoinBtn" class="menu-btn secondary" disabled>Rejoin Game</button>
-          <button id="startJoinBtn" class="menu-btn secondary">Join Game</button>
+          <button id="startCreateBtn" class="menu-btn primary with-desc"><span class="menu-btn-label">Create Game</span><span class="menu-btn-desc">Start a new 18-hole round</span></button>
+          <button id="startJoinBtn" class="menu-btn secondary with-desc"><span class="menu-btn-label">Join Game</span><span class="menu-btn-desc">Enter a friend's game code</span></button>
+          <button id="startRejoinBtn" class="menu-btn secondary with-desc" disabled><span class="menu-btn-label">Rejoin Game</span><span class="menu-btn-desc">Return to your last game</span></button>
           <div class="menu-divider"></div>
-          <button id="startRulesBtn" class="menu-btn secondary rules">Game Rules</button>
+          <button id="startRulesBtn" class="menu-btn secondary rules with-desc"><span class="menu-btn-label">Game Rules</span><span class="menu-btn-desc">Learn how Pardle works</span></button>
         </div>
       </div>
     </div>
@@ -2732,6 +2935,7 @@
         <div class="todays-hole-label">Today's Hole</div>
         <div id="currentHoleNumber" class="todays-hole-number">1</div>
         <div id="holeProgress" class="todays-hole-of">of 18</div>
+        <div id="hintDailyCadence" style="display:none; font-size:11px; color:var(--text-muted); margin-top:-4px; margin-bottom:8px;">1 hole per day · Next hole unlocks at midnight</div>
 
         <div class="hole-stats">
           <div class="hole-stat">
@@ -2748,6 +2952,11 @@
         <div id="scoreEntry" class="score-entry">
           <!-- Phase 1: Prediction -->
           <div id="predictionPhase" class="prediction-phase">
+            <div id="hintPrediction" class="ftue-hint" style="display:none;">
+              <span class="ftue-hint-icon">💡</span>
+              <span class="ftue-hint-text">Guess how many tries your Wordle will take. Nail it for a <strong style="color:var(--green);">-1 stroke bonus</strong>. No penalty if you're wrong.</span>
+              <button class="ftue-hint-dismiss" onclick="dismissHint('prediction')" aria-label="Dismiss">✕</button>
+            </div>
             <div class="score-entry-label">Predict your score</div>
             <div class="score-entry-sublabel">Lock in your prediction before playing Wordle</div>
             <div id="predictionButtons" class="score-buttons"></div>
@@ -2759,6 +2968,11 @@
               <div id="confidenceInfo" class="confidence-info">
                 <span class="bonus">Bonus</span> = strokes under par • <span class="penalty">Penalty</span> = strokes over par
               </div>
+              <div id="hintConfidence" class="ftue-hint" style="display:none; margin-top:8px;">
+                <span class="ftue-hint-icon">⚡</span>
+                <span class="ftue-hint-text"><strong>Example (Par 4):</strong> Score a 2? <span style="color:var(--green);">-2 stroke bonus</span>. Score a 6? <span style="color:var(--red);">+2 stroke penalty</span>. High risk, high reward.</span>
+                <button class="ftue-hint-dismiss" onclick="dismissHint('confidence')" aria-label="Dismiss">✕</button>
+              </div>
             </div>
             <button id="lockPredictionBtn" class="submit-btn" disabled>Lock Prediction</button>
           </div>
@@ -2769,6 +2983,11 @@
               <span class="prediction-locked-icon">🔒</span>
               <span class="prediction-locked-text">Prediction locked: <strong id="lockedPredictionValue">-</strong></span>
               <span id="lockedConfidenceIndicator" class="confidence-indicator" style="display:none;">⚡</span>
+            </div>
+            <div id="hintWordle" class="wordle-callout" style="display:none;">
+              <span class="wordle-callout-title">Prediction locked!</span>
+              <span class="wordle-callout-text">Now go play today's Wordle, then come back here to enter your actual score.</span>
+              <a href="https://www.nytimes.com/games/wordle/index.html" target="_blank" rel="noopener noreferrer" class="wordle-callout-link">Open Wordle ↗</a>
             </div>
             <div class="score-entry-label">Enter your actual score</div>
             <div class="score-entry-sublabel">How did you do on today's Wordle?</div>
@@ -2796,10 +3015,19 @@
       <div class="card">
         <div class="live-status-header">
           <span id="liveStatusTitle" class="live-status-title">Hole 1 Status</span>
-          <span class="live-indicator">
-            <span class="live-dot"></span>
-            Live
-          </span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button class="symbol-legend-btn" onclick="toggleLegend('liveStatusLegend')" aria-label="Symbol key" title="Symbol key">?</button>
+            <span class="live-indicator">
+              <span class="live-dot"></span>
+              Live
+            </span>
+          </div>
+        </div>
+        <div id="liveStatusLegend" class="symbol-legend">
+          <div class="symbol-legend-row"><span class="symbol-legend-icon">🎯-1</span> Correct prediction (-1 stroke bonus)</div>
+          <div class="symbol-legend-row"><span class="symbol-legend-icon">⚡-2</span> Confidence bet bonus (strokes under par)</div>
+          <div class="symbol-legend-row"><span class="symbol-legend-icon" style="color:var(--red);">⚡+1</span> Confidence bet penalty (strokes over par)</div>
+          <div class="symbol-legend-row"><span class="symbol-legend-icon">🔒 3</span> Locked prediction (waiting for actual score)</div>
         </div>
         <div id="playerStatusList" class="player-status-list"></div>
       </div>
@@ -3077,6 +3305,7 @@
       <div class="section-title">Your Name</div>
       <input id="createNameInput" class="sheet-input" placeholder="Enter your name" autocomplete="name">
       <div class="section-title">Choose Your Course</div>
+      <p style="font-size:12px; color:var(--text-muted); margin-top:-2px; margin-bottom:10px;">Each course has a different par layout. Pick any to start!</p>
       <div id="courseCardsContainer" class="course-cards-container">
         <div class="course-card st-andrews selected" data-course="st-andrews">
           <div class="course-card-content">
@@ -3671,6 +3900,9 @@
     const STORAGE_MODE = "pardle_mode";
     const STORAGE_ACCENT = "pardle_accent";
     const STORAGE_LAST_SEEN = "pardle_last_seen_msg";
+    const STORAGE_HINTS_DISMISSED = "pardle_hints_dismissed";
+    const STORAGE_FIRST_VISIT = "pardle_first_visit_done";
+    const STORAGE_ANALYTICS_NUDGE = "pardle_analytics_nudge_shown";
 
     const COURSES = {
       "st-andrews": { name: "St. Androos Links", pars: [4,4,4,4,5,4,4,3,4,4,3,4,4,5,4,4,4,4] },
@@ -3726,6 +3958,11 @@
       // Hide all tab pages
       document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.bottom-tab-btn').forEach(b => b.classList.remove('active'));
+
+      // Enable coin display when user navigates to monetized tabs
+      if (tab === 'match' || tab === 'tournaments' || tab === 'store') {
+        enableCoinDisplay();
+      }
 
       // Show/hide app shell (Play tab)
       const appShell = document.querySelector('.app-shell');
@@ -4319,6 +4556,8 @@
       $("noGameState").style.display = "none";
       $("gameContent").classList.add("visible");
       $("chatFab").classList.add("visible");
+      // Show tab tooltips on first game entry
+      setTimeout(showTabTooltips, 1000);
     }
 
     function showNoGameUI() {
@@ -4387,6 +4626,8 @@
         info.classList.add("visible");
         if (lockBtn) lockBtn.classList.add("confident-active");
         if (navigator.vibrate) navigator.vibrate(30);
+        // Show first-time confidence example
+        showHintIfNew('confidence');
       } else {
         btn.classList.remove("active");
         info.classList.remove("visible");
@@ -4452,6 +4693,7 @@
         if (hasSubmitted) {
           $("scoreEntry").style.display = "none";
           $("submittedState").style.display = "flex";
+          hideWordleCallout();
           // Clear selection state when already submitted
           selectedScore = null;
           selectedPrediction = null;
@@ -4473,6 +4715,9 @@
             $("lockedPredictionValue").textContent = predictions[currentHole - 1];
             $("lockedConfidenceIndicator").style.display = isConfident ? "inline" : "none";
 
+            // Show Wordle callout for first-time users
+            showWordleCallout();
+
             // Highlight the predicted score button
             const predictedScore = predictions[currentHole - 1];
             document.querySelectorAll("#actualScoreButtons .score-btn").forEach(btn => {
@@ -4490,6 +4735,9 @@
             // Phase 1: Show prediction entry
             $("predictionPhase").style.display = "block";
             $("actualScorePhase").style.display = "none";
+
+            // Show first-time prediction hint
+            showHintIfNew('prediction');
 
             if (selectedPrediction === null) {
               document.querySelectorAll("#predictionButtons .score-btn").forEach(btn => btn.classList.remove("selected"));
@@ -4637,6 +4885,12 @@
         `;
         standingsList.appendChild(row);
       });
+
+      // Show daily cadence hint for first-time users
+      showDailyCadenceHint();
+
+      // Analytics nudge after a few holes
+      maybeShowAnalyticsNudge(maxHolesPlayed);
 
       // Past holes shows completed days only (for historical view)
       const completedHoles = Math.max(currentHole - 1, 0);
@@ -5131,6 +5385,11 @@
           }
         }
 
+        // Dismiss first-time hints after first successful submission
+        dismissHint('wordle');
+        dismissHint('prediction');
+        dismissHint('dailyCadence');
+
         // Clear selection after successful submit
         selectedScore = null;
         selectedPrediction = null;
@@ -5431,6 +5690,112 @@
     }
 
     // ==============================
+    // First-Time User Hints
+    // ==============================
+    function getHintsDismissed() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_HINTS_DISMISSED) || '{}'); }
+      catch(e) { return {}; }
+    }
+
+    function isHintDismissed(hintId) {
+      return !!getHintsDismissed()[hintId];
+    }
+
+    function dismissHint(hintId) {
+      const hints = getHintsDismissed();
+      hints[hintId] = true;
+      localStorage.setItem(STORAGE_HINTS_DISMISSED, JSON.stringify(hints));
+      const el = $('hint' + hintId.charAt(0).toUpperCase() + hintId.slice(1));
+      if (el) el.style.display = 'none';
+    }
+
+    function showHintIfNew(hintId) {
+      if (isHintDismissed(hintId)) return;
+      const el = $('hint' + hintId.charAt(0).toUpperCase() + hintId.slice(1));
+      if (el) el.style.display = 'flex';
+    }
+
+    function showDailyCadenceHint() {
+      if (isHintDismissed('dailyCadence')) return;
+      const el = $('hintDailyCadence');
+      if (el) el.style.display = 'block';
+    }
+
+    function showWordleCallout() {
+      if (isHintDismissed('wordle')) return;
+      const el = $('hintWordle');
+      if (el) el.style.display = 'flex';
+    }
+
+    function hideWordleCallout() {
+      const el = $('hintWordle');
+      if (el) el.style.display = 'none';
+    }
+
+    function toggleLegend(id) {
+      const el = $(id);
+      if (el) el.classList.toggle('visible');
+    }
+
+    function isFirstVisit() {
+      return !localStorage.getItem(STORAGE_FIRST_VISIT);
+    }
+
+    function markFirstVisitDone() {
+      localStorage.setItem(STORAGE_FIRST_VISIT, '1');
+    }
+
+    // Progressive disclosure: show tab tooltips on first game join
+    function showTabTooltips() {
+      if (!isFirstVisit()) return;
+      const playBtn = document.querySelector('.bottom-tab-btn[data-tab="play"]');
+      if (!playBtn) return;
+
+      const tooltip = document.createElement('span');
+      tooltip.className = 'tab-tooltip';
+      tooltip.textContent = 'Start here';
+      playBtn.appendChild(tooltip);
+
+      setTimeout(() => {
+        if (tooltip.parentNode) tooltip.remove();
+      }, 6000);
+
+      markFirstVisitDone();
+    }
+
+    // Analytics nudge: show toast after 3+ holes completed
+    function maybeShowAnalyticsNudge(holesPlayed) {
+      if (holesPlayed >= 3 && !localStorage.getItem(STORAGE_ANALYTICS_NUDGE)) {
+        localStorage.setItem(STORAGE_ANALYTICS_NUDGE, '1');
+        setTimeout(() => {
+          showToast("📊 Round Stats", "Tap the chart icon to see analytics and player stats.", () => {
+            buildAnalytics();
+            openSheet("analyticsSheet");
+          });
+        }, 2000);
+      }
+    }
+
+    // Hide coin balance for brand-new users until they need it
+    function updateCoinDisplayVisibility() {
+      const headerDisplay = $('coinDisplayHeader');
+      if (!headerDisplay) return;
+      // Show coins once user has visited match/tournaments or has played a few holes
+      const hasContext = localStorage.getItem('pardle_coin_display_shown');
+      if (hasContext) {
+        headerDisplay.style.display = 'flex';
+      } else {
+        headerDisplay.style.display = 'none';
+      }
+    }
+
+    function enableCoinDisplay() {
+      localStorage.setItem('pardle_coin_display_shown', '1');
+      const headerDisplay = $('coinDisplayHeader');
+      if (headerDisplay) headerDisplay.style.display = 'flex';
+    }
+
+    // ==============================
     // Init
     // ==============================
     function init() {
@@ -5598,8 +5963,8 @@
       // Premium Features Init
       // ==============================
 
-      // Show coin display in header
-      $('coinDisplayHeader').style.display = 'flex';
+      // Show coin display only when user has context for it
+      updateCoinDisplayVisibility();
 
       // Coin display → Store tab
       $('coinDisplayHeader').onclick = () => {
