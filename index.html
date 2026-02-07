@@ -539,85 +539,8 @@
     }
 
     /* ================================
-       CONFIDENCE BET TOGGLE
+       DOUBLE DOWN UI
        ================================ */
-    .confidence-toggle-container {
-      margin-bottom: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .confidence-toggle-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px 20px;
-      border-radius: 10px;
-      border: 1px solid var(--border-soft);
-      background: var(--bg-card-elevated);
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .confidence-toggle-btn:active { transform: scale(0.97); }
-
-    .confidence-toggle-btn .confidence-icon {
-      font-size: 18px;
-      opacity: 0.5;
-      transition: all 0.2s ease;
-    }
-
-    .confidence-toggle-btn.active {
-      background: var(--accent-soft);
-      border-color: var(--accent);
-      color: var(--accent);
-      box-shadow: 0 4px 15px var(--accent-glow);
-      animation: confidencePulse 2s ease-in-out infinite;
-    }
-
-    .confidence-toggle-btn.active .confidence-icon {
-      opacity: 1;
-      animation: boltSpin 0.4s ease-out;
-    }
-
-    @keyframes confidencePulse {
-      0%, 100% { box-shadow: 0 4px 15px var(--accent-glow); }
-      50% { box-shadow: 0 6px 25px var(--accent-glow); }
-    }
-
-    @keyframes boltSpin {
-      0% { transform: scale(0.5) rotate(-20deg); opacity: 0; }
-      50% { transform: scale(1.3) rotate(10deg); opacity: 1; }
-      100% { transform: scale(1) rotate(0deg); opacity: 1; }
-    }
-
-    .confidence-info {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-align: center;
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: all 0.3s ease;
-      line-height: 1.4;
-    }
-
-    .confidence-info.visible {
-      max-height: 50px;
-      opacity: 1;
-      margin-top: 4px;
-    }
-
-    .confidence-info .bonus { color: var(--green); font-weight: 600; }
-    .confidence-info .penalty { color: var(--red); font-weight: 600; }
-
-    /* Prediction Phase Styles */
     .score-entry-sublabel {
       font-size: 12px;
       color: var(--text-muted);
@@ -625,22 +548,129 @@
       text-align: center;
     }
 
-    .prediction-locked-banner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 16px;
-      background: var(--accent-soft);
-      border: 1px solid var(--accent);
-      border-radius: 10px;
+    .result-display {
+      text-align: center;
+      padding: 20px;
+      background: var(--bg-card-elevated);
+      border-radius: 16px;
       margin-bottom: 16px;
-      font-size: 14px;
-      color: var(--accent);
     }
 
-    .prediction-locked-icon {
+    .result-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .result-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--green);
+      margin-bottom: 4px;
+    }
+
+    .result-title.over-par {
+      color: var(--red);
+    }
+
+    .result-title.at-par {
+      color: var(--text);
+    }
+
+    .result-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .current-score-display {
+      text-align: center;
+      padding: 16px;
+      background: var(--bg-card);
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-soft);
+    }
+
+    .current-score-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .current-adjustment {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    .current-adjustment.over-par {
+      color: var(--red);
+    }
+
+    .current-adjustment.at-par {
+      color: var(--text-muted);
+    }
+
+    .adjustment-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .choice-prompt {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .choice-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .choice-btn {
+      flex: 1;
+      padding: 16px 12px;
+      border-radius: 14px;
+      border: none;
       font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+
+    .choice-btn:active {
+      transform: scale(0.97);
+    }
+
+    .choice-btn.keep {
+      background: var(--bg-card-elevated);
+      color: var(--text);
+      border: 1.5px solid var(--border-soft);
+    }
+
+    .choice-btn.double {
+      background: linear-gradient(135deg, var(--accent), #ff6d00);
+      color: #000;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .choice-sub {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 4px;
+      opacity: 0.8;
+    }
+
+    .double-down-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
     }
 
     .prediction-locked-text strong {
@@ -2746,34 +2776,40 @@
         </div>
 
         <div id="scoreEntry" class="score-entry">
-          <!-- Phase 1: Prediction -->
-          <div id="predictionPhase" class="prediction-phase">
-            <div class="score-entry-label">Predict your score</div>
-            <div class="score-entry-sublabel">Lock in your prediction before playing Wordle</div>
-            <div id="predictionButtons" class="score-buttons"></div>
-            <div class="confidence-toggle-container">
-              <button id="confidenceToggleBtn" class="confidence-toggle-btn" type="button">
-                <span class="confidence-icon">⚡</span>
-                <span class="confidence-label">Confidence Bet</span>
-              </button>
-              <div id="confidenceInfo" class="confidence-info">
-                <span class="bonus">Bonus</span> = strokes under par • <span class="penalty">Penalty</span> = strokes over par
-              </div>
-            </div>
-            <button id="lockPredictionBtn" class="submit-btn" disabled>Lock Prediction</button>
+          <!-- Phase 1: Enter Score -->
+          <div id="scoreInputPhase" class="score-input-phase">
+            <div class="score-entry-label">What did you score?</div>
+            <div class="score-entry-sublabel">Enter your Wordle result</div>
+            <div id="scoreButtons" class="score-buttons"></div>
+            <button id="continueBtn" class="submit-btn" disabled>Continue</button>
           </div>
 
-          <!-- Phase 2: Actual Score -->
-          <div id="actualScorePhase" class="actual-score-phase" style="display:none;">
-            <div class="prediction-locked-banner">
-              <span class="prediction-locked-icon">🔒</span>
-              <span class="prediction-locked-text">Prediction locked: <strong id="lockedPredictionValue">-</strong></span>
-              <span id="lockedConfidenceIndicator" class="confidence-indicator" style="display:none;">⚡</span>
+          <!-- Phase 2: Result & Double Down Choice -->
+          <div id="doubleDownPhase" class="double-down-phase" style="display:none;">
+            <div class="result-display">
+              <div class="result-label">Your result</div>
+              <div id="resultTitle" class="result-title">Birdie!</div>
+              <div id="resultDesc" class="result-desc">You scored 3 on a Par 4</div>
             </div>
-            <div class="score-entry-label">Enter your actual score</div>
-            <div class="score-entry-sublabel">How did you do on today's Wordle?</div>
-            <div id="actualScoreButtons" class="score-buttons"></div>
-            <button id="submitScoreBtn" class="submit-btn" disabled>Submit Actual Score</button>
+
+            <div class="current-score-display">
+              <div class="current-score-label">Current adjustment</div>
+              <div id="currentAdjustment" class="current-adjustment">-1</div>
+              <div id="adjustmentDesc" class="adjustment-desc">1 stroke under par</div>
+            </div>
+
+            <div class="choice-prompt">What do you want to do?</div>
+            <div class="choice-buttons">
+              <button id="keepBtn" class="choice-btn keep">
+                Keep It
+                <span id="keepValue" class="choice-sub">Lock in -1</span>
+              </button>
+              <button id="doubleDownBtn" class="choice-btn double">
+                ⚡ Double Down
+                <span id="doubleValue" class="choice-sub">Risk it for -2</span>
+              </button>
+            </div>
+            <div class="double-down-hint">Double Down: Doubles bonus if under par, doubles penalty if over</div>
           </div>
         </div>
 
@@ -3697,9 +3733,8 @@
     let currentGameData = null;
     let unsubGame = null;
     let unsubMessages = null;
-    let selectedPrediction = null; // Prediction phase score selection
-    let selectedScore = null; // Actual score phase selection
-    let selectedConfident = false; // Confidence bet state
+    let selectedScore = null; // Score selection
+    let selectedConfident = false; // Double Down state
     let unreadCount = 0;
     let countdownInterval = null;
     let messagesInitialized = false;
@@ -4207,18 +4242,15 @@
     }
 
     // Helper to calculate player stats from all submitted scores
-    // Includes confidence bonus/penalty and prediction accuracy bonus
+    // Includes Double Down bonus/penalty (doubles the vs-par adjustment)
     function calculatePlayerStats(player, pars, maxHole) {
       const scores = player.scores || [];
-      const predictions = player.predictions || [];
       const confident = player.confident || [];
       let total = 0;
       let parTotal = 0;
       let holesPlayed = 0;
-      let confidenceAdjustment = 0;
-      let predictionAdjustment = 0;
-      let confidentCount = 0;
-      let correctPredictions = 0;
+      let doubleDownAdjustment = 0;
+      let doubleDownCount = 0;
 
       // Count all submitted scores up to the current hole
       for (let h = 0; h < maxHole && h < HOLES; h++) {
@@ -4227,34 +4259,26 @@
           parTotal += pars[h];
           holesPlayed++;
 
-          const predictionCorrect = predictions[h] != null && predictions[h] === scores[h];
-
           if (confident[h]) {
-            // Confidence bet: bonus/penalty equals strokes under/over par
-            confidentCount++;
+            // Double Down: adds another vs-par adjustment (effectively doubling it)
+            doubleDownCount++;
             const vsPar = scores[h] - pars[h];
-            confidenceAdjustment += vsPar;
-            if (predictionCorrect) correctPredictions++;
-          } else if (predictionCorrect) {
-            // No bet but correct prediction: -1 stroke bonus
-            correctPredictions++;
-            predictionAdjustment -= 1;
+            doubleDownAdjustment += vsPar;
           }
         }
       }
 
       // Apply adjustments to total
-      const adjustedTotal = total + confidenceAdjustment + predictionAdjustment;
+      // Note: total already includes base vs-par, doubleDownAdjustment adds another copy
+      const adjustedTotal = total + doubleDownAdjustment;
 
       return {
         total: adjustedTotal,
         rawTotal: total,
         parTotal,
         holesPlayed,
-        confidenceAdjustment,
-        predictionAdjustment,
-        confidentCount,
-        correctPredictions
+        doubleDownAdjustment,
+        doubleDownCount
       };
     }
 
@@ -4335,87 +4359,108 @@
     }
 
     function renderScoreButtons() {
-      // Render prediction phase buttons
-      const predContainer = $("predictionButtons");
-      predContainer.innerHTML = "";
+      // Render score input buttons
+      const container = $("scoreButtons");
+      container.innerHTML = "";
       for (let i = 1; i <= 7; i++) {
         const btn = document.createElement("button");
         btn.className = "score-btn";
         btn.textContent = i;
         btn.dataset.score = i;
-        btn.onclick = () => selectPrediction(i);
-        predContainer.appendChild(btn);
-      }
-
-      // Render actual score phase buttons
-      const actualContainer = $("actualScoreButtons");
-      actualContainer.innerHTML = "";
-      for (let i = 1; i <= 7; i++) {
-        const btn = document.createElement("button");
-        btn.className = "score-btn";
-        btn.textContent = i;
-        btn.dataset.score = i;
-        btn.onclick = () => selectActualScore(i);
-        actualContainer.appendChild(btn);
+        btn.onclick = () => selectScore(i);
+        container.appendChild(btn);
       }
     }
 
-    function selectPrediction(score) {
-      selectedPrediction = score;
-      document.querySelectorAll("#predictionButtons .score-btn").forEach(btn => {
-        btn.classList.toggle("selected", parseInt(btn.dataset.score) === score);
-      });
-      $("lockPredictionBtn").disabled = false;
-    }
-
-    function selectActualScore(score) {
+    function selectScore(score) {
       selectedScore = score;
-      document.querySelectorAll("#actualScoreButtons .score-btn").forEach(btn => {
+      document.querySelectorAll("#scoreButtons .score-btn").forEach(btn => {
         btn.classList.toggle("selected", parseInt(btn.dataset.score) === score);
       });
-      $("submitScoreBtn").disabled = false;
+      $("continueBtn").disabled = false;
     }
 
-    function toggleConfidence() {
-      selectedConfident = !selectedConfident;
-      const btn = $("confidenceToggleBtn");
-      const info = $("confidenceInfo");
-      const lockBtn = $("lockPredictionBtn");
-
-      if (selectedConfident) {
-        btn.classList.add("active");
-        info.classList.add("visible");
-        if (lockBtn) lockBtn.classList.add("confident-active");
-        if (navigator.vibrate) navigator.vibrate(30);
-      } else {
-        btn.classList.remove("active");
-        info.classList.remove("visible");
-        if (lockBtn) lockBtn.classList.remove("confident-active");
-      }
-    }
-
-    function resetConfidenceUI() {
-      selectedConfident = false;
-      const btn = $("confidenceToggleBtn");
-      const info = $("confidenceInfo");
-      const lockBtn = $("lockPredictionBtn");
-      if (btn) btn.classList.remove("active");
-      if (info) info.classList.remove("visible");
-      if (lockBtn) lockBtn.classList.remove("confident-active");
-    }
-
-    function resetPredictionUI() {
-      selectedPrediction = null;
-      selectedConfident = false;
-      document.querySelectorAll("#predictionButtons .score-btn").forEach(btn => btn.classList.remove("selected"));
-      $("lockPredictionBtn").disabled = true;
-      resetConfidenceUI();
-    }
-
-    function resetActualScoreUI() {
+    function resetScoreUI() {
       selectedScore = null;
-      document.querySelectorAll("#actualScoreButtons .score-btn").forEach(btn => btn.classList.remove("selected"));
-      $("submitScoreBtn").disabled = true;
+      selectedConfident = false;
+      document.querySelectorAll("#scoreButtons .score-btn").forEach(btn => btn.classList.remove("selected"));
+      $("continueBtn").disabled = true;
+    }
+
+    function getScoreName(score, par) {
+      const diff = score - par;
+      if (score === 1) return "Hole in One!";
+      if (diff <= -3) return "Albatross!";
+      if (diff === -2) return "Eagle!";
+      if (diff === -1) return "Birdie!";
+      if (diff === 0) return "Par";
+      if (diff === 1) return "Bogey";
+      if (diff === 2) return "Double Bogey";
+      return "Triple+";
+    }
+
+    function showDoubleDownPhase() {
+      if (selectedScore == null || !currentGameData) return;
+
+      const course = COURSES[currentGameData.courseId] || COURSES["st-andrews"];
+      const currentHole = getCurrentHole(currentGameData);
+      const par = course.pars[currentHole - 1];
+      const vsPar = selectedScore - par;
+
+      // Hide score input, show double down choice
+      $("scoreInputPhase").style.display = "none";
+      $("doubleDownPhase").style.display = "block";
+
+      // Set result title
+      const resultTitle = $("resultTitle");
+      resultTitle.textContent = getScoreName(selectedScore, par);
+      resultTitle.classList.remove("over-par", "at-par");
+      if (vsPar > 0) resultTitle.classList.add("over-par");
+      else if (vsPar === 0) resultTitle.classList.add("at-par");
+
+      // Set result description
+      $("resultDesc").textContent = `You scored ${selectedScore} on a Par ${par}`;
+
+      // Set current adjustment display
+      const adjustmentEl = $("currentAdjustment");
+      adjustmentEl.classList.remove("over-par", "at-par");
+      if (vsPar < 0) {
+        adjustmentEl.textContent = vsPar;
+        $("adjustmentDesc").textContent = `${Math.abs(vsPar)} stroke${Math.abs(vsPar) > 1 ? 's' : ''} under par`;
+      } else if (vsPar > 0) {
+        adjustmentEl.textContent = "+" + vsPar;
+        adjustmentEl.classList.add("over-par");
+        $("adjustmentDesc").textContent = `${vsPar} stroke${vsPar > 1 ? 's' : ''} over par`;
+      } else {
+        adjustmentEl.textContent = "E";
+        adjustmentEl.classList.add("at-par");
+        $("adjustmentDesc").textContent = "Even with par";
+      }
+
+      // Set button values
+      if (vsPar < 0) {
+        $("keepValue").textContent = `Lock in ${vsPar}`;
+        $("doubleValue").textContent = `Risk it for ${vsPar * 2}`;
+      } else if (vsPar > 0) {
+        $("keepValue").textContent = `Lock in +${vsPar}`;
+        $("doubleValue").textContent = `Risk it for +${vsPar * 2}`;
+      } else {
+        $("keepValue").textContent = "Lock in E";
+        $("doubleValue").textContent = "No change at par";
+      }
+
+      if (navigator.vibrate) navigator.vibrate(30);
+    }
+
+    function keepScore() {
+      selectedConfident = false;
+      submitScore();
+    }
+
+    function doubleDown() {
+      selectedConfident = true;
+      if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+      submitScore();
     }
 
     function renderGame(data) {
@@ -4454,53 +4499,24 @@
           $("submittedState").style.display = "flex";
           // Clear selection state when already submitted
           selectedScore = null;
-          selectedPrediction = null;
-          resetConfidenceUI();
+          selectedConfident = false;
         } else {
           $("scoreEntry").style.display = "block";
           $("submittedState").style.display = "none";
 
-          // Check if prediction is already locked for this hole
-          const predictions = myPlayer?.predictions || [];
-          const confident = myPlayer?.confident || [];
-          const hasPrediction = predictions[currentHole - 1] != null;
-          const isConfident = confident[currentHole - 1] || false;
+          // Show score input phase (reset double down phase)
+          $("scoreInputPhase").style.display = "block";
+          $("doubleDownPhase").style.display = "none";
 
-          if (hasPrediction) {
-            // Phase 2: Show actual score entry
-            $("predictionPhase").style.display = "none";
-            $("actualScorePhase").style.display = "block";
-            $("lockedPredictionValue").textContent = predictions[currentHole - 1];
-            $("lockedConfidenceIndicator").style.display = isConfident ? "inline" : "none";
-
-            // Highlight the predicted score button
-            const predictedScore = predictions[currentHole - 1];
-            document.querySelectorAll("#actualScoreButtons .score-btn").forEach(btn => {
-              const btnScore = parseInt(btn.dataset.score);
-              btn.classList.toggle("prediction-match", btnScore === predictedScore);
-              btn.classList.toggle("selected", btnScore === selectedScore);
-            });
-
-            if (selectedScore === null) {
-              $("submitScoreBtn").disabled = true;
-            } else {
-              $("submitScoreBtn").disabled = false;
-            }
+          // Update score button selection state
+          if (selectedScore === null) {
+            document.querySelectorAll("#scoreButtons .score-btn").forEach(btn => btn.classList.remove("selected"));
+            $("continueBtn").disabled = true;
           } else {
-            // Phase 1: Show prediction entry
-            $("predictionPhase").style.display = "block";
-            $("actualScorePhase").style.display = "none";
-
-            if (selectedPrediction === null) {
-              document.querySelectorAll("#predictionButtons .score-btn").forEach(btn => btn.classList.remove("selected"));
-              $("lockPredictionBtn").disabled = true;
-              resetConfidenceUI();
-            } else {
-              document.querySelectorAll("#predictionButtons .score-btn").forEach(btn => {
-                btn.classList.toggle("selected", parseInt(btn.dataset.score) === selectedPrediction);
-              });
-              $("lockPredictionBtn").disabled = false;
-            }
+            document.querySelectorAll("#scoreButtons .score-btn").forEach(btn => {
+              btn.classList.toggle("selected", parseInt(btn.dataset.score) === selectedScore);
+            });
+            $("continueBtn").disabled = false;
           }
         }
       }
@@ -4511,10 +4527,8 @@
       players.forEach((player, idx) => {
         if (!player || !player.id) return;
         const scores = player.scores || [];
-        const predictions = player.predictions || [];
         const confident = player.confident || [];
         const holeScore = roundComplete ? null : scores[currentHole - 1];
-        const holePrediction = roundComplete ? null : predictions[currentHole - 1];
         const isConfident = roundComplete ? false : confident[currentHole - 1];
         const isYou = idx === currentPlayerSlot;
         const par = roundComplete ? 0 : pars[currentHole - 1];
@@ -4524,35 +4538,23 @@
 
         let scoreHtml;
         if (holeScore != null) {
-          // Has actual score - show with appropriate indicator
+          // Has score - show with appropriate indicator
           let indicator = '';
-          const predictionCorrect = holePrediction != null && holePrediction === holeScore;
 
           if (isConfident) {
-            // Confidence bet: show vs par bonus/penalty
+            // Double Down: show doubled vs par bonus/penalty
             const vsPar = holeScore - par;
             if (vsPar < 0) {
-              indicator = `<span class="confidence-indicator" style="color:var(--green);" title="${Math.abs(vsPar)} stroke bonus">⚡-${Math.abs(vsPar)}</span>`;
+              indicator = `<span class="confidence-indicator" style="color:var(--green);" title="Doubled! ${Math.abs(vsPar) * 2} strokes saved">⚡×2</span>`;
             } else if (vsPar > 0) {
-              indicator = `<span class="confidence-indicator" style="color:var(--red);" title="${vsPar} stroke penalty">⚡+${vsPar}</span>`;
+              indicator = `<span class="confidence-indicator" style="color:var(--red);" title="Doubled! +${vsPar * 2} strokes">⚡×2</span>`;
             } else {
-              indicator = `<span class="confidence-indicator" title="No adjustment">⚡</span>`;
+              indicator = `<span class="confidence-indicator" title="Doubled (no effect at par)">⚡</span>`;
             }
-            // Add target if prediction was also correct
-            if (predictionCorrect) {
-              indicator += `<span class="confidence-indicator" title="Prediction correct!">🎯</span>`;
-            }
-          } else if (predictionCorrect) {
-            // No bet but correct prediction: show target with -1 bonus
-            indicator = `<span class="confidence-indicator" style="color:var(--green);" title="Correct prediction! -1 stroke">🎯-1</span>`;
           }
           scoreHtml = `<span class="player-score-badge ${getScoreClass(holeScore, par)}">${holeScore} (${getScoreLabel(holeScore, par)})${indicator}</span>`;
-        } else if (holePrediction != null) {
-          // Has prediction but no actual score yet - show prediction locked
-          const confidenceIndicator = isConfident ? '<span class="confidence-indicator">⚡</span>' : '';
-          scoreHtml = `<span class="player-waiting" style="color:var(--accent);"><span style="font-size:12px;">🔒</span> Predicted: ${holePrediction}${confidenceIndicator}</span>`;
         } else {
-          // No prediction yet
+          // No score yet
           scoreHtml = `<span class="player-waiting"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Waiting...</span>`;
         }
 
@@ -4660,30 +4662,24 @@
       players.forEach((p, idx) => {
         if (!p || !p.id) return;
         const scores = p.scores || [];
-        const predictions = p.predictions || [];
         const confident = p.confident || [];
         html += `<tr><td>${p.name || "Player " + (idx + 1)}</td>`;
         for (let h = 0; h < completedHoles; h++) {
           const score = scores[h];
-          const prediction = predictions[h];
           const isConfident = confident[h];
           if (score != null) {
             const cls = getScoreClass(score, pars[h]);
-            const predictionCorrect = prediction != null && prediction === score;
-            // Show appropriate indicator
+            // Show Double Down indicator if used
             let indicator = '';
             if (isConfident) {
               const vsPar = score - pars[h];
               if (vsPar < 0) {
-                indicator = `<span class="confidence-indicator" style="color:var(--green);">⚡-${Math.abs(vsPar)}</span>`;
+                indicator = `<span class="confidence-indicator" style="color:var(--green);">⚡×2</span>`;
               } else if (vsPar > 0) {
-                indicator = `<span class="confidence-indicator" style="color:var(--red);">⚡+${vsPar}</span>`;
+                indicator = `<span class="confidence-indicator" style="color:var(--red);">⚡×2</span>`;
               } else {
                 indicator = `<span class="confidence-indicator">⚡</span>`;
               }
-              if (predictionCorrect) indicator += '🎯';
-            } else if (predictionCorrect) {
-              indicator = `<span class="confidence-indicator" style="color:var(--green);">🎯-1</span>`;
             }
             html += `<td><span class="past-hole-score ${cls}">${score}${indicator}</span></td>`;
           } else {
@@ -4782,8 +4778,8 @@
       currentPlayerId = getPlayerId();
       currentPlayerSlot = 0;
 
-      const players = Array(MAX_PLAYERS).fill(null).map(() => ({ id: null, name: "", scores: [], predictions: [], confident: [] }));
-      players[0] = { id: currentPlayerId, name, scores: [], predictions: [], confident: [] };
+      const players = Array(MAX_PLAYERS).fill(null).map(() => ({ id: null, name: "", scores: [], confident: [] }));
+      players[0] = { id: currentPlayerId, name, scores: [], confident: [] };
 
       const docRef = await db.collection("games").add({
         courseId,
@@ -4816,12 +4812,11 @@
       if (slot === -1) {
         slot = players.findIndex(p => !p || !p.id);
         if (slot === -1) { showToast("Error", "Game is full (4 players max)"); return; }
-        players[slot] = { id: currentPlayerId, name, scores: [], predictions: [], confident: [] };
+        players[slot] = { id: currentPlayerId, name, scores: [], confident: [] };
       } else {
         players[slot].name = name;
         // Ensure arrays exist for existing players
         if (!players[slot].confident) players[slot].confident = [];
-        if (!players[slot].predictions) players[slot].predictions = [];
       }
 
       await docRef.update({ players });
@@ -4893,70 +4888,8 @@
       subscribeToMessages(currentGameId);
     }
 
-    async function lockPrediction() {
-      console.log("lockPrediction called", { currentGameId, currentPlayerSlot, selectedPrediction, selectedConfident });
-
-      if (!currentGameId) {
-        console.error("No currentGameId");
-        return;
-      }
-      if (currentPlayerSlot == null) {
-        console.error("No currentPlayerSlot");
-        return;
-      }
-      if (selectedPrediction == null) {
-        console.error("No selectedPrediction");
-        return;
-      }
-
-      try {
-        const currentHole = getCurrentHole(currentGameData);
-        const docRef = db.collection("games").doc(currentGameId);
-        const snap = await docRef.get();
-        const data = snap.data();
-        const players = data.players || [];
-
-        if (!players[currentPlayerSlot]) {
-          console.error("Player not found at slot", currentPlayerSlot);
-          return;
-        }
-
-        // Make sure predictions array exists and is long enough
-        const predictions = players[currentPlayerSlot].predictions || [];
-        while (predictions.length < HOLES) {
-          predictions.push(null);
-        }
-
-        // Make sure confident array exists and is long enough
-        const confident = players[currentPlayerSlot].confident || [];
-        while (confident.length < HOLES) {
-          confident.push(false);
-        }
-
-        predictions[currentHole - 1] = selectedPrediction;
-        confident[currentHole - 1] = selectedConfident;
-        players[currentPlayerSlot].predictions = predictions;
-        players[currentPlayerSlot].confident = confident;
-
-        await docRef.update({ players });
-
-        // Feedback
-        if (navigator.vibrate) navigator.vibrate(50);
-        showToast("🔒 Locked!", `Prediction: ${selectedPrediction}${selectedConfident ? " ⚡" : ""}`, 2000);
-
-        // Clear prediction selection (actual score phase will show next)
-        selectedPrediction = null;
-        selectedConfident = false;
-
-        console.log("Prediction locked successfully");
-      } catch (error) {
-        console.error("Error locking prediction:", error);
-        showToast("Error", "Failed to lock prediction. Try again.");
-      }
-    }
-
     async function submitScore() {
-      console.log("submitScore called", { currentGameId, currentPlayerSlot, selectedScore });
+      console.log("submitScore called", { currentGameId, currentPlayerSlot, selectedScore, selectedConfident });
 
       if (!currentGameId) {
         console.error("No currentGameId");
@@ -4989,8 +4922,16 @@
           scores.push(null);
         }
 
+        // Make sure confident array exists and is long enough (for Double Down)
+        const confident = players[currentPlayerSlot].confident || [];
+        while (confident.length < HOLES) {
+          confident.push(false);
+        }
+
         scores[currentHole - 1] = selectedScore;
+        confident[currentHole - 1] = selectedConfident;
         players[currentPlayerSlot].scores = scores;
+        players[currentPlayerSlot].confident = confident;
 
         await docRef.update({ players });
 
@@ -5088,19 +5029,13 @@
           }
         }
 
-        // Check confidence bet and prediction feedback
-        const predictions = players[currentPlayerSlot].predictions || [];
-        const confident = players[currentPlayerSlot].confident || [];
-        const prediction = predictions[currentHole - 1];
-        const isConfident = confident[currentHole - 1];
-        const predictionCorrect = prediction != null && prediction === selectedScore;
-
-        if (isConfident) {
+        // Double Down feedback
+        if (selectedConfident) {
           const vsPar = selectedScore - par;
           if (vsPar < 0) {
-            // Under par - bonus!
+            // Under par - doubled bonus!
             const bonus = Math.abs(vsPar);
-            showToast("⚡ Bonus!", `${bonus} under par = -${bonus} stroke${bonus > 1 ? 's' : ''} bonus!`, 3000);
+            showToast("⚡ Double Down!", `${bonus * 2} strokes saved!`, 3000);
             if (typeof confetti === 'function') {
               confetti({
                 particleCount: 50 + (bonus * 30),
@@ -5111,29 +5046,17 @@
               });
             }
           } else if (vsPar > 0) {
-            // Over par - penalty
-            showToast("⚡ Penalty!", `${vsPar} over par = +${vsPar} stroke${vsPar > 1 ? 's' : ''} penalty.`, 3000);
+            // Over par - doubled penalty
+            showToast("⚡ Doubled!", `+${vsPar * 2} strokes added.`, 3000);
           } else {
             // At par - no adjustment
-            showToast("⚡ Even!", "At par - no adjustment.", 2000);
-          }
-        } else if (predictionCorrect) {
-          // No bet but correct prediction - bonus!
-          showToast("🎯 Nailed it!", "Prediction correct! -1 stroke bonus!", 3000);
-          if (typeof confetti === 'function') {
-            confetti({
-              particleCount: 40,
-              spread: 50,
-              origin: { x: 0.5, y: 0.5 },
-              colors: ['#00c853', '#4caf50', '#8bc34a'],
-              ticks: 120
-            });
+            showToast("⚡ Even!", "At par - no change.", 2000);
           }
         }
 
         // Clear selection after successful submit
         selectedScore = null;
-        selectedPrediction = null;
+        selectedConfident = false;
 
         console.log("Score submitted successfully");
       } catch (error) {
@@ -5543,12 +5466,10 @@
         } catch (e) {}
       };
 
-      // Prediction and score submission
-      $("lockPredictionBtn").onclick = lockPrediction;
-      $("submitScoreBtn").onclick = submitScore;
-
-      // Confidence toggle
-      $("confidenceToggleBtn").onclick = toggleConfidence;
+      // Score entry and Double Down
+      $("continueBtn").onclick = showDoubleDownPhase;
+      $("keepBtn").onclick = keepScore;
+      $("doubleDownBtn").onclick = doubleDown;
 
       // Past holes toggle
       $("pastHolesToggle").onclick = () => { $("pastHolesSection").classList.toggle("open"); };
